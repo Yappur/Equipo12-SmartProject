@@ -1,13 +1,16 @@
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
-import HomePage from "./pages/homePage";
+import RoutesViews from "./routes/RoutesViews";
+import { BrowserRouter as Router } from "react-router-dom";
 
 function App() {
   return (
     <>
-      <Navbar />
-      <HomePage />
-      <Footer />
+      <Router>
+        <Navbar />
+        <RoutesViews />
+        <Footer />
+      </Router>
     </>
   );
 }
