@@ -1,7 +1,12 @@
 import React from "react";
 
 const HomePage = () => {
-  return <div className="text-3xl ">homePage</div>;
+  return (
+    <>
+      <h1 className="text-2xl font-bold text-gray-600">Home</h1>
+      <a href="/admin/userPanel">Usuarios</a>
+    </>
+  );
 };
 
 export default HomePage;
