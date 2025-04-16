@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
+import axiosConfig from "../../helpers/axios.config";
 
 const columns = [
   {
     name: "Nombre",
-    selector: (row) => row.nombre,
+    selector: (row) => row.name,
     sortable: true,
   },
   {
@@ -35,39 +36,6 @@ const columns = [
   },
 ];
 
-const data = [
-  {
-    id: 1,
-    nombre: "Juan Pérez",
-    email: "juan@example.com",
-    rol: "superAdmin",
-  },
-  {
-    id: 2,
-    nombre: "Ana Gómez",
-    email: "ana@example.com",
-    rol: "reclutador",
-  },
-  {
-    id: 3,
-    nombre: "José Rodríguez",
-    email: "jose@example.com",
-    rol: "reclutador",
-  },
-  {
-    id: 4,
-    nombre: "Manuel López",
-    email: "manuel@example.com",
-    rol: "superAdmin",
-  },
-  {
-    id: 5,
-    nombre: "Leonardo Puentes",
-    email: "zpuentes@example.com",
-    rol: "superAdmin",
-  },
-];
-
 const customStyles = {
   headCells: {
     style: {
@@ -94,12 +62,36 @@ const customStyles = {
 };
 const UserTable = () => {
   const [filtrarUsuarios, setFiltrarUsuarios] = useState("");
+  const [usuarios, setUsuarios] = useState([]);
 
-  const filtrarData = data.filter(
+  const obtenerUsuarios = async () => {
+    try {
+      const response = await axiosConfig.get(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+
+      // Añadimos un rol aleatorio a cada usuario, ya que JSONPlaceholder no tiene este campo
+      const usuariosConRol = response.data.map((usuario) => ({
+        ...usuario,
+        rol: Math.random() > 0.5 ? "superAdmin" : "reclutador",
+      }));
+
+      setUsuarios(usuariosConRol);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+    }
+  };
+
+  useEffect(() => {
+    obtenerUsuarios();
+  }, []);
+
+  const filtrarData = usuarios.filter(
     (user) =>
-      user.nombre.toLowerCase().includes(filtrarUsuarios.toLowerCase()) ||
+      user.name.toLowerCase().includes(filtrarUsuarios.toLowerCase()) ||
       user.email.toLowerCase().includes(filtrarUsuarios.toLowerCase())
   );
+
   return (
     <div className="container mx-auto ">
       <div className="flex justify-between items-center mt-5">
