@@ -1,15 +1,29 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   return (
-    <nav className="bg-[#14599A] text-white py-4 !important">
-      <ul className="list-none flex gap-16 p-0 m-0">
-        <li><a href="#" className="text-white ">Home</a></li>
-        <li><a href="/admin/userPanel" className="text-white ">Usuarios</a></li>
-        <li><a href="#" className="text-white ">Postulaciones</a></li>
-        <li><a href="#" className="text-white ">Administrar Vacantes</a></li>
-        <li><a href="#" className="text-white">Administrar Usuarios</a></li>
-      </ul>
+    <nav className="bg-[#14599A] text-white py-4">
+      <div className="container mx-auto flex justify-between items-center">
+        {/* Sección izquierda: logo + links */}
+        <div className="flex items-center space-x-6">
+          <NavLink to="/">
+            <img className="h-8" src="" alt="Logo" />
+          </NavLink>
+          <NavLink to="/">Inicio</NavLink>
+          <NavLink to="/admin/userPanel">Usuarios</NavLink>
+        </div>
+
+        {/* Sección derecha: login */}
+        <div>
+          <NavLink
+            to="/login"
+            className="border border-white px-4 py-2 rounded hover:bg-[#072a4b] transition"
+          >
+            Iniciar sesión
+          </NavLink>
+        </div>
+      </div>
     </nav>
   );
 };
