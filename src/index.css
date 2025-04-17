@@ -1,1 +1,6 @@
 @import "tailwindcss";
+html, body {
+    height: 100%; /* Asegura que el cuerpo y html ocupen toda la altura de la ventana */
+    margin: 0; /* Elimina márgenes por defecto que pueden afectar el diseño */
+  }
+  
