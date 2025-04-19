@@ -10,7 +10,19 @@ const FormRegister = () => {
 
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
+
+  // Función para validar el formato del correo electrónico
+  const validarEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  // Función para validar la seguridad de la contraseña
+  const validarPassword = (password) => {
+    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return regex.test(password);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,35 +30,67 @@ const FormRegister = () => {
       ...usuario,
       [name]: value,
     });
+
+    if (errors[`error${name.charAt(0).toUpperCase() + name.slice(1)}`]) {
+      setErrors((prev) => ({
+        ...prev,
+        [`error${name.charAt(0).toUpperCase() + name.slice(1)}`]: false,
+      }));
+    }
+  };
+
+  // Validación del formulario antes de enviar
+  const validateForm = () => {
+    const { email, password, confirmarPassword } = usuario;
+    const newErrors = {};
+    let isValid = true;
+
+    // Validación de email
+    if (!email || !validarEmail(email)) {
+      newErrors.errorEmail = "Por favor, ingresa un email válido";
+      isValid = false;
+    }
+
+    // Validación de contraseña
+    if (!password || !validarPassword(password)) {
+      newErrors.errorPassword =
+        "La contraseña debe tener al menos 8 caracteres, una letra y un número";
+      isValid = false;
+    }
+
+    // Validación de confirmación de contraseña
+    if (!confirmarPassword || password !== confirmarPassword) {
+      newErrors.errorConfirmarPassword = "Las contraseñas no coinciden";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones básicas
-    if (usuario.password !== usuario.confirmarPassword) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
-
+    if (!validateForm()) return;
     try {
       setCargando(true);
-      setError("");
 
-      // Realizar la petición POST con axios
       const response = await axiosConfig.post("/auth/register", {
         email: usuario.email,
         password: usuario.password,
       });
+
       setMensaje("Usuario registrado correctamente");
-      // Limpiar el formulario después de un registro exitoso
       setUsuario({
         email: "",
         password: "",
         confirmarPassword: "",
       });
     } catch (err) {
-      setError(err.response?.data?.mensaje || "Error al registrar usuario");
+      setErrors({
+        serverError:
+          err.response?.data?.mensaje || "Error al registrar usuario",
+      });
       console.error("Error:", err);
     } finally {
       setCargando(false);
@@ -55,7 +99,6 @@ const FormRegister = () => {
 
   return (
     <div className="min-h-screen bg-[#00254B] text-white flex items-center justify-center p-4">
-      {/* Eliminado el grid-cols-2 que estaba causando el espacio vacío */}
       <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden w-full max-w-md shadow-2xl backdrop-blur-md">
         <div className="p-8 text-white flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-center mb-2">
@@ -70,22 +113,25 @@ const FormRegister = () => {
             <div className="flex-grow h-px bg-white/20" />
           </div>
 
-          {/* Mostramos mensajes de éxito o error */}
+          {/* Mostramos mensajes de éxito */}
           {mensaje && (
             <div className="bg-green-500/20 text-green-300 p-3 rounded-md mb-4 text-center">
               {mensaje}
             </div>
           )}
-          {error && (
+
+          {/* Mostramos error general del servidor */}
+          {errors.serverError && (
             <div className="bg-red-500/20 text-red-300 p-3 rounded-md mb-4 text-center">
-              {error}
+              {errors.serverError}
             </div>
           )}
 
           {/* Formulario conectado al estado y handlers */}
           <form className="space-y-4" onSubmit={handleSubmit}>
+            {/* Email */}
             <div>
-              <label className="block text-sm text-gray-300">
+              <label className="flex text-sm text-gray-300 items-center">
                 Correo Electrónico
               </label>
               <input
@@ -93,27 +139,41 @@ const FormRegister = () => {
                 name="email"
                 value={usuario.email}
                 onChange={handleChange}
-                className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
+                className={`w-full p-2.5 mt-1 bg-white/10 border rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none ${
+                  errors.errorEmail ? "border-red-500" : "border-white/30"
+                }`}
                 placeholder="Ingresa tu correo"
-                required
               />
+              {errors.errorEmail && (
+                <p className="text-red-400 text-xs mt-1">{errors.errorEmail}</p>
+              )}
             </div>
 
+            {/* Contraseña */}
             <div>
-              <label className="block text-sm text-gray-300">Contraseña</label>
+              <label className="flex text-sm text-gray-300 items-center">
+                Contraseña
+              </label>
               <input
                 type="password"
                 name="password"
                 value={usuario.password}
                 onChange={handleChange}
-                className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
-                placeholder="Ingresa tu contraseña"
-                required
+                className={`w-full p-2.5 mt-1 bg-white/10 border rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none ${
+                  errors.errorPassword ? "border-red-500" : "border-white/30"
+                }`}
+                placeholder="Contraseña (mínimo 8 caracteres, incluir letra y número)"
               />
+              {errors.errorPassword && (
+                <p className="text-red-400 text-xs mt-1">
+                  {errors.errorPassword}
+                </p>
+              )}
             </div>
 
+            {/* Confirmar Contraseña */}
             <div>
-              <label className="block text-sm text-gray-300">
+              <label className="flex text-sm text-gray-300 items-center">
                 Confirmar Contraseña
               </label>
               <input
@@ -121,16 +181,25 @@ const FormRegister = () => {
                 name="confirmarPassword"
                 value={usuario.confirmarPassword}
                 onChange={handleChange}
-                className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
+                className={`w-full p-2.5 mt-1 bg-white/10 border rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none ${
+                  errors.errorConfirmarPassword
+                    ? "border-red-500"
+                    : "border-white/30"
+                }`}
                 placeholder="Confirma tu contraseña"
-                required
               />
+              {errors.errorConfirmarPassword && (
+                <p className="text-red-400 text-xs mt-1">
+                  {errors.errorConfirmarPassword}
+                </p>
+              )}
             </div>
 
+            {/* Botón de registro */}
             <button
               type="submit"
               disabled={cargando}
-              className="w-full bg-[#008080] hover:bg-[#006666] text-white font-semibold py-2.5 rounded-md text-sm transition shadow"
+              className="w-full bg-[#008080] hover:bg-[#006666] text-white font-semibold py-2.5 rounded-md text-sm transition shadow disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {cargando ? "Procesando..." : "Registrar Usuario"}
             </button>
