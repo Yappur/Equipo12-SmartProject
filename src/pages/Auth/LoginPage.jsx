@@ -22,7 +22,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#00254B] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#00254B] flex items-center justify-center p-4 pt-16">
       <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-2xl backdrop-blur-md">
         <div className="p-8 md:p-12 text-white flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-center mb-2">

@@ -3,7 +3,7 @@ import { UserPlus, Users, Briefcase, ChevronRight } from "lucide-react";
 
 const AdminView = () => {
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-white to-gray-400">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-white to-gray-400 pt-16">
       <div className="bg-gradient-to-r from-blue-700 to-blue-300 rounded-b-3xl shadow-xl overflow-hidden mb-10">
         <div className="container mx-auto px-6 py-12">
           <h1 className="text-4xl md:text-5xl font-bold text-center text-white mb-2">
