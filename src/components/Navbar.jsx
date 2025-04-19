@@ -11,7 +11,7 @@ const Navbar = () => {
             <img className="h-8" src="" alt="Logo" />
           </NavLink>
           <NavLink to="/">Inicio</NavLink>
-          <NavLink to="/admin/userPanel">Usuarios</NavLink>
+          <NavLink to="/admin">Vista Admin</NavLink>
         </div>
 
         {/* Sección derecha: login */}
