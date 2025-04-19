@@ -1,32 +1,46 @@
 import React from "react";
-import CardHome from "../components/Cards/CardHome";
+import CardHome from "@/components/Cards/CardHome";
+import homeDesktop from "@/assets/img/home-desktop.png";
+import homeMovil from "@/assets/img/home-movil.png";
 
 const HomePage = () => {
   return (
-    <>
-      {/* Imagen de fondo */}
-      <div className="relative w-full h-96">
-        <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTulH1GG7mifCTeQSEZG14ibVVm2zuktCGxkg&s" // Aquí puedes usar la URL de tu imagen
-          alt="Background"
-          className="object-cover w-full h-full"
-        />
-        <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50"></div>
+    <div className="pt-16">
+      {/* Imagen de fondo con texto centrado */}
+      <div className="relative w-full h-[85vh] sm:h-[90vh] lg:h-[100vh] ">
+        <picture>
+          <source srcSet={homeDesktop} media="(min-width: 640px)" />
+          <img
+            src={homeMovil}
+            alt="Fondo Home"
+            className="object-cover w-full h-full"
+          />
+        </picture>
+
+        {/* Overlay y título centrado */}
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center px-4 sm:px-8">
+          <h1 className="text-white text-3xl sm:text-5xl lg:text-6xl font-bold text-center leading-snug drop-shadow-md">
+            Gestión de Ofertas
+          </h1>
+        </div>
       </div>
 
-      {/* Título */}
-      <h1 className="text-4xl font-bold text-center text-gray-800 mt-8">
-        Vacantes Disponibles
-      </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 mx-4">
-        <CardHome />
-        <CardHome />
-        <CardHome />
-        <CardHome />
-        <CardHome />
-        <CardHome />
-      </div>
-    </>
+      {/* Sección de Vacantes */}
+      <section className="my-12 px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-800">
+          Vacantes Disponibles
+        </h2>
+
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-screen-xl mx-auto">
+          <CardHome />
+          <CardHome />
+          <CardHome />
+          <CardHome />
+          <CardHome />
+          <CardHome />
+        </div>
+      </section>
+    </div>
   );
 };
 
