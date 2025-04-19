@@ -5,7 +5,7 @@ const obtenerToken = () => {
 };
 
 const axiosConfig = axios.create({
-  baseURL: "https://backend-foo-talent.onrender.com", // Backend URL
+  // baseURL: "", // Backend URL
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
