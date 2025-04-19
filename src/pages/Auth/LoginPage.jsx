@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logoLinkedin from "@/assets/img/logo-linkedin.png";
-import { useLoginFirebase } from "@/hooks/useLoginFirebase"; 
+import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ function LoginPage() {
     if (resultado) {
       setSuccess("¡Inicio de sesión exitoso!");
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/admin");
       }, 1200); // Delay de 1.2s para que vea el mensaje
     }
   };
@@ -26,12 +26,17 @@ function LoginPage() {
       <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-2xl backdrop-blur-md">
         <div className="p-8 md:p-12 text-white flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-center mb-2">
-            Bienvenido de nuevo a <span className="text-[#008080] drop-shadow">Gestion</span>
+            Bienvenido de nuevo a{" "}
+            <span className="text-[#008080] drop-shadow">Gestion</span>
           </h2>
           <p className="text-gray-300 text-center mb-6">Accede a tu cuenta</p>
 
           <button className="flex items-center justify-center w-full border border-white/20 rounded-md py-2.5 px-4 text-white bg-[#14599A]/30 hover:bg-[#14599A]/50 transition mb-6">
-            <img src={logoLinkedin} alt="Logo LinkedIn" className="w-5 h-5 mr-3" />
+            <img
+              src={logoLinkedin}
+              alt="Logo LinkedIn"
+              className="w-5 h-5 mr-3"
+            />
             Iniciar sesión con LinkedIn
           </button>
 
@@ -44,7 +49,9 @@ function LoginPage() {
           {/* Formulario funcional */}
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm text-gray-300">Correo Electrónico</label>
+              <label className="block text-sm text-gray-300">
+                Correo Electrónico
+              </label>
               <input
                 type="email"
                 className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
@@ -72,7 +79,9 @@ function LoginPage() {
                 <input type="checkbox" className="mr-2 accent-[#008080]" />
                 Recuérdame
               </label>
-              <a href="#" className="text-[#008080] hover:underline">¿Olvidaste tu contraseña?</a>
+              <a href="#" className="text-[#008080] hover:underline">
+                ¿Olvidaste tu contraseña?
+              </a>
             </div>
 
             <button
@@ -84,7 +93,9 @@ function LoginPage() {
             </button>
 
             {/* 🟢 Mensaje de éxito */}
-            {success && <p className="text-green-400 text-sm mt-2">{success}</p>}
+            {success && (
+              <p className="text-green-400 text-sm mt-2">{success}</p>
+            )}
 
             {/* 🔴 Mensaje de error */}
             {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
@@ -92,7 +103,9 @@ function LoginPage() {
 
           <p className="text-gray-300 mt-6 text-center text-sm">
             ¿No tienes cuenta?{" "}
-            <a href="#" className="text-[#008080] hover:underline">Regístrate</a>
+            <a href="#" className="text-[#008080] hover:underline">
+              Regístrate
+            </a>
           </p>
         </div>
 
