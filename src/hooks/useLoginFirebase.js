@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import axiosConfig from '@/helpers/axios.config'; // ajusta la ruta si es necesario
 
 export const useLoginFirebase = () => {
   const [error, setError] = useState(null);
@@ -8,30 +9,21 @@ export const useLoginFirebase = () => {
   const login = async ({ email, password }) => {
     setCargando(true);
     setError(null);
-
+  
     try {
       const auth = getAuth();
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       const idToken = await user.getIdToken();
-
-      // Enviar el token a tu backend para validarlo
-      const respuesta = await fetch('https://backend-foo-talent.onrender.com/auth/verify-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ idToken })
-      });
-
-      if (!respuesta.ok) {
-        throw new Error("Token inválido");
-      }
-
-      const data = await respuesta.json();
-      return data; // Aquí puedes retornar los datos del usuario
+  
+      console.log("🔐 idToken generado:", idToken); // 👈 LOG DEL TOKEN
+  
+      const { data } = await axiosConfig.post('/auth/verify-token', { idToken });
+  
+      return data;
     } catch (err) {
-      setError(err.message || "Error al iniciar sesión");
+      console.error("❌ Error al loguear:", err);
+      setError(err.response?.data?.message || err.message || "Error al iniciar sesión");
       return null;
     } finally {
       setCargando(false);

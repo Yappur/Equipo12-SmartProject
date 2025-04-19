@@ -1,18 +1,23 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logoLinkedin from "@/assets/img/logo-linkedin.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase"; 
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [success, setSuccess] = useState(null);
   const { login, error, cargando } = useLoginFirebase();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const resultado = await login({ email, password });
     if (resultado) {
-      console.log("✅ Usuario autenticado:", resultado);
-      // Redirige o guarda sesión aquí si quieres
+      setSuccess("¡Inicio de sesión exitoso!");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1200); // Delay de 1.2s para que vea el mensaje
     }
   };
 
@@ -21,7 +26,7 @@ function LoginPage() {
       <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-2xl backdrop-blur-md">
         <div className="p-8 md:p-12 text-white flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-center mb-2">
-            Bienvenido de nuevo a <span className="text-[#008080] drop-shadow">gestiON</span>
+            Bienvenido de nuevo a <span className="text-[#008080] drop-shadow">Gestion</span>
           </h2>
           <p className="text-gray-300 text-center mb-6">Accede a tu cuenta</p>
 
@@ -78,6 +83,10 @@ function LoginPage() {
               {cargando ? "Iniciando..." : "Iniciar Sesión"}
             </button>
 
+            {/* 🟢 Mensaje de éxito */}
+            {success && <p className="text-green-400 text-sm mt-2">{success}</p>}
+
+            {/* 🔴 Mensaje de error */}
             {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
           </form>
 
