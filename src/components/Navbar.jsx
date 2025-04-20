@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import logo from "@/assets/img/logo.png";
 
-const Navbar = () => {
+const Navbar = ({ isAuthenticated, logout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -10,7 +9,7 @@ const Navbar = () => {
       <div className="container mx-auto h-full flex justify-between items-center px-4 sm:px-8">
         {/* Logo */}
         <NavLink to="/" className="flex items-center space-x-2">
-          <h1 className="text-white font-bold">Gestion de ofertas</h1>
+          <h1 className="text-white font-bold">Gestión de ofertas</h1>
         </NavLink>
 
         {/* Enlaces desktop */}
@@ -35,12 +34,21 @@ const Navbar = () => {
           >
             Vista Admin
           </NavLink>
-          <NavLink
-            to="/login"
-            className="border border-white px-4 py-2 rounded hover:bg-white hover:text-[#14599A] transition font-medium"
-          >
-            Iniciar sesión
-          </NavLink>
+          {isAuthenticated ? (
+            <button
+              onClick={logout}
+              className="border border-white px-4 py-2 rounded hover:bg-white hover:text-[#14599A] transition font-medium"
+            >
+              Cerrar sesión
+            </button>
+          ) : (
+            <NavLink
+              to="/login"
+              className="border border-white px-4 py-2 rounded hover:bg-white hover:text-[#14599A] transition font-medium"
+            >
+              Iniciar sesión
+            </NavLink>
+          )}
         </div>
 
         {/* Botón hamburguesa móvil */}
@@ -80,13 +88,25 @@ const Navbar = () => {
           >
             Vista Admin
           </NavLink>
-          <NavLink
-            to="/login"
-            className="block border border-white px-4 py-2 rounded hover:bg-white hover:text-[#14599A] transition font-medium"
-            onClick={() => setMenuOpen(false)}
-          >
-            Iniciar sesión
-          </NavLink>
+          {isAuthenticated ? (
+            <button
+              onClick={() => {
+                logout();
+                setMenuOpen(false);
+              }}
+              className="block border border-white px-4 py-2 rounded hover:bg-white hover:text-[#14599A] transition font-medium"
+            >
+              Cerrar sesión
+            </button>
+          ) : (
+            <NavLink
+              to="/login"
+              className="block border border-white px-4 py-2 rounded hover:bg-white hover:text-[#14599A] transition font-medium"
+              onClick={() => setMenuOpen(false)}
+            >
+              Iniciar sesión
+            </NavLink>
+          )}
         </div>
       )}
     </nav>
