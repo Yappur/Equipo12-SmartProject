@@ -5,7 +5,7 @@ import axiosConfig from "../../helpers/axios.config";
 const columns = [
   {
     name: "Nombre",
-    selector: (row) => row.name,
+    selector: (row) => row.displayName,
     sortable: true,
   },
   {
@@ -112,13 +112,15 @@ const UserTable = () => {
 
   const filtrarData = usuarios.filter(
     (user) =>
-      user.name.toLowerCase().includes(filtrarUsuarios.toLowerCase()) ||
-      user.email.toLowerCase().includes(filtrarUsuarios.toLowerCase())
+      (user.displayName?.toLowerCase() || "").includes(
+        filtrarUsuarios.toLowerCase()
+      ) ||
+      (user.email?.toLowerCase() || "").includes(filtrarUsuarios.toLowerCase())
   );
 
   return (
-    <div className="container mx-auto">
-      <div className="flex justify-between items-center mt-5">
+    <div className="container mx-auto my-20">
+      <div className="flex justify-between items-center ">
         <h1 className="text-2xl font-bold text-gray-600 mb-4">
           Lista de Usuarios
         </h1>
