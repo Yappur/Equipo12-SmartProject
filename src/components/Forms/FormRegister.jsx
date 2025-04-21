@@ -3,6 +3,7 @@ import axiosConfig from "../../helpers/axios.config";
 
 const FormRegister = () => {
   const [usuario, setUsuario] = useState({
+    displayName: "",
     email: "",
     password: "",
     confirmarPassword: "",
@@ -41,9 +42,14 @@ const FormRegister = () => {
 
   // Validación del formulario antes de enviar
   const validateForm = () => {
-    const { email, password, confirmarPassword } = usuario;
+    const { displayName, email, password, confirmarPassword } = usuario;
     const newErrors = {};
     let isValid = true;
+
+    if (!displayName || displayName.trim() === "") {
+      newErrors.errorDisplayName = "Por favor, ingresa tu nombre y apellido";
+      isValid = false;
+    }
 
     // Validación de email
     if (!email || !validarEmail(email)) {
@@ -76,12 +82,14 @@ const FormRegister = () => {
       setCargando(true);
 
       const response = await axiosConfig.post("/auth/register", {
+        displayName: usuario.displayName,
         email: usuario.email,
         password: usuario.password,
       });
 
       setMensaje("Usuario registrado correctamente");
       setUsuario({
+        displayName: "",
         email: "",
         password: "",
         confirmarPassword: "",
@@ -129,7 +137,26 @@ const FormRegister = () => {
 
           {/* Formulario conectado al estado y handlers */}
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Email */}
+            <div>
+              <label className="flex text-sm text-gray-300 items-center">
+                Nombre/s y Apellido/s
+              </label>
+              <input
+                type="text"
+                name="displayName"
+                value={usuario.displayName}
+                onChange={handleChange}
+                className={`w-full p-2.5 mt-1 bg-white/10 border rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none ${
+                  errors.errorDisplayName ? "border-red-500" : "border-white/30"
+                }`}
+                placeholder="Ingresa Nombre y Apellido"
+              />
+              {errors.errorDisplayName && (
+                <p className="text-red-400 text-xs mt-1">
+                  {errors.errorDisplayName}
+                </p>
+              )}
+            </div>
             <div>
               <label className="flex text-sm text-gray-300 items-center">
                 Correo Electrónico

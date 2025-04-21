@@ -1,28 +1,29 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logoLinkedin from "@/assets/img/logo-linkedin.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 
-function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const LoginPage = ({ login }) => {
   const [success, setSuccess] = useState(null);
-  const { login, error, cargando } = useLoginFirebase();
+  const { error, cargando } = useLoginFirebase();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
     const resultado = await login({ email, password });
     if (resultado) {
       setSuccess("¡Inicio de sesión exitoso!");
       setTimeout(() => {
         navigate("/admin");
-      }, 1200); // Delay de 1.2s para que vea el mensaje
+      }, 1200);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#00254B] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#00254B] flex items-center justify-center p-4 pt-16">
       <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-2xl backdrop-blur-md">
         <div className="p-8 md:p-12 text-white flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-center mb-2">
@@ -46,7 +47,6 @@ function LoginPage() {
             <div className="flex-grow h-px bg-white/20" />
           </div>
 
-          {/* Formulario funcional */}
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm text-gray-300">
@@ -54,10 +54,9 @@ function LoginPage() {
               </label>
               <input
                 type="email"
+                name="email"
                 className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
                 placeholder="Ingresa tu correo"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -66,10 +65,9 @@ function LoginPage() {
               <label className="block text-sm text-gray-300">Contraseña</label>
               <input
                 type="password"
+                name="password"
                 className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
                 placeholder="Ingresa tu contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -92,12 +90,10 @@ function LoginPage() {
               {cargando ? "Iniciando..." : "Iniciar Sesión"}
             </button>
 
-            {/* 🟢 Mensaje de éxito */}
             {success && (
               <p className="text-green-400 text-sm mt-2">{success}</p>
             )}
 
-            {/* 🔴 Mensaje de error */}
             {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
           </form>
 
@@ -109,13 +105,12 @@ function LoginPage() {
           </p>
         </div>
 
-        {/* Imagen decorativa */}
         <div className="hidden md:block bg-[#14599A] w-full h-full">
           {/* Aquí irá el banner */}
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default LoginPage;
