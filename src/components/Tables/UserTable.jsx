@@ -17,11 +17,11 @@ const columns = [
     name: "Rol",
     selector: (row) => (
       <select
-        value={row.role || "reclutador"}
+        value={row.role || "user"}
         onChange={(e) => handleChangeRol(row.id, e.target.value)}
       >
-        <option value="superAdmin">Super Admin</option>
-        <option value="reclutador">Reclutador</option>
+        <option value="admin">Super Admin</option>
+        <option value="user">Reclutador</option>
       </select>
     ),
     sortable: true,
