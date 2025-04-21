@@ -1,11 +1,11 @@
 import axios from "axios";
 
 const obtenerToken = () => {
-  return sessionStorage.getItem("token");
+  return localStorage.getItem("firebaseAuthToken");
 };
 
 const axiosConfig = axios.create({
-  // baseURL: "", // Backend URL
+  baseURL: "https://backend-foo-talent.onrender.com",
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
@@ -26,5 +26,35 @@ axiosConfig.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+function parseJwt(token) {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    console.error("Error al decodificar token:", e);
+    return null;
+  }
+}
+
+const token = localStorage.getItem("firebaseAuthToken");
+if (token) {
+  const decodedToken = parseJwt(token);
+  console.log("Token decodificado:", decodedToken);
+  console.log(
+    "Expiración:",
+    new Date(decodedToken.exp * 1000).toLocaleString()
+  );
+  console.log("¿Está expirado?", decodedToken.exp * 1000 < Date.now());
+}
 
 export default axiosConfig;

@@ -16,7 +16,10 @@ const columns = [
   {
     name: "Rol",
     selector: (row) => (
-      <select value={row.rol}>
+      <select
+        value={row.role || "reclutador"}
+        onChange={(e) => handleChangeRol(row.id, e.target.value)}
+      >
         <option value="superAdmin">Super Admin</option>
         <option value="reclutador">Reclutador</option>
       </select>
@@ -66,19 +69,22 @@ const UserTable = () => {
 
   const obtenerUsuarios = async () => {
     try {
-      const response = await axiosConfig.get(
-        "https://jsonplaceholder.typicode.com/users"
-      );
+      console.log("Intentando obtener usuarios...");
+      const response = await axiosConfig.get("/users");
+      console.log("Respuesta exitosa:", response);
 
-      // Añadimos un rol aleatorio a cada usuario, ya que JSONPlaceholder no tiene este campo
-      const usuariosConRol = response.data.map((usuario) => ({
-        ...usuario,
-        rol: Math.random() > 0.5 ? "superAdmin" : "reclutador",
-      }));
-
-      setUsuarios(usuariosConRol);
+      if (response.data && Array.isArray(response.data)) {
+        setUsuarios(response.data);
+      } else if (response.data && Array.isArray(response.data.users)) {
+        setUsuarios(response.data.users);
+      } else {
+        console.error("Formato de respuesta inesperado:", response.data);
+        setUsuarios([]);
+      }
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
+      console.log("URL que causó el error:", error.config?.url);
+      console.log("Método:", error.config?.method);
     }
   };
 
@@ -112,6 +118,7 @@ const UserTable = () => {
         pagination
         highlightOnHover
         customStyles={customStyles}
+        noDataComponent="No hay usuarios disponibles"
       />
     </div>
   );
