@@ -24,16 +24,18 @@ const Navbar = ({ isAuthenticated, logout }) => {
           >
             Inicio
           </NavLink>
-          <NavLink
-            to="/admin"
-            className={({ isActive }) =>
-              isActive
-                ? "text-white font-semibold underline"
-                : "hover:text-gray-200 transition"
-            }
-          >
-            Vista Admin
-          </NavLink>
+          {isAuthenticated && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-white font-semibold underline"
+                  : "hover:text-gray-200 transition"
+              }
+            >
+              Vista Admin
+            </NavLink>
+          )}
           {isAuthenticated ? (
             <button
               onClick={logout}
@@ -81,13 +83,15 @@ const Navbar = ({ isAuthenticated, logout }) => {
           <NavLink to="/" className="block" onClick={() => setMenuOpen(false)}>
             Inicio
           </NavLink>
-          <NavLink
-            to="/admin"
-            className="block"
-            onClick={() => setMenuOpen(false)}
-          >
-            Vista Admin
-          </NavLink>
+          {isAuthenticated && (
+            <NavLink
+              to="/admin"
+              className="block"
+              onClick={() => setMenuOpen(false)}
+            >
+              Vista Admin
+            </NavLink>
+          )}
           {isAuthenticated ? (
             <button
               onClick={() => {
