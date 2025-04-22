@@ -41,6 +41,26 @@ const AdminView = () => {
             </div>
           </Link>
 
+          <Link to="/vacantes" className="block">
+            <div className="bg-white border-2 border-blue-100 rounded-2xl overflow-hidden shadow-lg hover:border-blue-500 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+              <div className="p-6">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <Briefcase className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  Crear Vacantes
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Añade nuevas vacantes desde 0 al sistema
+                </p>
+                <div className="flex items-center text-blue-600 font-medium">
+                  <span>Acceder</span>
+                  <ChevronRight className="w-5 h-5 ml-1" />
+                </div>
+              </div>
+            </div>
+          </Link>
+
           <Link to="/admin/panelUsuarios" className="block">
             <div className="bg-white border-2 border-blue-100 rounded-2xl overflow-hidden shadow-lg hover:border-blue-500 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
               <div className="p-6">
@@ -53,24 +73,6 @@ const AdminView = () => {
                 <p className="text-gray-600 mb-4">
                   Gestiona y visualiza todos los usuarios registrados
                 </p>
-                <div className="flex items-center text-blue-600 font-medium">
-                  <span>Acceder</span>
-                  <ChevronRight className="w-5 h-5 ml-1" />
-                </div>
-              </div>
-            </div>
-          </Link>
-
-          <Link to="/vacantes" className="block">
-            <div className="bg-white border-2 border-blue-100 rounded-2xl overflow-hidden shadow-lg hover:border-blue-500 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-              <div className="p-6">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <Briefcase className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  Crear Vacantes
-                </h3>
-                <p className="text-gray-600 mb-4">Crea vacantes desde 0</p>
                 <div className="flex items-center text-blue-600 font-medium">
                   <span>Acceder</span>
                   <ChevronRight className="w-5 h-5 ml-1" />
