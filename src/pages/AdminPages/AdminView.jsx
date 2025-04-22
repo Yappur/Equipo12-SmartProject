@@ -61,7 +61,6 @@ const AdminView = () => {
             </div>
           </Link>
 
-
           <Link to="/vacantes" className="block">
             <div className="bg-white border-2 border-blue-100 rounded-2xl overflow-hidden shadow-lg hover:border-blue-500 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
               <div className="p-6">
@@ -71,9 +70,7 @@ const AdminView = () => {
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   Crear Vacantes
                 </h3>
-                <p className="text-gray-600 mb-4">
-                  Crea vacantes desde 0
-                </p>
+                <p className="text-gray-600 mb-4">Crea vacantes desde 0</p>
                 <div className="flex items-center text-blue-600 font-medium">
                   <span>Acceder</span>
                   <ChevronRight className="w-5 h-5 ml-1" />
@@ -81,11 +78,6 @@ const AdminView = () => {
               </div>
             </div>
           </Link>
-
-
-
-
-
 
           <Link to="/admin/panelVacantes" className="block">
             <div className="bg-white border-2 border-blue-100 rounded-2xl overflow-hidden shadow-lg hover:border-blue-500 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
