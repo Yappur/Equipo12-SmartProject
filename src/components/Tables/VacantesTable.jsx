@@ -14,8 +14,18 @@ const columns = [
     sortable: true,
   },
   {
+    name: "Fecha",
+    selector: (row) => row.fecha,
+    sortable: true,
+  },
+  {
     name: "Estado",
     selector: (row) => row.estado,
+    sortable: true,
+  },
+  {
+    name: "Imagen",
+    selector: (row) => row.img,
     sortable: true,
   },
   {
@@ -64,6 +74,7 @@ const Loader = () => (
 );
 
 const VacantesTable = () => {
+  const [filtrarVacantes, setFiltrarVacantes] = useState("");
   const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -72,7 +83,7 @@ const VacantesTable = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosConfig.get("/vacantes");
+      const response = await axiosConfig.get("/products");
 
       if (response.data && Array.isArray(response.data)) {
         setVacantes(response.data);
@@ -94,12 +105,30 @@ const VacantesTable = () => {
     obtenerVacantes();
   }, []);
 
+  const filtrarData = vacantes.filter(
+    (vacantes) =>
+      (vacantes.nombre?.toLowerCase() || "").includes(
+        filtrarVacantes.toLowerCase()
+      ) ||
+      (vacantes.descripcion?.toLowerCase() || "").includes(
+        filtrarVacantes.toLowerCase()
+      )
+  );
+
   return (
     <div className="container mx-auto my-20">
       <div className="flex justify-between items-center ">
         <h1 className="text-2xl font-bold text-gray-600 mb-4">
           Lista de Vacantes
         </h1>
+        <input
+          className="border border-gray-400 rounded py-2 px-4 mb-4"
+          type="text"
+          placeholder="Buscar Nombre o Email"
+          value={filtrarVacantes}
+          onChange={(e) => setFiltrarVacantes(e.target.value)}
+          disabled={loading}
+        />
       </div>
 
       {error && (
@@ -119,6 +148,7 @@ const VacantesTable = () => {
       ) : (
         <DataTable
           columns={columns}
+          data={filtrarData}
           pagination
           highlightOnHover
           customStyles={customStyles}
