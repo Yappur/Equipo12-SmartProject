@@ -4,26 +4,33 @@ import axiosConfig from "../../helpers/axios.config";
 
 const columns = [
   {
-    name: "Nombre",
-    selector: (row) => row.displayName,
+    name: "Titulo",
+    selector: (row) => row.nombre,
     sortable: true,
   },
   {
-    name: "Email",
-    selector: (row) => row.email,
+    name: "Descripcion",
+    selector: (row) => row.descripcion,
     sortable: true,
   },
   {
-    name: "Rol",
-    selector: (row) => (
-      <select
-        value={row.role || "user"}
-        onChange={(e) => handleChangeRol(row.id, e.target.value)}
-      >
-        <option value="admin">Super Admin</option>
-        <option value="user">Reclutador</option>
-      </select>
-    ),
+    name: "Fecha",
+    selector: (row) => row.fecha,
+    sortable: true,
+  },
+  {
+    name: "Sector",
+    selector: (row) => row.sector,
+    sortable: true,
+  },
+  {
+    name: "Estado",
+    selector: (row) => row.estado,
+    sortable: true,
+  },
+  {
+    name: "Imagen",
+    selector: (row) => row.img,
     sortable: true,
   },
   {
@@ -67,62 +74,64 @@ const customStyles = {
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
     <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    <p className="ml-4 text-gray-600 font-medium">Cargando usuarios...</p>
+    <p className="ml-4 text-gray-600 font-medium">Cargando Vacantes...</p>
   </div>
 );
 
-const UserTable = () => {
-  const [filtrarUsuarios, setFiltrarUsuarios] = useState("");
-  const [usuarios, setUsuarios] = useState([]);
+const VacantesTable = () => {
+  const [filtrarVacantes, setFiltrarVacantes] = useState("");
+  const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const obtenerUsuarios = async () => {
+  const obtenerVacantes = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosConfig.get("/users");
+      const response = await axiosConfig.get("/products");
 
       if (response.data && Array.isArray(response.data)) {
-        setUsuarios(response.data);
-      } else if (response.data && Array.isArray(response.data.users)) {
-        setUsuarios(response.data.users);
+        setVacantes(response.data);
+      } else if (response.data && Array.isArray(response.data.vacantes)) {
+        setVacantes(response.data.vacantes);
       } else {
-        setUsuarios([]);
+        setVacantes([]);
         setError("No se pudieron cargar los datos correctamente");
       }
     } catch (error) {
-      setError("Error al cargar los usuarios. Intente nuevamente.");
-      setUsuarios([]);
+      setError("Error al cargar los vacantes. Intente nuevamente.");
+      setVacantes([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    obtenerUsuarios();
+    obtenerVacantes();
   }, []);
 
-  const filtrarData = usuarios.filter(
-    (user) =>
-      (user.displayName?.toLowerCase() || "").includes(
-        filtrarUsuarios.toLowerCase()
+  const filtrarData = vacantes.filter(
+    (vacantes) =>
+      (vacantes.nombre?.toLowerCase() || "").includes(
+        filtrarVacantes.toLowerCase()
       ) ||
-      (user.email?.toLowerCase() || "").includes(filtrarUsuarios.toLowerCase())
+      (vacantes.descripcion?.toLowerCase() || "").includes(
+        filtrarVacantes.toLowerCase()
+      )
   );
 
   return (
     <>
       <div className="flex justify-between items-center ">
         <h1 className="text-2xl font-bold text-gray-600 mb-4">
-          Lista de Usuarios
+          Lista de Vacantes
         </h1>
         <input
           className="border border-gray-400 rounded py-2 px-4 mb-4"
           type="text"
           placeholder="Buscar Nombre o Email"
-          value={filtrarUsuarios}
-          onChange={(e) => setFiltrarUsuarios(e.target.value)}
+          value={filtrarVacantes}
+          onChange={(e) => setFiltrarVacantes(e.target.value)}
           disabled={loading}
         />
       </div>
@@ -131,7 +140,7 @@ const UserTable = () => {
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
           <button
-            onClick={obtenerUsuarios}
+            onClick={obtenerVacantes}
             className="ml-4 bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded text-sm"
           >
             Reintentar
@@ -148,12 +157,11 @@ const UserTable = () => {
           pagination
           highlightOnHover
           customStyles={customStyles}
-          noDataComponent="No hay usuarios disponibles"
-          progressPending={loading}
+          noDataComponent="No hay Vacantes disponibles"
         />
       )}
     </>
   );
 };
 
-export default UserTable;
+export default VacantesTable;
