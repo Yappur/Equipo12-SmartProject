@@ -29,20 +29,36 @@ const columns = [
   {
     name: "Acciones",
     cell: (row) => (
-      <button
-        className="bg-red-500 hover:bg-red-900 text-white font-bold py-2 px-4 rounded"
-        onClick={() => handleEliminar(row.id)}
-      >
-        Eliminar
-      </button>
+      <div className="flex gap-2">
+        <button
+          className="bg-blue-900 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded"
+          onClick={() => handleAgregar()}
+        >
+          Agregar
+        </button>
+        <button
+          className="bg-blue-700 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded"
+          onClick={() => handleModificar(row)}
+        >
+          Modificar
+        </button>
+        <button
+          className="bg-red-500 hover:bg-red-900 text-white font-bold py-2 px-4 rounded"
+          onClick={() => handleEliminar(row.id)}
+        >
+          Eliminar
+        </button>
+        
+      </div>
     ),
-  },
+  }
+  
 ];
 
 const customStyles = {
   headCells: {
     style: {
-      backgroundColor: "#f97316",
+      backgroundColor: "#2563EB",
       color: "white",
       fontWeight: "bold",
       fontSize: "16px",
