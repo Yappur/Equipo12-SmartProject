@@ -19,6 +19,11 @@ const columns = [
     sortable: true,
   },
   {
+    name: "Sector",
+    selector: (row) => row.sector,
+    sortable: true,
+  },
+  {
     name: "Estado",
     selector: (row) => row.estado,
     sortable: true,
@@ -116,7 +121,7 @@ const VacantesTable = () => {
   );
 
   return (
-    <div className="container mx-auto my-20">
+    <>
       <div className="flex justify-between items-center ">
         <h1 className="text-2xl font-bold text-gray-600 mb-4">
           Lista de Vacantes
@@ -155,7 +160,7 @@ const VacantesTable = () => {
           noDataComponent="No hay Vacantes disponibles"
         />
       )}
-    </div>
+    </>
   );
 };
 

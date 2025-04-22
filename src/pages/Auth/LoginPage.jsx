@@ -77,7 +77,7 @@ const LoginPage = ({ login }) => {
                 <input type="checkbox" className="mr-2 accent-[#008080]" />
                 Recuérdame
               </label>
-              <a href="#" className="text-[#008080] hover:underline">
+              <a href="*" className="text-[#008080] hover:underline">
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
@@ -96,13 +96,6 @@ const LoginPage = ({ login }) => {
 
             {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
           </form>
-
-          <p className="text-gray-300 mt-6 text-center text-sm">
-            ¿No tienes cuenta?{" "}
-            <a href="#" className="text-[#008080] hover:underline">
-              Regístrate
-            </a>
-          </p>
         </div>
 
         <div className="hidden md:block bg-[#14599A] w-full h-full">

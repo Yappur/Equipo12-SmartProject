@@ -112,7 +112,7 @@ const UserTable = () => {
   );
 
   return (
-    <div className="container mx-auto my-20">
+    <>
       <div className="flex justify-between items-center ">
         <h1 className="text-2xl font-bold text-gray-600 mb-4">
           Lista de Usuarios
@@ -152,7 +152,7 @@ const UserTable = () => {
           progressPending={loading}
         />
       )}
-    </div>
+    </>
   );
 };
 
