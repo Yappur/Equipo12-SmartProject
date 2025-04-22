@@ -9,7 +9,11 @@ import UserRegister from "../pages/Auth/UserRegister";
 import AdminView from "../pages/AdminPages/AdminView";
 import ProtectedRoute from "./ProtectedRoute";
 import Navbar from "../components/Navbar";
+<<<<<<< HEAD
 import VacantesPanel from "../pages/AdminPages/VacantesPanel";
+=======
+import Vacancies from "../pages/vacancies";
+>>>>>>> parent of 049cc74 (Revert "Vacancies form")
 
 const RoutesViews = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -36,6 +40,7 @@ const RoutesViews = () => {
       <Routes>
         {/* Rutas Públicas */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/vacantes" element={<Vacancies />} />
         <Route path="/login" element={<LoginPage login={login} />} />
 
         {/* Rutas Protegidas */}
