@@ -46,15 +46,4 @@ function parseJwt(token) {
   }
 }
 
-const token = localStorage.getItem("firebaseAuthToken");
-if (token) {
-  const decodedToken = parseJwt(token);
-  console.log("Token decodificado:", decodedToken);
-  console.log(
-    "Expiración:",
-    new Date(decodedToken.exp * 1000).toLocaleString()
-  );
-  console.log("¿Está expirado?", decodedToken.exp * 1000 < Date.now());
-}
-
 export default axiosConfig;

@@ -64,7 +64,6 @@ const customStyles = {
   },
 };
 
-// Componente Loader básico
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
     <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -82,23 +81,17 @@ const UserTable = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log("Intentando obtener usuarios...");
       const response = await axiosConfig.get("/users");
-      console.log("Respuesta exitosa:", response);
 
       if (response.data && Array.isArray(response.data)) {
         setUsuarios(response.data);
       } else if (response.data && Array.isArray(response.data.users)) {
         setUsuarios(response.data.users);
       } else {
-        console.error("Formato de respuesta inesperado:", response.data);
         setUsuarios([]);
         setError("No se pudieron cargar los datos correctamente");
       }
     } catch (error) {
-      console.error("Error al obtener usuarios:", error);
-      console.log("URL que causó el error:", error.config?.url);
-      console.log("Método:", error.config?.method);
       setError("Error al cargar los usuarios. Intente nuevamente.");
       setUsuarios([]);
     } finally {
