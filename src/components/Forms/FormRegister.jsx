@@ -7,6 +7,7 @@ const FormRegister = () => {
     email: "",
     password: "",
     confirmarPassword: "",
+    role: "user",
   });
 
   const [mensaje, setMensaje] = useState("");
@@ -51,20 +52,17 @@ const FormRegister = () => {
       isValid = false;
     }
 
-    // Validación de email
     if (!email || !validarEmail(email)) {
       newErrors.errorEmail = "Por favor, ingresa un email válido";
       isValid = false;
     }
 
-    // Validación de contraseña
     if (!password || !validarPassword(password)) {
       newErrors.errorPassword =
         "La contraseña debe tener al menos 8 caracteres, una letra y un número";
       isValid = false;
     }
 
-    // Validación de confirmación de contraseña
     if (!confirmarPassword || password !== confirmarPassword) {
       newErrors.errorConfirmarPassword = "Las contraseñas no coinciden";
       isValid = false;
@@ -85,7 +83,10 @@ const FormRegister = () => {
         displayName: usuario.displayName,
         email: usuario.email,
         password: usuario.password,
+        role: usuario.role,
       });
+
+      console.log("Datos enviados:", usuario);
 
       setMensaje("Usuario registrado correctamente");
       setUsuario({
@@ -220,6 +221,21 @@ const FormRegister = () => {
                   {errors.errorConfirmarPassword}
                 </p>
               )}
+            </div>
+
+            <div>
+              <label className="flex text-sm text-gray-300 items-center">
+                Rol
+              </label>
+              <select
+                name="role"
+                value={usuario.role}
+                onChange={handleChange}
+                className="w-full p-2.5 mt-1 bg-white border rounded-md text-black text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none border-white/30"
+              >
+                <option value="user">Reclutador</option>
+                <option value="admin">Super Admin</option>
+              </select>
             </div>
 
             {/* Botón de registro */}
