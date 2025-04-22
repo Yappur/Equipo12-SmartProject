@@ -67,6 +67,33 @@ const VacantesTable = () => {
   const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const obtenerVacantes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axiosConfig.get("/vacantes");
+
+      if (response.data && Array.isArray(response.data)) {
+        setVacantes(response.data);
+      } else if (response.data && Array.isArray(response.data.vacantes)) {
+        setVacantes(response.data.vacantes);
+      } else {
+        setVacantes([]);
+        setError("No se pudieron cargar los datos correctamente");
+      }
+    } catch (error) {
+      setError("Error al cargar los vacantes. Intente nuevamente.");
+      setVacantes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    obtenerVacantes();
+  }, []);
+
   return (
     <div className="container mx-auto my-20">
       <div className="flex justify-between items-center ">
@@ -74,6 +101,18 @@ const VacantesTable = () => {
           Lista de Vacantes
         </h1>
       </div>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+          <button
+            onClick={obtenerVacantes}
+            className="ml-4 bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded text-sm"
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <Loader />
