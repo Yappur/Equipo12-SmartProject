@@ -9,6 +9,7 @@ import UserRegister from "../pages/Auth/UserRegister";
 import AdminView from "../pages/AdminPages/AdminView";
 import ProtectedRoute from "./ProtectedRoute";
 import Navbar from "../components/Navbar";
+import VacantesPanel from "../pages/AdminPages/VacantesPanel";
 
 const RoutesViews = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -51,6 +52,14 @@ const RoutesViews = () => {
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <UserPanel />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/panelVacantes"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <VacantesPanel />
             </ProtectedRoute>
           }
         />
