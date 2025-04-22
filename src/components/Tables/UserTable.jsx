@@ -2,43 +2,6 @@ import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import axiosConfig from "../../helpers/axios.config";
 
-const columns = [
-  {
-    name: "Nombre",
-    selector: (row) => row.displayName,
-    sortable: true,
-  },
-  {
-    name: "Email",
-    selector: (row) => row.email,
-    sortable: true,
-  },
-  {
-    name: "Rol",
-    selector: (row) => (
-      <select
-        value={row.role || "user"}
-        onChange={(e) => handleChangeRol(row.id, e.target.value)}
-      >
-        <option value="admin">Super Admin</option>
-        <option value="user">Reclutador</option>
-      </select>
-    ),
-    sortable: true,
-  },
-  {
-    name: "Acciones",
-    cell: (row) => (
-      <button
-        className="bg-red-500 hover:bg-red-900 text-white font-bold py-2 px-4 rounded"
-        onClick={() => handleEliminar(row.id)}
-      >
-        Eliminar
-      </button>
-    ),
-  },
-];
-
 const customStyles = {
   headCells: {
     style: {
@@ -99,9 +62,73 @@ const UserTable = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirm = window.confirm(
+      "¿Estás seguro de que querés eliminar el usuario?"
+    );
+    if (!confirm) return;
+    try {
+      await axiosConfig.delete(`/users/${id}`);
+      obtenerUsuarios();
+    } catch (error) {
+      console.error("Error al eliminar el usuario:", error);
+    }
+  };
+
+  const handleChangeRol = async (id, newRol) => {
+    const confirm = window.confirm(
+      "¿Estás seguro de que querés cambiar el rol del usuario?"
+    );
+    if (!confirm) return;
+
+    try {
+      await axiosConfig.patch(`/users/${id}/role`, { role: newRol });
+      obtenerUsuarios();
+    } catch (error) {
+      console.error("Error al cambiar el rol del usuario:", error);
+    }
+  };
+
   useEffect(() => {
     obtenerUsuarios();
   }, []);
+
+  const columns = [
+    {
+      name: "Nombre",
+      selector: (row) => row.displayName,
+      sortable: true,
+    },
+    {
+      name: "Email",
+      selector: (row) => row.email,
+      sortable: true,
+    },
+    {
+      name: "Rol",
+      selector: (row) => (
+        <select
+          value={row.role || "user"}
+          onChange={(e) => handleChangeRol(row.uid, e.target.value)}
+        >
+          <option value="admin">Super Admin</option>
+          <option value="user">Reclutador</option>
+        </select>
+      ),
+      sortable: true,
+    },
+    {
+      name: "Acciones",
+      cell: (row) => (
+        <button
+          className="bg-red-500 hover:bg-red-900 text-white font-bold py-2 px-4 rounded"
+          onClick={() => handleDelete(row.uid)}
+        >
+          Eliminar
+        </button>
+      ),
+    },
+  ];
 
   const filtrarData = usuarios.filter(
     (user) =>
