@@ -4,12 +4,15 @@ import { CirclePlus } from "lucide-react";
 
 const Vacancies = () => {
   const [showForm, setShowForm] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [vacancy, setVacancy] = useState({
     nombre: "",
     descripcion: "",
-    fecha: "",
-    file: null,
+    fecha: new Date().toISOString().split("T")[0],
+    estado: "borrador",
   });
 
   const handleInputChange = (e) => {
@@ -17,41 +20,86 @@ const Vacancies = () => {
     setVacancy({ ...vacancy, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    setVacancy({ ...vacancy, file: e.target.files[0] });
+  // Manejador para la subida de archivos
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validamos que sea una imagen
+      if (!file.type.includes("image")) {
+        alert("Por favor, sube solo archivos de imagen.");
+        return;
+      }
+
+      setSelectedFile(file);
+
+      // Crear URL temporal para la vista previa
+      const previewURL = URL.createObjectURL(file);
+      setImagePreview(previewURL);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validación adicional
+    if (
+      !vacancy.nombre ||
+      !vacancy.descripcion ||
+      !vacancy.fecha ||
+      !vacancy.estado
+    ) {
+      alert("Por favor, completa todos los campos requeridos");
+      return;
+    }
+
     try {
       const formData = new FormData();
+
       formData.append("nombre", vacancy.nombre);
       formData.append("descripcion", vacancy.descripcion);
       formData.append("fecha", vacancy.fecha);
+      formData.append("estado", vacancy.estado);
 
-      if (vacancy.file) {
-        formData.append("file", vacancy.file);
+      if (selectedFile) {
+        formData.append("image", selectedFile);
       }
-      const response = await axiosConfig.post("/products", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
 
-      if (response.status === 200) {
+      const response = await axiosConfig.post("/vacancies", formData);
+
+      // Aceptar tanto 200 como 201 como códigos exitosos
+      if (response.status === 200 || response.status === 201) {
         alert("Vacante creada con éxito");
+
+        // Restablecer con valores predeterminados adecuados
         setVacancy({
           nombre: "",
           descripcion: "",
-          fecha: "",
-          file: null,
+          fecha: new Date().toISOString().split("T")[0],
+          estado: "borrador",
         });
+
+        setSelectedFile(null);
+        setImagePreview(null);
         setShowForm(false);
       }
     } catch (error) {
       console.error("Error al crear vacante:", error);
-      alert("Hubo un problema al guardar la vacante");
+
+      // Mostrar información detallada del error
+      if (error.response) {
+        console.error("Detalles del error:", error.response.data);
+        alert(
+          `Error ${error.response.status}: ${
+            error.response.data?.message || "Datos inválidos"
+          }`
+        );
+      } else if (error.request) {
+        alert("No se recibió respuesta del servidor. Verifica tu conexión.");
+      } else {
+        alert(`Error: ${error.message}`);
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -118,18 +166,58 @@ const Vacancies = () => {
           </div>
 
           <div>
-            <label htmlFor="file" className="block text-gray-700">
-              Archivo PDF
+            <label htmlFor="estado" className="block text-gray-700">
+              Estado
+            </label>
+            <select
+              id="estado"
+              name="estado"
+              value={vacancy.estado}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 p-2 mt-1 rounded"
+              required
+            >
+              <option value="">Selecciona un estado</option>
+              <option value="activo">Activo</option>
+              <option value="terminado">Terminado</option>
+              <option value="pausado">Pausado</option>
+              <option value="borrador">Borrador</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="image" className="block text-gray-700">
+              Imagen
             </label>
             <input
               type="file"
-              id="file"
-              name="file"
-              accept=".pdf"
-              onChange={handleFileChange}
+              id="image"
+              name="image"
+              accept="image/*"
+              onChange={handleFileUpload}
               className="w-full border border-gray-300 p-2 mt-1 rounded"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Sube una imagen que represente la vacante (JPG, PNG)
+            </p>
           </div>
+
+          {/* Vista previa de la imagen si hay imagen cargada */}
+          {imagePreview && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-700 mb-1">Vista previa:</p>
+              <img
+                src={imagePreview}
+                alt="Vista previa"
+                className="max-h-40 border rounded"
+                onLoad={() => {
+                  // Liberar la URL temporal cuando ya no se necesite
+                  URL.revokeObjectURL(imagePreview);
+                }}
+              />
+            </div>
+          )}
 
           <div className="flex gap-2">
             <button

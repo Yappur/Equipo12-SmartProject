@@ -88,7 +88,7 @@ const VacantesTable = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosConfig.get("/products");
+      const response = await axiosConfig.get("/vacancies");
 
       if (response.data && Array.isArray(response.data)) {
         setVacantes(response.data);
