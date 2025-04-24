@@ -41,7 +41,6 @@ const Vacancies = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validación adicional
     if (
       !vacancy.nombre ||
       !vacancy.descripcion ||
@@ -66,11 +65,9 @@ const Vacancies = () => {
 
       const response = await axiosConfig.post("/vacancies", formData);
 
-      // Aceptar tanto 200 como 201 como códigos exitosos
       if (response.status === 200 || response.status === 201) {
         alert("Vacante creada con éxito");
 
-        // Restablecer con valores predeterminados adecuados
         setVacancy({
           nombre: "",
           descripcion: "",
@@ -84,20 +81,6 @@ const Vacancies = () => {
       }
     } catch (error) {
       console.error("Error al crear vacante:", error);
-
-      // Mostrar información detallada del error
-      if (error.response) {
-        console.error("Detalles del error:", error.response.data);
-        alert(
-          `Error ${error.response.status}: ${
-            error.response.data?.message || "Datos inválidos"
-          }`
-        );
-      } else if (error.request) {
-        alert("No se recibió respuesta del servidor. Verifica tu conexión.");
-      } else {
-        alert(`Error: ${error.message}`);
-      }
     } finally {
       setIsSubmitting(false);
     }
