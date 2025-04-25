@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axiosConfig from "../helpers/axios.config";
+import { uploadImage } from "../firebase/uploadImage";
 import { CirclePlus } from "lucide-react";
 
 const Vacancies = () => {
@@ -52,18 +53,18 @@ const Vacancies = () => {
     }
 
     try {
-      const formData = new FormData();
-
-      formData.append("nombre", vacancy.nombre);
-      formData.append("descripcion", vacancy.descripcion);
-      formData.append("fecha", vacancy.fecha);
-      formData.append("estado", vacancy.estado);
+      let imageUrl = null;
 
       if (selectedFile) {
-        formData.append("image", selectedFile);
+        imageUrl = await uploadImage(selectedFile);
       }
 
-      const response = await axiosConfig.post("/vacancies", formData);
+      const nuevaVacante = {
+        ...vacancy,
+        image: imageUrl, // guardamos solo la URL
+      };
+
+      const response = await axiosConfig.post("/vacancies", nuevaVacante);
 
       if (response.status === 200 || response.status === 201) {
         alert("Vacante creada con éxito");
