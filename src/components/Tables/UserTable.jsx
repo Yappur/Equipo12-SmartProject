@@ -69,6 +69,7 @@ const UserTable = () => {
     if (!confirm) return;
     try {
       await axiosConfig.delete(`/users/${id}`);
+      alert("Usuario eliminado con exito");
       obtenerUsuarios();
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);
@@ -83,6 +84,7 @@ const UserTable = () => {
 
     try {
       await axiosConfig.patch(`/users/${id}/role`, { role: newRol });
+      alert("Rol cambiado con exito");
       obtenerUsuarios();
     } catch (error) {
       console.error("Error al cambiar el rol del usuario:", error);

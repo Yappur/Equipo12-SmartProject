@@ -158,15 +158,10 @@ const VacantesTable = () => {
     try {
       setLoading(true);
       console.log(`Eliminando vacante con ID: ${id}`);
-
       const response = await axiosConfig.delete(`/vacancies/${id}`);
-      console.log("Respuesta al eliminar:", response);
-
-      // Refrescar la lista después de eliminar
       refreshVacantes();
       alert("Vacante eliminada con éxito");
     } catch (error) {
-      console.error("Error al eliminar la vacante:", error);
       alert(`Error al eliminar: ${error.message}`);
       setLoading(false);
     }
@@ -193,7 +188,7 @@ const VacantesTable = () => {
         // Formato de fecha más legible
         try {
           const date = new Date(row.fecha);
-          return date.toLocaleDateString("es-ES");
+          return date.toLocaleDateString("es-AR");
         } catch (e) {
           return row.fecha || "Fecha inválida";
         }
@@ -209,7 +204,7 @@ const VacantesTable = () => {
       name: "Estado",
       cell: (row) => {
         const estado = row.estado || "desconocido";
-        let colorClass = "bg-gray-200 text-gray-800"; // Por defecto
+        let colorClass = "bg-gray-200 text-gray-800";
 
         // Colores según el estado
         if (estado === "activo") colorClass = "bg-green-200 text-green-800";
