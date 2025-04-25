@@ -30,8 +30,17 @@ const columns = [
   },
   {
     name: "Imagen",
-    selector: (row) => row.img,
-    sortable: true,
+    cell: (row) =>
+      row.image ? (
+        <img
+          src={row.image}
+          alt={`Imagen de ${row.nombre}`}
+          className="w-16 h-16 object-cover rounded"
+        />
+      ) : (
+        <span className="text-gray-400">Sin imagen</span>
+      ),
+    sortable: false,
   },
   {
     name: "Acciones",
@@ -81,6 +90,8 @@ const Loader = () => (
 const VacantesTable = () => {
   const [filtrarVacantes, setFiltrarVacantes] = useState("");
   const [vacantes, setVacantes] = useState([]);
+  const [vacantesConImagenes, setVacantesConImagenes] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
