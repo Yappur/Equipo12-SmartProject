@@ -41,6 +41,7 @@ const Vacancies = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // Activar estado de carga
 
     if (
       !vacancy.nombre ||
@@ -49,20 +50,32 @@ const Vacancies = () => {
       !vacancy.estado
     ) {
       alert("Por favor, completa todos los campos requeridos");
+      setIsSubmitting(false);
       return;
     }
 
     try {
       let imageUrl = null;
 
+      // Solo subir la imagen si hay un archivo seleccionado
       if (selectedFile) {
-        imageUrl = await uploadImage(selectedFile);
+        try {
+          imageUrl = await uploadImage(selectedFile);
+          console.log("Imagen subida exitosamente:", imageUrl);
+        } catch (imageError) {
+          console.error("Error al subir la imagen:", imageError);
+          alert("Error al subir la imagen. Inténtalo de nuevo.");
+          setIsSubmitting(false);
+          return;
+        }
       }
 
       const nuevaVacante = {
         ...vacancy,
-        image: imageUrl, // guardamos solo la URL
+        image: imageUrl,
       };
+
+      console.log("Enviando datos de vacante:", nuevaVacante);
 
       const response = await axiosConfig.post("/vacancies", nuevaVacante);
 
@@ -79,9 +92,14 @@ const Vacancies = () => {
         setSelectedFile(null);
         setImagePreview(null);
         setShowForm(false);
+      } else {
+        alert(`Error al crear la vacante: ${response.statusText}`);
       }
     } catch (error) {
       console.error("Error al crear vacante:", error);
+      alert(
+        `Error al crear la vacante: ${error.message || "Error desconocido"}`
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -206,9 +224,21 @@ const Vacancies = () => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+              disabled={isSubmitting}
+              className={`${
+                isSubmitting
+                  ? "bg-green-300"
+                  : "bg-green-500 hover:bg-green-600"
+              } text-white py-2 px-4 rounded flex items-center gap-2`}
             >
-              Guardar Vacante
+              {isSubmitting ? (
+                <>
+                  <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
+                  <span>Procesando...</span>
+                </>
+              ) : (
+                "Guardar Vacante"
+              )}
             </button>
 
             <button

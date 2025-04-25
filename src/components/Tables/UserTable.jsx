@@ -140,10 +140,15 @@ const UserTable = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center ">
-        <h1 className="text-2xl font-bold text-gray-600 mb-4">
-          Lista de Usuarios
-        </h1>
+      <div className="flex justify-between items-center mb-4 ">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-600">
+            Lista de Usuarios
+          </h1>
+          <p className="text-gray-500 text-sm">
+            {filtrarData.length} Usuarios en total
+          </p>
+        </div>
         <input
           className="border border-gray-400 rounded py-2 px-4 mb-4"
           type="text"
