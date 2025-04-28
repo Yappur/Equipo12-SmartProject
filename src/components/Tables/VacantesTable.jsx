@@ -46,81 +46,29 @@ const VacantesTable = () => {
       setLoading(true);
       setError(null);
 
-      console.log("Solicitando vacantes al servidor...");
       const response = await axiosConfig.get("/vacancies");
-      console.log("Respuesta del servidor:", response);
 
       if (response.data) {
-        let vacantesData = [];
+        let vacantesData = Array.isArray(response.data)
+          ? response.data
+          : response.data.vacantes && Array.isArray(response.data.vacantes)
+          ? response.data.vacantes
+          : Object.values(response.data).filter(
+              (item) => item && typeof item === "object"
+            );
 
-        if (Array.isArray(response.data)) {
-          vacantesData = response.data;
-        } else if (
-          response.data.vacantes &&
-          Array.isArray(response.data.vacantes)
-        ) {
-          vacantesData = response.data.vacantes;
-        } else if (typeof response.data === "object") {
-          vacantesData = Object.values(response.data).filter(
-            (item) => item && typeof item === "object"
-          );
-        }
+        // Procesar cada vacante para normalizar sus datos
+        const vacantesNormalizadas = vacantesData.map((vacante) => ({
+          ...vacante,
+          id: vacante.id || vacante._id,
+          imageUrl:
+            typeof vacante.image === "string" &&
+            vacante.image.startsWith("http")
+              ? vacante.image
+              : null,
+        }));
 
-        console.log("Vacantes procesadas:", vacantesData);
-
-        // Corregir problemas con las imágenes
-        const vacantesCorregidas = await Promise.all(
-          vacantesData.map(async (vacante) => {
-            // Asegurarse de que el ID existe
-            if (!vacante.id && vacante._id) {
-              vacante.id = vacante._id;
-            }
-
-            // Manejar el caso específico de "[object Object]"
-            if (vacante.image === "[object Object]") {
-              // Intentar recuperar la URL correcta de Firebase
-              try {
-                // Si sabemos que la imagen está en Firebase, podríamos intentar reconstruir la URL
-                // Esto es un ejemplo y necesitaría adaptarse a tu estructura específica
-                console.log(
-                  `Intentando recuperar URL para vacante ${vacante.id}`
-                );
-
-                // Si tienes alguna forma de obtener el nombre del archivo original
-                // Podrías intentar algo como esto:
-                if (vacante.imagePath || vacante.fileName) {
-                  const storage = getStorage();
-                  const imagePath =
-                    vacante.imagePath || `vacancies/${vacante.fileName}`;
-                  const imageRef = ref(storage, imagePath);
-                  const url = await getDownloadURL(imageRef);
-                  vacante.imageUrl = url;
-                } else {
-                  vacante.imageUrl = null;
-                }
-              } catch (error) {
-                console.error(
-                  `Error recuperando URL para ${vacante.id}:`,
-                  error
-                );
-                vacante.imageUrl = null;
-              }
-            }
-            // Si la imagen ya es una URL válida
-            else if (
-              typeof vacante.image === "string" &&
-              vacante.image.startsWith("http")
-            ) {
-              vacante.imageUrl = vacante.image;
-            } else {
-              vacante.imageUrl = null;
-            }
-
-            return vacante;
-          })
-        );
-
-        setVacantes(vacantesCorregidas);
+        setVacantes(vacantesNormalizadas);
       } else {
         setVacantes([]);
         setError("No se recibieron datos del servidor");
@@ -133,12 +81,11 @@ const VacantesTable = () => {
       setLoading(false);
     }
   };
-  // Efecto para cargar vacantes al inicio y cuando cambie refreshCounter
+
   useEffect(() => {
     obtenerVacantes();
   }, [refreshCounter]);
 
-  // Función para forzar una actualización
   const refreshVacantes = () => {
     setRefreshCounter((prev) => prev + 1);
   };
@@ -157,7 +104,6 @@ const VacantesTable = () => {
 
     try {
       setLoading(true);
-      console.log(`Eliminando vacante con ID: ${id}`);
       const response = await axiosConfig.delete(`/vacancies/${id}`);
       refreshVacantes();
       alert("Vacante eliminada con éxito");
@@ -177,7 +123,6 @@ const VacantesTable = () => {
       name: "Descripcion",
       selector: (row) => {
         const desc = row.descripcion || "Sin descripción";
-        // Limitar la longitud de la descripción para mejor visualización
         return desc.length > 50 ? `${desc.substring(0, 50)}...` : desc;
       },
       sortable: true,
@@ -185,11 +130,9 @@ const VacantesTable = () => {
     {
       name: "Fecha",
       selector: (row) => {
-        // Formato de fecha más legible
         try {
-          const date = new Date(row.fecha);
-          return date.toLocaleDateString("es-AR");
-        } catch (e) {
+          return new Date(row.fecha).toLocaleDateString("es-AR");
+        } catch {
           return row.fecha || "Fecha inválida";
         }
       },
@@ -201,12 +144,16 @@ const VacantesTable = () => {
       sortable: true,
     },
     {
+      name: "Modalidad",
+      selector: (row) => row.sector || "No especificado",
+      sortable: true,
+    },
+    {
       name: "Estado",
       cell: (row) => {
         const estado = row.estado || "desconocido";
         let colorClass = "bg-gray-200 text-gray-800";
 
-        // Colores según el estado
         if (estado === "activo") colorClass = "bg-green-200 text-green-800";
         if (estado === "pausado") colorClass = "bg-yellow-200 text-yellow-800";
         if (estado === "borrador") colorClass = "bg-blue-200 text-blue-800";
@@ -226,31 +173,21 @@ const VacantesTable = () => {
     {
       name: "Imagen",
       cell: (row) => {
-        // Usar imageUrl si existe, o intentar extraer una URL válida de row.image
-        const imageUrl =
-          row.imageUrl ||
-          (typeof row.image === "string" && row.image.startsWith("http")
-            ? row.image
-            : null);
-
-        if (imageUrl) {
+        if (row.imageUrl) {
           return (
             <div className="relative group">
               <img
-                src={imageUrl}
+                src={row.imageUrl}
                 alt={`Imagen de ${row.nombre || "vacante"}`}
                 className="w-16 h-16 object-cover rounded cursor-pointer transition-transform group-hover:scale-105"
                 onError={(e) => {
-                  console.error(
-                    `Error al cargar imagen para vacante ${row.id || "sin ID"}`
-                  );
                   e.target.onerror = null;
-                  e.target.src = "/placeholder-image.png";
+                  e.target.src = "";
                   e.target.className =
                     "w-16 h-16 object-cover rounded opacity-50";
                 }}
               />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded transition-all"></div>
+              <div className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-20 rounded transition-all"></div>
             </div>
           );
         }
