@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import axiosConfig from "../helpers/axios.config";
-import { uploadImage } from "../firebase/uploadImage";
+import axiosConfig from "../../helpers/axios.config";
+import { uploadImage } from "../../firebase/uploadImage";
 import { CirclePlus } from "lucide-react";
 
-const Vacancies = () => {
+const CreateVacancies = () => {
   const [showForm, setShowForm] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -252,4 +252,4 @@ const Vacancies = () => {
   );
 };
 
-export default Vacancies;
+export default CreateVacancies;

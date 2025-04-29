@@ -34,7 +34,7 @@ const Loader = () => (
   </div>
 );
 
-const VacantesTable = () => {
+const VacanciesTable = () => {
   const [filtrarVacantes, setFiltrarVacantes] = useState("");
   const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -274,4 +274,4 @@ const VacantesTable = () => {
   );
 };
 
-export default VacantesTable;
+export default VacanciesTable;

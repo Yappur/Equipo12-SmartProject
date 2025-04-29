@@ -21,7 +21,7 @@ const AdminView = () => {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Link to="/admin/crearUsuario" className="block">
+          <Link to="/admin/crear/usuario" className="block">
             <div className="bg-white border-2 border-blue-100 rounded-2xl overflow-hidden shadow-lg hover:border-blue-500 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
               <div className="p-6">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
@@ -41,7 +41,7 @@ const AdminView = () => {
             </div>
           </Link>
 
-          <Link to="/vacantes" className="block">
+          <Link to="/crear/vacante" className="block">
             <div className="bg-white border-2 border-blue-100 rounded-2xl overflow-hidden shadow-lg hover:border-blue-500 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
               <div className="p-6">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
