@@ -24,6 +24,16 @@ const Navbar = ({ isAuthenticated, logout }) => {
           >
             Inicio
           </NavLink>
+          <NavLink
+            to="/ver/vacantes"
+            className={({ isActive }) =>
+              isActive
+                ? "text-white font-semibold underline"
+                : "hover:text-gray-200 transition"
+            }
+          >
+            Vacantes
+          </NavLink>
           {isAuthenticated && (
             <NavLink
               to="/admin"

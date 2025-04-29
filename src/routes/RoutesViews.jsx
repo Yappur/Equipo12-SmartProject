@@ -11,6 +11,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Navbar from "../components/Navbar";
 import VacantesPanel from "../pages/AdminPages/VacantesPanel";
 import Vacancies from "../pages/vacancies";
+import VacancyGallery from "../pages/PublicPages/VacancyGallery";
 
 const RoutesViews = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -37,6 +38,7 @@ const RoutesViews = () => {
       <Routes>
         {/* Rutas Públicas */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/ver/vacantes" element={<VacancyGallery />} />
         <Route path="/vacantes" element={<Vacancies />} />
         <Route path="/login" element={<LoginPage login={login} />} />
 
