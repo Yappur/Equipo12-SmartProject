@@ -6,7 +6,6 @@ import homeMovil from "@/assets/img/home-movil.png";
 const HomePage = () => {
   return (
     <div className="pt-16">
-      {/* Imagen de fondo con texto centrado */}
       <div className="relative w-full h-[85vh] sm:h-[90vh] lg:h-[100vh] ">
         <picture>
           <source srcSet={homeDesktop} media="(min-width: 640px)" />
@@ -17,7 +16,6 @@ const HomePage = () => {
           />
         </picture>
 
-        {/* Overlay y título centrado */}
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center px-4 sm:px-8">
           <h1 className="text-white text-3xl sm:text-5xl lg:text-6xl font-bold text-center leading-snug drop-shadow-md">
             Gestión de Ofertas

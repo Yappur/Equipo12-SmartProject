@@ -21,11 +21,9 @@ const Vacancies = () => {
     setVacancy({ ...vacancy, [name]: value });
   };
 
-  // Manejador para la subida de archivos
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validamos que sea una imagen
       if (!file.type.includes("image")) {
         alert("Por favor, sube solo archivos de imagen.");
         return;
@@ -41,7 +39,7 @@ const Vacancies = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true); // Activar estado de carga
+    setIsSubmitting(true);
 
     if (
       !vacancy.nombre ||
@@ -57,7 +55,6 @@ const Vacancies = () => {
     try {
       let imageUrl = null;
 
-      // Solo subir la imagen si hay un archivo seleccionado
       if (selectedFile) {
         try {
           imageUrl = await uploadImage(selectedFile);

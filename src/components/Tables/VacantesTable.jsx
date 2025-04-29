@@ -47,34 +47,8 @@ const VacantesTable = () => {
       setError(null);
 
       const response = await axiosConfig.get("/vacancies");
-
-      if (response.data) {
-        let vacantesData = Array.isArray(response.data)
-          ? response.data
-          : response.data.vacantes && Array.isArray(response.data.vacantes)
-          ? response.data.vacantes
-          : Object.values(response.data).filter(
-              (item) => item && typeof item === "object"
-            );
-
-        // Procesar cada vacante para normalizar sus datos
-        const vacantesNormalizadas = vacantesData.map((vacante) => ({
-          ...vacante,
-          id: vacante.id || vacante._id,
-          imageUrl:
-            typeof vacante.image === "string" &&
-            vacante.image.startsWith("http")
-              ? vacante.image
-              : null,
-        }));
-
-        setVacantes(vacantesNormalizadas);
-      } else {
-        setVacantes([]);
-        setError("No se recibieron datos del servidor");
-      }
+      setVacantes(response.data);
     } catch (error) {
-      console.error("Error al obtener vacantes:", error);
       setError(`Error al cargar las vacantes: ${error.message}`);
       setVacantes([]);
     } finally {
