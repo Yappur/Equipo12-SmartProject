@@ -13,6 +13,8 @@ import UsersDashboard from "../pages/AdminPages/UsersDashboard";
 import CreateVacancies from "../pages/AdminPages/CreateVacancies";
 import VacanciesGallery from "../pages/PublicPages/VacanciesGallery";
 import VacancyView from "../pages/PublicPages/VacancyView";
+import Home from "../pages/UserPages/Home";
+import Perfil from "../pages/UserPages/Perfil";
 
 const RoutesViews = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -39,6 +41,7 @@ const RoutesViews = () => {
       <Routes>
         {/* Rutas Públicas */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/galeria/vacantes" element={<VacanciesGallery />} />
         <Route path="/ver/vacante/:id" element={<VacancyView />} />
         <Route path="/login" element={<LoginPage login={login} />} />
@@ -81,6 +84,14 @@ const RoutesViews = () => {
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <CreateVacancies />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Perfil />
             </ProtectedRoute>
           }
         />
