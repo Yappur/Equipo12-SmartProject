@@ -25,7 +25,7 @@ const Navbar = ({ isAuthenticated, logout }) => {
             Inicio
           </NavLink>
           <NavLink
-            to="/ver/vacantes"
+            to="/galeria/vacantes"
             className={({ isActive }) =>
               isActive
                 ? "text-white font-semibold underline"

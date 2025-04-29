@@ -19,16 +19,20 @@ const CardVacancie = () => {
     obtenerVacantes();
   }, []);
 
+  const handleVerVacante = (id) => {
+    navigate(`/ver/vacante/${id}`);
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 max-w-7xl mx-auto">
       {cargarVacantes.map((vacante) => {
         return (
-          <div key={vacante._id} className="h-full ">
+          <div key={vacante.id} className="h-full ">
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col overflow-hidden transform hover:-translate-y-2">
               <div className="h-52 w-full overflow-hidden relative">
                 <img
                   src={vacante.image}
-                  alt="Vacante Frontend"
+                  alt={`Vacante ${vacante.nombre}`}
                   className="w-full h-full object-cover object-center rounded-t-2xl"
                 />
               </div>
@@ -41,7 +45,10 @@ const CardVacancie = () => {
                 </p>
 
                 <div className="mt-auto">
-                  <button className="bg-transparent border border-blue-600 text-blue-600 px-5 py-2 rounded-full hover:bg-blue-50 transition text-sm">
+                  <button
+                    onClick={() => handleVerVacante(vacante.id)}
+                    className="bg-transparent border border-blue-600 text-blue-600 px-5 py-2 rounded-full hover:bg-blue-50 transition text-sm"
+                  >
                     Ver oferta
                   </button>
                 </div>
