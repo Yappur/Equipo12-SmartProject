@@ -1,50 +1,67 @@
 import { Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useLoginFirebase } from "../hooks/useLoginFirebase";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/Auth/LoginPage";
 import App404 from "../pages/App404";
-import UserPanel from "../pages/AdminPages/UserPanel";
 import UserRegister from "../pages/Auth/UserRegister";
 import AdminView from "../pages/AdminPages/AdminView";
-import ProtectedRoute from "./ProtectedRoute";
 import Navbar from "../components/Navbar";
-import VacantesPanel from "../pages/AdminPages/VacantesPanel";
-import Vacancies from "../pages/vacancies";
+import VacanciesDashboard from "../pages/AdminPages/VacanciesDashboard";
+import UsersDashboard from "../pages/AdminPages/UsersDashboard";
+import CreateVacancies from "../pages/AdminPages/CreateVacancies";
+import VacanciesGallery from "../pages/PublicPages/VacanciesGallery";
+import VacancyView from "../pages/PublicPages/VacancyView";
+import Perfil from "../pages/UserPages/Perfil";
+import ProtectedRoute from "./ProtectedRoute";
+import { useAuth } from "../context/AuthContext";
+import RecruiterView from "../pages/RecruiterPages/RecruiterView";
 
 const RoutesViews = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("firebaseAuthToken")
-  );
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setIsAuthenticated(!!localStorage.getItem("firebaseAuthToken"));
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
-
-  const { login, logout } = useLoginFirebase(setIsAuthenticated);
+  const { isAuthenticated, role } = useAuth();
+  const { login, logout } = useLoginFirebase();
 
   return (
     <>
-      <Navbar isAuthenticated={isAuthenticated} logout={logout} />
+      <Navbar isAuthenticated={isAuthenticated} role={role} logout={logout} />
       <Routes>
         {/* Rutas Públicas */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/vacantes" element={<Vacancies />} />
+        <Route path="/galeria/vacantes" element={<VacanciesGallery />} />
+        <Route path="/ver/vacante/:id" element={<VacancyView />} />
         <Route path="/login" element={<LoginPage login={login} />} />
 
-        {/* Rutas Protegidas */}
+        {/* Rutas de Reclutadores */}
+        <Route
+          path="/reclutador"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "user"]}>
+              <RecruiterView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/crear/vacante"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "user"]}>
+              <CreateVacancies />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "user"]}>
+              <Perfil />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Rutas de Administracion */}
         <Route
           path="/admin"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <ProtectedRoute allowedRoles={["admin"]}>
               <AdminView />
             </ProtectedRoute>
           }
@@ -52,23 +69,23 @@ const RoutesViews = () => {
         <Route
           path="/admin/panelUsuarios"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <UserPanel />
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <UsersDashboard />
             </ProtectedRoute>
           }
         />
         <Route
           path="/admin/panelVacantes"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <VacantesPanel />
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <VacanciesDashboard />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/admin/crearUsuario"
+          path="/admin/crear/usuario"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <ProtectedRoute allowedRoles={["admin"]}>
               <UserRegister />
             </ProtectedRoute>
           }

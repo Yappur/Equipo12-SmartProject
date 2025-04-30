@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const obtenerToken = () => {
-  return localStorage.getItem("firebaseAuthToken");
+  return localStorage.getItem("authToken");
 };
 
 const axiosConfig = axios.create({

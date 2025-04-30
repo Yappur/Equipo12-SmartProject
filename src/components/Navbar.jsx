@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useLoginFirebase } from "../hooks/useLoginFirebase";
 
-const Navbar = ({ isAuthenticated, logout }) => {
+const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { logout } = useLoginFirebase();
+  const { isAuthenticated, role } = useAuth();
 
   return (
     <nav className="bg-[#14599A] text-white h-16 shadow-md fixed top-0 left-0 w-full z-50">
       <div className="container mx-auto h-full flex justify-between items-center px-4 sm:px-8">
         {/* Logo */}
         <NavLink to="/" className="flex items-center space-x-2">
-          <h1 className="text-white font-bold">Gestión de ofertas</h1>
+          <h1 className="text-white font-bold ml-10">Gestión de ofertas</h1>
         </NavLink>
 
         {/* Enlaces desktop */}
@@ -24,18 +28,62 @@ const Navbar = ({ isAuthenticated, logout }) => {
           >
             Inicio
           </NavLink>
+          <NavLink
+            to="/galeria/vacantes"
+            className={({ isActive }) =>
+              isActive
+                ? "text-white font-semibold underline"
+                : "hover:text-gray-200 transition"
+            }
+          >
+            Vacantes
+          </NavLink>
           {isAuthenticated && (
-            <NavLink
-              to="/admin"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-white font-semibold underline"
-                  : "hover:text-gray-200 transition"
-              }
-            >
-              Vista Admin
-            </NavLink>
+            <>
+              {/* Opciones específicas para admins */}
+              {role === "admin" && (
+                <>
+                  <NavLink
+                    to="/admin"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-white font-semibold underline"
+                        : "hover:text-gray-200 transition"
+                    }
+                  >
+                    Vista Admin
+                  </NavLink>
+                </>
+              )}
+
+              {(role === "admin" || role === "user") && (
+                <>
+                  <NavLink
+                    to="/reclutador"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-white font-semibold underline"
+                        : "hover:text-gray-200 transition"
+                    }
+                  >
+                    Vista Reclutador
+                  </NavLink>
+
+                  <NavLink
+                    to="/crear/vacante"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-white font-semibold underline"
+                        : "hover:text-gray-200 transition"
+                    }
+                  >
+                    Crear Vacante
+                  </NavLink>
+                </>
+              )}
+            </>
           )}
+
           {isAuthenticated ? (
             <button
               onClick={logout}
@@ -83,6 +131,13 @@ const Navbar = ({ isAuthenticated, logout }) => {
           <NavLink to="/" className="block" onClick={() => setMenuOpen(false)}>
             Inicio
           </NavLink>
+          <NavLink
+            to="/galeria/vacantes"
+            className="block"
+            onClick={() => setMenuOpen(false)}
+          >
+            Vacantes
+          </NavLink>
           {isAuthenticated && (
             <NavLink
               to="/admin"
@@ -92,6 +147,34 @@ const Navbar = ({ isAuthenticated, logout }) => {
               Vista Admin
             </NavLink>
           )}
+
+          {isAuthenticated && (
+            <>
+              {/* Opciones de admin en móvil */}
+              {role === "admin" && (
+                <>
+                  <NavLink
+                    to="/admin"
+                    className="block"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Vista Admin
+                  </NavLink>
+                </>
+              )}
+
+              {(role === "admin" || role === "user") && (
+                <NavLink
+                  to="/crear/vacante"
+                  className="block"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Crear Vacante
+                </NavLink>
+              )}
+            </>
+          )}
+
           {isAuthenticated ? (
             <button
               onClick={() => {
