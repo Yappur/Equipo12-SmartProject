@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logoLinkedin from "@/assets/img/logo-linkedin.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
+import { useAuth } from "../../context/AuthContext";
 
-const LoginPage = ({ login }) => {
+const LoginPage = () => {
   const [success, setSuccess] = useState(null);
-  const { error, cargando } = useLoginFirebase();
+  const { login, error, cargando } = useLoginFirebase();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,9 +18,6 @@ const LoginPage = ({ login }) => {
     const resultado = await login({ email, password });
     if (resultado) {
       setSuccess("¡Inicio de sesión exitoso!");
-      setTimeout(() => {
-        navigate("/admin");
-      }, 1200);
     }
   };
 
