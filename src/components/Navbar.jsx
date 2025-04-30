@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useLoginFirebase } from "../hooks/useLoginFirebase";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { logout } = useAuth();
+  const { logout } = useLoginFirebase();
   const { isAuthenticated, role } = useAuth();
 
   return (

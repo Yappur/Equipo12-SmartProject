@@ -35,6 +35,8 @@ export const useLoginFirebase = () => {
 
       if (data.role === "admin") {
         navigate("/admin");
+      } else if (data.role === "user") {
+        navigate("/reclutador");
       } else {
         navigate("/");
       }
