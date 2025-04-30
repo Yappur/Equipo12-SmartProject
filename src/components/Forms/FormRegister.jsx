@@ -47,10 +47,24 @@ const FormRegister = () => {
     const newErrors = {};
     let isValid = true;
 
+    const validarNombre = (nombre) => {
+      const regex = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/;
+      return regex.test(nombre.trim());
+    };
+    
+
     if (!displayName || displayName.trim() === "") {
       newErrors.errorDisplayName = "Por favor, ingresa tu nombre y apellido";
       isValid = false;
+    } else if (!validarNombre(displayName)) {
+      newErrors.errorDisplayName =
+        "El nombre solo debe contener letras y espacios, sin números ni símbolos";
+      isValid = false;
     }
+    
+
+
+
 
     if (!email || !validarEmail(email)) {
       newErrors.errorEmail = "Por favor, ingresa un email válido";

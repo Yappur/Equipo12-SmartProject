@@ -57,16 +57,29 @@ const Navbar = () => {
               )}
 
               {(role === "admin" || role === "user") && (
-                <NavLink
-                  to="/crear/vacante"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-white font-semibold underline"
-                      : "hover:text-gray-200 transition"
-                  }
-                >
-                  Crear Vacante
-                </NavLink>
+                <>
+                  <NavLink
+                    to="/reclutador"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-white font-semibold underline"
+                        : "hover:text-gray-200 transition"
+                    }
+                  >
+                    Vista Reclutador
+                  </NavLink>
+
+                  <NavLink
+                    to="/crear/vacante"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-white font-semibold underline"
+                        : "hover:text-gray-200 transition"
+                    }
+                  >
+                    Crear Vacante
+                  </NavLink>
+                </>
               )}
             </>
           )}
