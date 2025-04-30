@@ -2,13 +2,14 @@ import { Link } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import { FaUserGear, FaMagnifyingGlass } from "react-icons/fa6";
 import { FaUserPlus } from "react-icons/fa6";
+import { BsFillGrid1X2Fill } from "react-icons/bs";
 
 const AdminView = () => {
   return (
     <>
       <Sidebar />
 
-      <div className="pt-16 flex flex-col items-center justify-center w-full min-h-[75vh] px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
+      <div className="pt-16 flex flex-col items-center justify-center w-full min-h-[100vh] px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
         <section className="flex flex-col items-center justify-center gap-3 sm:gap-4 max-w-4xl mx-auto">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center font-bold">
             ¡Bienvendio a Talent Match!
@@ -61,7 +62,7 @@ const AdminView = () => {
             className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl hover:bg-slate-50 transition-all duration-300 transform hover:scale-[1.02]"
           >
             <div>
-              <FaUserGear className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl" />
+              <BsFillGrid1X2Fill className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl" />
             </div>
             <p className="sm:text-lg md:text-xl font-medium mt-2 text-center text-black">
               Ver mis Vacantes

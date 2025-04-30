@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useLoginFirebase } from "../hooks/useLoginFirebase";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/Auth/LoginPage";
@@ -12,7 +11,6 @@ import UsersDashboard from "../pages/AdminPages/UsersDashboard";
 import CreateVacancies from "../pages/AdminPages/CreateVacancies";
 import VacanciesGallery from "../pages/PublicPages/VacanciesGallery";
 import VacancyView from "../pages/PublicPages/VacancyView";
-import Home from "../pages/UserPages/Home";
 import Perfil from "../pages/UserPages/Perfil";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../context/AuthContext";
@@ -28,7 +26,6 @@ const RoutesViews = () => {
       <Routes>
         {/* Rutas Públicas */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/home" element={<Home />} />
         <Route path="/galeria/vacantes" element={<VacanciesGallery />} />
         <Route path="/ver/vacante/:id" element={<VacancyView />} />
         <Route path="/login" element={<LoginPage login={login} />} />
@@ -93,7 +90,6 @@ const RoutesViews = () => {
             </ProtectedRoute>
           }
         />
-
 
         {/* Ruta 404 */}
         <Route path="*" element={<App404 />} />
