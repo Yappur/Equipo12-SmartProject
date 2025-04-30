@@ -46,7 +46,7 @@ const Sidebar = () => {
                 Inicio
               </NavLink>
               <NavLink
-                to="/vacantes"
+                to="/galeria/vacantes"
                 className="flex items-center gap-3 p-3 rounded-md hover:bg-[#008080]/70 transition"
               >
                 <Briefcase className="w-5 h-5" />
