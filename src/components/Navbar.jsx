@@ -13,7 +13,7 @@ const Navbar = () => {
       <div className="container mx-auto h-full flex justify-between items-center px-4 sm:px-8">
         {/* Logo */}
         <NavLink to="/" className="flex items-center space-x-2">
-          <h1 className="text-white font-bold">Gestión de ofertas</h1>
+          <h1 className="text-white font-bold ml-10">Gestión de ofertas</h1>
         </NavLink>
 
         {/* Enlaces desktop */}
