@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState }  from "react";
 import { useNavigate } from "react-router-dom";
 import logoLinkedin from "@/assets/img/logo-linkedin.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
+
 
 const LoginPage = () => {
   const [success, setSuccess] = useState(null);
@@ -20,7 +21,7 @@ const LoginPage = () => {
       setSuccess("¡Inicio de sesión exitoso!");
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-[#00254B] flex items-center justify-center p-4 pt-16">
       <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-2xl backdrop-blur-md">
@@ -93,7 +94,24 @@ const LoginPage = () => {
               <p className="text-green-400 text-sm mt-2">{success}</p>
             )}
 
-            {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
+{error && (
+  <div className="fixed top-10 left-1/2 transform -translate-x-1/2 z-50">
+    <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center shadow-lg w-[90vw] max-w-md animate-fade-in backdrop-blur-sm">
+      <div className="w-16 h-16 mx-auto mb-4 relative">
+        <div className="absolute inset-0 rounded-full bg-red-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
+            <span className="text-white text-2xl">✖</span>
+          </div>
+        </div>
+      </div>
+      <h2 className="text-red-700 font-semibold text-lg mb-1">Algun dato está incorrecto</h2>
+      <h2 className="text-red-700 font-semibold text-lg mb-1">Intentelo nuevamente o cambie la contraseña</h2>
+      <p className="text-red-600 text-sm">{error}</p>
+    </div>
+  </div>
+)}
+
+
           </form>
         </div>
 

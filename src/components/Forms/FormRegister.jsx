@@ -102,13 +102,16 @@ const FormRegister = () => {
 
       console.log("Datos enviados:", usuario);
 
-      setMensaje("Usuario registrado correctamente");
+      setMensaje("Dirigete a la pantalla de candidatos para vizualizar los detalles del candidato o general cambios");
       setUsuario({
         displayName: "",
         email: "",
         password: "",
         confirmarPassword: "",
       });
+      setTimeout(() => {
+        setMensaje("");  // Limpiar el mensaje de éxito
+      }, 5000);
     } catch (err) {
       setErrors({
         serverError:
@@ -136,12 +139,22 @@ const FormRegister = () => {
             <div className="flex-grow h-px bg-white/20" />
           </div>
 
-          {/* Mostramos mensajes de éxito */}
-          {mensaje && (
-            <div className="bg-green-500/20 text-green-300 p-3 rounded-md mb-4 text-center">
-              {mensaje}
-            </div>
-          )}
+          {/* Mostramos el mensaje de éxito */}
+{mensaje && (
+  <div className="fixed top-10 left-1/2 transform -translate-x-1/2 z-50">
+    <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center shadow-lg w-[90vw] max-w-md animate-fade-in backdrop-blur-sm">
+      <div className="w-16 h-16 mx-auto mb-4 relative">
+        <div className="absolute inset-0 rounded-full bg-green-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+            <span className="text-white text-2xl">✔</span> {/* Icono de check */}
+          </div>
+        </div>
+      </div>
+      <h2 className="text-green-700 font-semibold text-lg mb-1">¡El candidadato se ha registrado correctamente!</h2>
+      <p className="text-green-600 text-sm">{mensaje}</p>
+    </div>
+  </div>
+)}
 
           {/* Mostramos error general del servidor */}
           {errors.serverError && (
