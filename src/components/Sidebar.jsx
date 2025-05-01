@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { Home, Briefcase, Users, User, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
+
 const Sidebar = () => {
   const { isAuthenticated, logout } = useAuth();
 
@@ -14,7 +15,8 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-[#00254B] text-white shadow-lg z-40 flex flex-col p-6">
+<div className="w-64 bg-[#00254B] text-white shadow-lg flex flex-col p-6 h-full min-h-screen">
+
       {/* Logo o título */}
       <div className="mb-8">
         <h2 className="text-xl font-bold">Talent Match</h2>

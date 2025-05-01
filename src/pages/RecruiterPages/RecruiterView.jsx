@@ -5,8 +5,10 @@ import { FaUserGear, FaMagnifyingGlass } from "react-icons/fa6";
 
 const RecruiterView = () => {
   return (
-    <>
+    <div className="flex min-h-screen">
+      {/* Sidebar fijo a la izquierda */}
       <Sidebar />
+
 
       <div className="pt-16 flex flex-col items-center justify-center w-full min-h-[75vh] px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
         <section className="flex flex-col items-center justify-center gap-3 sm:gap-4 max-w-4xl mx-auto">
@@ -44,7 +46,8 @@ const RecruiterView = () => {
           </Link>
         </section>
       </div>
-    </>
+      </div>
+  
   );
 };
 
