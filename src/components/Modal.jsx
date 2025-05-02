@@ -16,15 +16,35 @@ export default function Modal({
   const getIcon = () => {
     switch (tipo) {
       case "success":
-        return <FaRegCheckCircle className="h-12 w-12 text-gray-500" />;
+        return (
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C6F6D5] ">
+            <FaRegCheckCircle className="h-10 w-10 text-[#1FC16B] " />
+          </div>
+        );
       case "error":
-        return <RiCloseCircleLine className="h-12 w-12 text-gray-500" />;
+        return (
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FBAAB2] ">
+            <RiCloseCircleLine className="h-10 w-10 text-[#D00416] " />
+          </div>
+        );
       case "confirm":
-        return <FaSave className="h-12 w-12 text-gray-500" />;
+        return (
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#AFCEFF] ">
+            <FaSave className="h-10 w-10 text-[#3D75CE]" />
+          </div>
+        );
       case "delete":
-        return <FaRegTrashAlt className="h-12 w-12 text-gray-500" />;
+        return (
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FBAAB2] ">
+            <FaRegTrashAlt className="h-10 w-10 text-[#D00416] " />
+          </div>
+        );
       default:
-        return <FaRegCheckCircle className="h-12 w-12 text-gray-500" />;
+        return (
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C6F6D5] ">
+            <FaRegCheckCircle className="h-10 w-10 text-[#1FC16B] " />
+          </div>
+        );
     }
   };
 
@@ -44,9 +64,7 @@ export default function Modal({
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg shadow-black/75">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
-              {getIcon()}
-            </div>
+            <div className="">{getIcon()}</div>
 
             <h3 className="text-xl font-bold">{titulo}</h3>
 
@@ -56,7 +74,7 @@ export default function Modal({
               {tipo === "success" || tipo === "error" ? (
                 <button
                   onClick={handleAccionPrimaria}
-                  className="w-full rounded bg-gray-400 px-4 py-2 text-white hover:bg-gray-500"
+                  className="w-full rounded bg-[#152D53] px-4 py-2 text-white hover:bg-gray-800 transition duration-300 ease-in-out"
                 >
                   {btnPrimario}
                 </button>
@@ -64,13 +82,13 @@ export default function Modal({
                 <>
                   <button
                     onClick={handleAccionSecundaria}
-                    className="w-full rounded bg-white px-4 py-2 text-gray-700 hover:bg-gray-200"
+                    className="w-full rounded border border-[#152D53] px-4 py-2 text-gray-700 hover:bg-gray-200 transition duration-300 ease-in-out"
                   >
                     {btnSecundario}
                   </button>
                   <button
                     onClick={handleAccionPrimaria}
-                    className="w-full rounded bg-gray-400 px-4 py-2 text-white hover:bg-gray-500"
+                    className="w-full rounded bg-[#152D53] px-4 py-2 text-white hover:bg-gray-800 transition duration-300 ease-in-out"
                   >
                     {btnPrimario}
                   </button>
