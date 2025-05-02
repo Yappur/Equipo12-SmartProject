@@ -39,44 +39,47 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-sm rounded-lg bg-gray-100 p-6 shadow-lg">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
-            {getIcon()}
-          </div>
+    <>
+      <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose}></div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg shadow-blue-500/50">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
+              {getIcon()}
+            </div>
 
-          <h3 className="text-xl font-bold">{titulo}</h3>
+            <h3 className="text-xl font-bold">{titulo}</h3>
 
-          {mensaje && <p className="text-sm text-gray-600">{mensaje}</p>}
+            {mensaje && <p className="text-sm text-gray-600">{mensaje}</p>}
 
-          <div className="mt-2 flex w-full flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
-            {tipo === "success" || tipo === "error" ? (
-              <button
-                onClick={handleAccionPrimaria}
-                className="w-full rounded bg-gray-400 px-4 py-2 text-white hover:bg-gray-500"
-              >
-                {btnPrimario}
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={handleAccionSecundaria}
-                  className="w-full rounded bg-white px-4 py-2 text-gray-700 hover:bg-gray-200"
-                >
-                  {btnSecundario}
-                </button>
+            <div className="mt-2 flex w-full flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
+              {tipo === "success" || tipo === "error" ? (
                 <button
                   onClick={handleAccionPrimaria}
                   className="w-full rounded bg-gray-400 px-4 py-2 text-white hover:bg-gray-500"
                 >
                   {btnPrimario}
                 </button>
-              </>
-            )}
+              ) : (
+                <>
+                  <button
+                    onClick={handleAccionSecundaria}
+                    className="w-full rounded bg-white px-4 py-2 text-gray-700 hover:bg-gray-200"
+                  >
+                    {btnSecundario}
+                  </button>
+                  <button
+                    onClick={handleAccionPrimaria}
+                    className="w-full rounded bg-gray-400 px-4 py-2 text-white hover:bg-gray-500"
+                  >
+                    {btnPrimario}
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

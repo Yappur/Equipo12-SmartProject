@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
+import Modal from "../Modal";
 import axiosConfig from "../../helpers/axios.config";
 
 const customStyles = {
@@ -40,6 +41,11 @@ const UserTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [changeRoleModal, setChangeRoleModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [newRole, setNewRole] = useState("user");
+
   const obtenerUsuarios = async () => {
     try {
       setLoading(true);
@@ -62,30 +68,34 @@ const UserTable = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    const confirm = window.confirm(
-      "¿Estás seguro de que querés eliminar el usuario?"
-    );
-    if (!confirm) return;
+  const openDeleteModal = (user) => {
+    setSelectedUser(user);
+    setDeleteModal(true);
+  };
+
+  const openChangeRoleModal = (user, role) => {
+    setSelectedUser(user);
+    setNewRole(role);
+    setChangeRoleModal(true);
+  };
+
+  const handleDelete = async () => {
     try {
-      await axiosConfig.delete(`/users/${id}`);
-      alert("Usuario eliminado con exito");
+      await axiosConfig.delete(`/users/${selectedUser.uid}`);
       obtenerUsuarios();
+      setDeleteModal(false);
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);
     }
   };
 
-  const handleChangeRol = async (id, newRol) => {
-    const confirm = window.confirm(
-      "¿Estás seguro de que querés cambiar el rol del usuario?"
-    );
-    if (!confirm) return;
-
+  const handleChangeRol = async () => {
     try {
-      await axiosConfig.patch(`/users/${id}/role`, { role: newRol });
-      alert("Rol cambiado con exito");
+      await axiosConfig.patch(`/users/${selectedUser.id}/role`, {
+        role: newRole,
+      });
       obtenerUsuarios();
+      setChangeRoleModal(false);
     } catch (error) {
       console.error("Error al cambiar el rol del usuario:", error);
     }
@@ -111,7 +121,7 @@ const UserTable = () => {
       selector: (row) => (
         <select
           value={row.role || "user"}
-          onChange={(e) => handleChangeRol(row.uid, e.target.value)}
+          onChange={(e) => openChangeRoleModal(row, e.target.value)}
         >
           <option value="admin">Super Admin</option>
           <option value="user">Reclutador</option>
@@ -124,7 +134,7 @@ const UserTable = () => {
       cell: (row) => (
         <button
           className="bg-red-500 hover:bg-red-900 text-white font-bold py-2 px-4 rounded"
-          onClick={() => handleDelete(row.uid)}
+          onClick={() => openDeleteModal(row)}
         >
           Eliminar
         </button>
@@ -186,6 +196,30 @@ const UserTable = () => {
           progressPending={loading}
         />
       )}
+      <Modal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        tipo="delete"
+        titulo="Eliminar Usuario"
+        mensaje={`¿Estás seguro de que deseas eliminar al usuario?`}
+        btnPrimario="Sí, eliminar"
+        btnSecundario="Cancelar"
+        accionPrimaria={handleDelete}
+      />
+
+      {/* Modal para confirmar cambio de rol */}
+      <Modal
+        isOpen={changeRoleModal}
+        onClose={() => setChangeRoleModal(false)}
+        tipo="confirm"
+        titulo="Cambiar Rol de Usuario"
+        mensaje={`¿Estás seguro de cambiar el rol de ${
+          selectedUser?.displayName || ""
+        } a ${newRole === "admin" ? "Super Admin" : "Reclutador"}?`}
+        btnPrimario="Confirmar Cambio"
+        btnSecundario="Cancelar"
+        onPrimaryAction={handleChangeRol}
+      />
     </>
   );
 };
