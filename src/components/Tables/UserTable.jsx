@@ -102,14 +102,14 @@ const UserTable = () => {
 
   const handleChangeRol = async () => {
     try {
-      await axiosConfig.patch(`/users/${selectedUser.id}/role`, {
+      await axiosConfig.patch(`/users/${selectedUser.uid}/role`, {
         role: newRole,
       });
       obtenerUsuarios();
       setChangeRoleModal(false);
       showSuccessMessage(
         `El rol de ${selectedUser.displayName} ha sido actualizado a ${
-          newRole === "user" ? "admin" : "Reclutador"
+          newRole === "admin" ? "Super Admin" : "Reclutador"
         } correctamente`
       );
     } catch (error) {
@@ -137,7 +137,10 @@ const UserTable = () => {
       selector: (row) => (
         <select
           value={row.role || "user"}
-          onChange={(e) => openChangeRoleModal(row, e.target.value)}
+          onChange={(e) => {
+            const selectedRole = e.target.value;
+            openChangeRoleModal(row, selectedRole);
+          }}
         >
           <option value="admin">Super Admin</option>
           <option value="user">Reclutador</option>
@@ -235,7 +238,7 @@ const UserTable = () => {
         } a ${newRole === "admin" ? "Super Admin" : "Reclutador"}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
-        onPrimaryAction={handleChangeRol}
+        accionPrimaria={handleChangeRol}
       />
 
       <Modal
