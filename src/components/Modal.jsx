@@ -42,7 +42,7 @@ export default function Modal({
     <>
       <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose}></div>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg shadow-blue-500/50">
+        <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg shadow-black/75">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
               {getIcon()}

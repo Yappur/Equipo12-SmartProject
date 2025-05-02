@@ -41,9 +41,12 @@ const UserTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // MODALES
   const [deleteModal, setDeleteModal] = useState(false);
   const [changeRoleModal, setChangeRoleModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [successModal, setSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const [newRole, setNewRole] = useState("user");
 
   const obtenerUsuarios = async () => {
@@ -79,11 +82,19 @@ const UserTable = () => {
     setChangeRoleModal(true);
   };
 
+  const showSuccessMessage = (message) => {
+    setSuccessMessage(message);
+    setSuccessModal(true);
+  };
+
   const handleDelete = async () => {
     try {
       await axiosConfig.delete(`/users/${selectedUser.uid}`);
       obtenerUsuarios();
       setDeleteModal(false);
+      showSuccessMessage(
+        `El usuario ${selectedUser.displayName} ha sido eliminado correctamente`
+      );
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);
     }
@@ -96,6 +107,11 @@ const UserTable = () => {
       });
       obtenerUsuarios();
       setChangeRoleModal(false);
+      showSuccessMessage(
+        `El rol de ${selectedUser.displayName} ha sido actualizado a ${
+          newRole === "user" ? "admin" : "Reclutador"
+        } correctamente`
+      );
     } catch (error) {
       console.error("Error al cambiar el rol del usuario:", error);
     }
@@ -201,13 +217,14 @@ const UserTable = () => {
         onClose={() => setDeleteModal(false)}
         tipo="delete"
         titulo="Eliminar Usuario"
-        mensaje={`¿Estás seguro de que deseas eliminar al usuario?`}
+        mensaje={`¿Estás seguro de que deseas eliminar al usuario ${
+          selectedUser?.displayName || ""
+        }? Esta acción no se puede deshacer.`}
         btnPrimario="Sí, eliminar"
         btnSecundario="Cancelar"
         accionPrimaria={handleDelete}
       />
 
-      {/* Modal para confirmar cambio de rol */}
       <Modal
         isOpen={changeRoleModal}
         onClose={() => setChangeRoleModal(false)}
@@ -219,6 +236,16 @@ const UserTable = () => {
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         onPrimaryAction={handleChangeRol}
+      />
+
+      <Modal
+        isOpen={successModal}
+        onClose={() => setSuccessModal(false)}
+        tipo="success"
+        titulo="Operación Exitosa"
+        mensaje={successMessage}
+        btnPrimario="Aceptar"
+        accionPrimaria={() => setSuccessModal(false)}
       />
     </>
   );
