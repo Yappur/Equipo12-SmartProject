@@ -23,7 +23,6 @@ const RoutesViews = () => {
 
   return (
     <>
-      <Navbar isAuthenticated={isAuthenticated} role={role} logout={logout} />
       <Routes>
         {/* Rutas Públicas */}
         <Route path="/" element={<HomePage />} />
