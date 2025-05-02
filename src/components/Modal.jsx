@@ -1,5 +1,7 @@
+import { useRef, useEffect, useState } from "react";
 import { FaRegCheckCircle, FaRegTrashAlt, FaSave } from "react-icons/fa";
 import { RiCloseCircleLine } from "react-icons/ri";
+import { slideInUp, slideOutDown } from "../helpers/animate";
 export default function Modal({
   isOpen,
   onClose,
@@ -11,6 +13,22 @@ export default function Modal({
   accionPrimaria,
   accionSecundaria,
 }) {
+  const modalRef = useRef(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      slideInUp(modalRef.current);
+    }
+  }, [isOpen]);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    slideOutDown(modalRef.current, () => {
+      onClose();
+    });
+  };
+
   if (!isOpen) return null;
 
   const getIcon = () => {
@@ -50,19 +68,29 @@ export default function Modal({
 
   const handleAccionPrimaria = () => {
     if (accionPrimaria) accionPrimaria();
-    onClose();
+    handleClose();
   };
 
   const handleAccionSecundaria = () => {
     if (accionSecundaria) accionSecundaria();
-    onClose();
+    handleClose();
+  };
+
+  const handleBackdropClick = () => {
+    handleClose();
   };
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose}></div>
+      <div
+        className="fixed inset-0 z-40 bg-black/50"
+        onClick={handleBackdropClick}
+      ></div>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg shadow-black/75">
+        <div
+          ref={modalRef}
+          className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg shadow-black/75"
+        >
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="">{getIcon()}</div>
 
