@@ -199,7 +199,7 @@ const UserTable = () => {
 
         return (
           <div
-            className="cursor-pointer hover:text-blue-600"
+            className="cursor-pointer hover:text-[#8a9dc0]"
             onClick={() => {
               const newRole = row.role === "admin" ? "user" : "admin";
               openChangeRoleModal(row, newRole);
@@ -217,8 +217,8 @@ const UserTable = () => {
         <div
           className={`px-4 py-1 rounded-full text-sm font-medium cursor-pointer ${
             row.estado === "Activo"
-              ? "bg-amber-100 text-amber-800"
-              : "bg-blue-100 text-blue-800"
+              ? "bg-[#ffe3ca] text-amber-800"
+              : "bg-[#d8e9ff] text-blue-800"
           }`}
           onClick={() =>
             openChangeStatusModal(
@@ -266,11 +266,11 @@ const UserTable = () => {
         </Link>
       </div>
 
-      <div className="border-8 border-[#0c1b33] mb-6">
-        <div className="flex items-center border-8 border-[#0c1b33]">
+      <div className="border-8 border-[#152d53] mb-3 rounded-md">
+        <div className="flex items-center border-8 border-[#152d53]">
           <div className="relative flex-grow">
             <input
-              className="rounded-md py-2 pl-10 pr-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className=" py-2 pl-10 pr-4 w-full"
               type="text"
               placeholder="Búsqueda"
               value={filtrarUsuarios}
@@ -279,9 +279,9 @@ const UserTable = () => {
             />
             <FaMagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
-          <div className="border-l-10 border-[#0c1b33]">
+          <div className="border-l-10 border-[#152d53]">
             <button
-              className=" bg-[#0c1b33] hover:bg-[#06101f] text-white border-white border  py-2 px-10 flex items-center"
+              className=" bg-[#152d53] hover:bg-[#0c1b33] text-white border-white border  py-2 px-10 flex items-center"
               onClick={() => setShowFilters(!showFilters)}
             >
               <IoOptions className="mr-2 h-6 w-6" />

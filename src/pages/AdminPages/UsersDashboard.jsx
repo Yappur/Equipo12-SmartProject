@@ -4,7 +4,7 @@ import UserTable from "../../components/Tables/UserTable";
 const UsersDashboard = () => {
   return (
     <>
-      <div className="container mx-auto my-18">
+      <div className="container mx-auto my-20">
         <UserTable />
       </div>
     </>
