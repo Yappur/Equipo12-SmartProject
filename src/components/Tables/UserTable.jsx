@@ -55,11 +55,14 @@ const UserTable = () => {
 
   // MODALES
   const [deleteModal, setDeleteModal] = useState(false);
+  const [changeRoleModal, setChangeRoleModal] = useState(false);
   const [changeStatusModal, setChangeStatusModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
   const [successModal, setSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [newStatus, setNewStatus] = useState("");
+  const [newRole, setNewRole] = useState("");
 
   const obtenerUsuarios = async () => {
     try {
@@ -109,6 +112,12 @@ const UserTable = () => {
     setDeleteModal(true);
   };
 
+  const openChangeRoleModal = (user) => {
+    setSelectedUser(user);
+    setNewRole(user.role === "admin" ? "user" : "admin");
+    setChangeRoleModal(true);
+  };
+
   const openChangeStatusModal = (user, status) => {
     setSelectedUser(user);
     setNewStatus(status);
@@ -130,6 +139,21 @@ const UserTable = () => {
       );
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);
+    }
+  };
+
+  const handleChangeRole = async () => {
+    try {
+      await axiosConfig.patch(`/users/${selectedUser.uid}/role`, {
+        role: newRole,
+      });
+      obtenerUsuarios();
+      setChangeRoleModal(false);
+      showSuccessMessage(
+        `El rol de ${selectedUser.displayName} ha sido actualizado correctamente`
+      );
+    } catch (error) {
+      console.error("Error al cambiar el rol del usuario:", error);
     }
   };
 
@@ -170,7 +194,21 @@ const UserTable = () => {
     },
     {
       name: "Rol",
-      selector: (row) => (row.role === "admin" ? "SuperAdmin" : "Reclutador"),
+      cell: (row) => {
+        const displayRole = row.role === "admin" ? "Super Admin" : "Reclutador";
+
+        return (
+          <div
+            className="cursor-pointer hover:text-blue-600"
+            onClick={() => {
+              const newRole = row.role === "admin" ? "user" : "admin";
+              openChangeRoleModal(row, newRole);
+            }}
+          >
+            {displayRole} <FaChevronDown className="inline ml-1 text-xs" />
+          </div>
+        );
+      },
       sortable: true,
     },
     {
@@ -219,7 +257,7 @@ const UserTable = () => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Usuarios</h1>
+        <h1 className="text-2xl font-bold">Lista de Usuarios</h1>
         <Link
           to={"/admin/crear/usuario"}
           className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
@@ -251,6 +289,11 @@ const UserTable = () => {
             </button>
           </div>
         </div>
+      </div>
+      <div>
+        <p className="text-gray-500 text-sm mb-3">
+          {filtrarData.length} Usuarios Encontrados
+        </p>
       </div>
 
       {error && (
@@ -291,6 +334,19 @@ const UserTable = () => {
         btnPrimario="Sí, eliminar"
         btnSecundario="Cancelar"
         accionPrimaria={handleDelete}
+      />
+
+      <Modal
+        isOpen={changeRoleModal}
+        onClose={() => setChangeRoleModal(false)}
+        tipo="confirm"
+        titulo="Cambiar Rol de Usuario"
+        mensaje={`¿Estás seguro de cambiar el rol de ${
+          selectedUser?.displayName || ""
+        } a ${newRole === "admin" ? "Super Admin" : "Reclutador"}?`}
+        btnPrimario="Confirmar Cambio"
+        btnSecundario="Cancelar"
+        accionPrimaria={handleChangeRole}
       />
 
       <Modal
