@@ -1,14 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logoLogin from "@/assets/img/imgfigma.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
+import Modal from "../../components/Modal";
 
 const LoginPage = () => {
-  const [success, setSuccess] = useState(null);
   const { login, error, cargando } = useLoginFirebase();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  const [successModal, setSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
+  useEffect(() => {
+    if (error) {
+      setModalMessage(error);
+      setErrorModal(true);
+    }
+  }, [error]);
+
+  const showSuccessMessage = (message) => {
+    setModalMessage(message || "Inicio de sesión exitoso");
+    setSuccessModal(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,8 +33,25 @@ const LoginPage = () => {
 
     const resultado = await login({ email, password });
     if (resultado) {
-      setSuccess("¡Inicio de sesión exitoso!");
+      showSuccessMessage(resultado);
     }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setSuccessModal(false);
+    if (isAuthenticated) {
+      if (role === "admin") {
+        navigate("/admin");
+      } else if (role === "user") {
+        navigate("/reclutador");
+      } else {
+        navigate("/");
+      }
+    }
+  };
+
+  const handleCloseErrorModal = () => {
+    setErrorModal(false);
   };
 
   return (
@@ -72,30 +105,6 @@ const LoginPage = () => {
                 {cargando ? "Iniciando..." : "Iniciar Sesión"}
               </button>
 
-              {success && (
-                <p className="text-green-400 text-sm mt-2">{success}</p>
-              )}
-
-              {error && (
-                <div className="fixed top-10 left-1/2 transform -translate-x-1/2 z-50">
-                  <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center shadow-lg w-[90vw] max-w-md animate-fade-in backdrop-blur-sm">
-                    <div className="w-16 h-16 mx-auto mb-4 relative">
-                      <div className="absolute inset-0 rounded-full bg-red-100 flex items-center justify-center">
-                        <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
-                          <span className="text-white text-2xl">✖</span>
-                        </div>
-                      </div>
-                    </div>
-                    <h2 className="text-red-700 font-semibold text-lg mb-1">
-                      Algún dato está incorrecto
-                    </h2>
-                    <h2 className="text-red-700 font-semibold text-lg mb-1">
-                      Inténtelo nuevamente o cambie la contraseña
-                    </h2>
-                    <p className="text-red-600 text-sm">{error}</p>
-                  </div>
-                </div>
-              )}
               <div>
                 <a
                   href="*"
@@ -116,6 +125,25 @@ const LoginPage = () => {
           />
         </div>
       </div>
+      <Modal
+        isOpen={successModal}
+        onClose={handleCloseSuccessModal}
+        tipo="success"
+        titulo="Inicio de sesión exitoso"
+        mensaje={modalMessage}
+        btnPrimario="Aceptar"
+        accionPrimaria={handleCloseSuccessModal}
+      />
+
+      <Modal
+        isOpen={errorModal}
+        onClose={handleCloseErrorModal}
+        tipo="error"
+        titulo="Error de autenticación"
+        mensaje={modalMessage}
+        btnPrimario="Entendido"
+        accionPrimaria={handleCloseErrorModal}
+      />
     </div>
   );
 };

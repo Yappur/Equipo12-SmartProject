@@ -4,9 +4,8 @@ import axiosConfig from "@/helpers/axios.config";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-
-
-const traducirFirebaseError = (codigo) => {
+const traducirFirebaseError = (errorCode) => {
+  const codigo = errorCode.replace("auth/", "");
   switch (codigo) {
     case "EMAIL_EXISTS":
       return "Este correo ya está registrado.";
@@ -27,7 +26,6 @@ const traducirFirebaseError = (codigo) => {
       return "Error al procesar la solicitud.";
   }
 };
-
 
 export const useLoginFirebase = () => {
   const [error, setError] = useState(null);
@@ -58,26 +56,11 @@ export const useLoginFirebase = () => {
       setIsAuthenticated(true);
       setRole(data.role);
 
-      if (data.role === "admin") {
-        navigate("/admin");
-      } else if (data.role === "user") {
-        navigate("/reclutador");
-      } else {
-        navigate("/");
-      }
-    
       return data;
     } catch (err) {
-      // Utiliza traducirFirebaseError para obtener el mensaje de error
-      const mensajeError = traducirFirebaseError(err.code);
-
-      // Establece el mensaje de error
+      console.error("Error de login:", err.code, err.message);
+      const mensajeError = traducirFirebaseError(err.code || "unknown-error");
       setError(mensajeError);
-
-      // Limpiar el error después de 5 segundos
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
 
       return null;
     } finally {
