@@ -22,14 +22,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#00254B] flex items-center justify-center p-4 pt-16">
+    <div className="poppins min-h-screen bg-white flex items-center justify-center p-4 pt-16">
       <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-2xl backdrop-blur-md">
-        <div className="p-8 md:p-12 text-white flex flex-col justify-center">
-          <h2 className="text-3xl font-bold text-center mb-2">
-            Bienvenido de nuevo a{" "}
-            <span className="text-[#008080] drop-shadow">TalentMatch</span>
-          </h2>
-          <p className="text-gray-300 text-center mb-6">Accede a tu cuenta</p>
+        <div className="p-8 md:p-12 text-black flex flex-col justify-center">
+          <h1 className="text-5xl text-center mb-2 drop-shadow">
+            Talent Match
+          </h1>
 
           <div className="flex items-center text-gray-400 mb-6">
             <div className="flex-grow h-px bg-white/20" />
@@ -37,39 +35,37 @@ const LoginPage = () => {
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm text-gray-300">
-                Correo Electrónico
-              </label>
+              <label className="block text-sm ">Correo Electrónico</label>
               <input
                 type="email"
                 name="email"
-                className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
+                className="w-full p-2.5 mt-1 bg-gray-200 border border-white/30 rounded-md placeholder-gray-600 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
                 placeholder="Ingresa tu correo"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm text-gray-300">Contraseña</label>
+              <label className="block text-sm">Contraseña</label>
               <input
                 type="password"
                 name="password"
-                className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
+                className="w-full p-2.5 mt-1 bg-gray-200 border border-white/30 rounded-md placeholder-gray-600 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
                 placeholder="Ingresa tu contraseña"
                 required
               />
             </div>
 
-            <div className="flex items-center justify-between text-sm text-gray-300">
+            <div className="flex items-center justify-between text-sm">
               <label className="flex items-center">
-                <input type="checkbox" className="mr-2 accent-[#008080]" />
+                <input type="checkbox" className="mr-2 accent-[#152d53]" />
                 Recuérdame
               </label>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-[#008080] hover:bg-[#006666] text-white font-semibold py-2.5 rounded-md text-sm transition shadow"
+              className="inter text-xl w-1/2 flex items-center justify-center mx-auto bg-[#152d53] hover:bg-[#181f31] text-white font-semibold py-2.5 rounded-md transition shadow"
               disabled={cargando}
             >
               {cargando ? "Iniciando..." : "Iniciar Sesión"}
@@ -99,15 +95,12 @@ const LoginPage = () => {
                 </div>
               </div>
             )}
-            <div className="flex items-center text-gray-400 mt-2">
-              <div className="flex-grow h-px bg-white/20" />
-            </div>
             <div>
               <a
                 href="*"
-                className="text-[#008080] hover:underline flex items-center justify-center"
+                className="hover:underline flex items-center justify-center"
               >
-                ¿Olvidaste tu contraseña?
+                ¿Haz olvidado tu contraseña?
               </a>
             </div>
           </form>
