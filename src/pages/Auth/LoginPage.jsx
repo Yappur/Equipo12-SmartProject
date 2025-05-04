@@ -13,6 +13,7 @@ const LoginPage = () => {
   const [successModal, setSuccessModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -31,10 +32,14 @@ const LoginPage = () => {
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const resultado = await login({ email, password });
+    const resultado = await login({ email, password, rememberMe });
     if (resultado) {
       showSuccessMessage("Inicio de sesión exitoso");
     }
+  };
+
+  const handleRememberMeChange = (e) => {
+    setRememberMe(e.target.checked);
   };
 
   const handleCloseSuccessModal = () => {
@@ -92,7 +97,12 @@ const LoginPage = () => {
 
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center">
-                  <input type="checkbox" className="mr-2 accent-[#152d53]" />
+                  <input
+                    type="checkbox"
+                    className="mr-2 accent-[#152d53]"
+                    checked={rememberMe}
+                    onChange={handleRememberMeChange}
+                  />
                   Recuérdame
                 </label>
               </div>

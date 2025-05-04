@@ -33,7 +33,7 @@ export const useLoginFirebase = () => {
   const { setIsAuthenticated, setRole } = useAuth();
   const navigate = useNavigate();
 
-  const login = async ({ email, password }) => {
+  const login = async ({ email, password, rememberMe = false }) => {
     setCargando(true);
     setError(null);
 
@@ -47,7 +47,12 @@ export const useLoginFirebase = () => {
       const user = userCredential.user;
       const idToken = await user.getIdToken();
 
-      localStorage.setItem("authToken", idToken);
+      if (rememberMe) {
+        localStorage.setItem("authToken", idToken);
+      } else {
+        sessionStorage.setItem("authToken", idToken);
+        localStorage.removeItem("authToken");
+      }
 
       const { data } = await axiosConfig.post("/auth/verify-token", {
         idToken,
@@ -70,6 +75,7 @@ export const useLoginFirebase = () => {
 
   const logout = () => {
     localStorage.removeItem("authToken");
+    sessionStorage.removeItem("authToken");
     setIsAuthenticated(false);
     setRole(null);
     navigate("/login");
