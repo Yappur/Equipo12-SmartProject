@@ -7,7 +7,7 @@ import Modal from "../../components/Modal";
 
 const LoginPage = () => {
   const { login, error, cargando } = useLoginFirebase();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
 
   const [successModal, setSuccessModal] = useState(false);
@@ -33,7 +33,7 @@ const LoginPage = () => {
 
     const resultado = await login({ email, password });
     if (resultado) {
-      showSuccessMessage(resultado);
+      showSuccessMessage("Inicio de sesión exitoso");
     }
   };
 
