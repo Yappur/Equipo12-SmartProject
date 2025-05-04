@@ -2,10 +2,12 @@ import React from "react";
 import CardVacancie from "@/components/Cards/CardVacancie";
 import homeDesktop from "@/assets/img/home-desktop.png";
 import homeMovil from "@/assets/img/home-movil.png";
+import LandingNavbar from "../components/LandingNavbar";
 
 const HomePage = () => {
   return (
-    <div className="pt-16">
+    <div className="">
+      <LandingNavbar />
       <div className="relative w-full h-[85vh] sm:h-[90vh] lg:h-[100vh] ">
         <picture>
           <source srcSet={homeDesktop} media="(min-width: 640px)" />

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import { FaUserGear, FaMagnifyingGlass, FaUserPlus } from "react-icons/fa6";
 import { BsFillGrid1X2Fill } from "react-icons/bs";
+import AdminNavbar from "../../components/Navbar";
 
 const AdminView = () => {
   return (
@@ -10,7 +11,8 @@ const AdminView = () => {
       <Sidebar />
 
       {/* Contenido principal, separado del Sidebar */}
-      <div className="flex-1 pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
+      <div className="flex-1 ml-0 md:ml-64 pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
+      <AdminNavbar />
         <section className="flex flex-col items-center justify-center gap-3 sm:gap-4 max-w-4xl mx-auto">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center font-bold">
             ¡Bienvendio a Talent Match!

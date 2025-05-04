@@ -32,7 +32,7 @@ const traducirFirebaseError = (codigo) => {
 export const useLoginFirebase = () => {
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(false);
-  const { setIsAuthenticated, setRole } = useAuth();
+  const { setIsAuthenticated, setRole, setNombre } = useAuth();
   const navigate = useNavigate();
 
   const login = async ({ email, password }) => {
@@ -57,6 +57,7 @@ export const useLoginFirebase = () => {
 
       setIsAuthenticated(true);
       setRole(data.role);
+      setNombre(data.displayName); // Asignar el nombre o correo al estado
 
       if (data.role === "admin") {
         navigate("/admin");

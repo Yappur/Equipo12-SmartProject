@@ -80,8 +80,8 @@ const Sidebar = () => {
       </AnimatePresence>
 
       {/* Sidebar fijo en pantallas grandes */}
-      <aside className="hidden md:flex flex-col w-64 bg-[#00254B] text-white shadow-lg p-6 h-full min-h-screen">
-        <div className="mb-8">
+      <aside className="hidden md:fixed md:flex flex-col w-64 bg-[#00254B] text-white shadow-lg p-6 h-screen top-0 left-0 z-30">
+      <div className="mb-8">
           <h2 className="text-xl font-bold">Talent Match</h2>
         </div>
 
