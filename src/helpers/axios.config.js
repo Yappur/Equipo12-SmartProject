@@ -31,4 +31,24 @@ axiosConfig.interceptors.request.use(
   }
 );
 
+axiosConfig.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    // Si recibimos un 401 (no autorizado) o 403 (prohibido), podría ser un token expirado
+    if (
+      error.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
+      // Limpiar tokens
+      localStorage.removeItem("authToken");
+      sessionStorage.removeItem("authToken");
+
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default axiosConfig;
