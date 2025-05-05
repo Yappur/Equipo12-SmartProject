@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
+import Sidebar from "../../components/Navigate/Sidebar";
 import { uploadImage } from "../../firebase/uploadImage";
 import { CirclePlus } from "lucide-react";
 
@@ -103,152 +104,162 @@ const CreateVacancies = () => {
   };
 
   return (
-    <div className="container mx-auto my-20">
-      <h1 className="text-2xl font-bold text-gray-600 mb-4">Vacantes</h1>
+    <>
+      {" "}
+      <div className="">
+        <Sidebar />
 
-      <button
-        className="bg-blue-500 text-white font-bold py-2 px-4 rounded-full mb-4 flex items-center gap-2"
-        onClick={() => setShowForm(!showForm)}
-      >
-        <CirclePlus size={20} />
-        <span>Crear nueva vacante</span>
-      </button>
+        <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 mx-auto my-8">
+          <h1 className="text-2xl font-bold text-gray-600 mb-4">Vacantes</h1>
 
-      {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-4 rounded shadow-md space-y-4"
-        >
-          <div>
-            <label htmlFor="nombre" className="block text-gray-700">
-              Título de la vacante
-            </label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              value={vacancy.nombre}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 mt-1 rounded"
-              required
-            />
-          </div>
+          <button
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded-full mb-4 flex items-center gap-2"
+            onClick={() => setShowForm(!showForm)}
+          >
+            <CirclePlus size={20} />
+            <span>Crear nueva vacante</span>
+          </button>
 
-          <div>
-            <label htmlFor="descripcion" className="block text-gray-700">
-              Descripción
-            </label>
-            <textarea
-              id="descripcion"
-              name="descripcion"
-              value={vacancy.descripcion}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 mt-1 rounded"
-              rows="4"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="fecha" className="block text-gray-700">
-              Fecha
-            </label>
-            <input
-              type="date"
-              id="fecha"
-              name="fecha"
-              value={vacancy.fecha}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 mt-1 rounded"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="estado" className="block text-gray-700">
-              Estado
-            </label>
-            <select
-              id="estado"
-              name="estado"
-              value={vacancy.estado}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 mt-1 rounded"
-              required
+          {showForm && (
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white p-4 rounded shadow-md space-y-4"
             >
-              <option value="">Selecciona un estado</option>
-              <option value="activo">Activo</option>
-              <option value="terminado">Terminado</option>
-              <option value="pausado">Pausado</option>
-              <option value="borrador">Borrador</option>
-              <option value="cancelado">Cancelado</option>
-            </select>
-          </div>
+              <div>
+                <label htmlFor="nombre" className="block text-gray-700">
+                  Título de la vacante
+                </label>
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  value={vacancy.nombre}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 p-2 mt-1 rounded"
+                  required
+                />
+              </div>
 
-          <div>
-            <label htmlFor="image" className="block text-gray-700">
-              Imagen
-            </label>
-            <input
-              type="file"
-              id="image"
-              name="image"
-              accept="image/*"
-              onChange={handleFileUpload}
-              className="w-full border border-gray-300 p-2 mt-1 rounded"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Sube una imagen que represente la vacante (JPG, PNG)
-            </p>
-          </div>
+              <div>
+                <label htmlFor="descripcion" className="block text-gray-700">
+                  Descripción
+                </label>
+                <textarea
+                  id="descripcion"
+                  name="descripcion"
+                  value={vacancy.descripcion}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 p-2 mt-1 rounded"
+                  rows="4"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Minimo 200 caracteres.
+                </p>
+              </div>
 
-          {/* Vista previa de la imagen si hay imagen cargada */}
-          {imagePreview && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-700 mb-1">Vista previa:</p>
-              <img
-                src={imagePreview}
-                alt="Vista previa"
-                className="max-h-40 border rounded"
-                onLoad={() => {
-                  // Liberar la URL temporal cuando ya no se necesite
-                  URL.revokeObjectURL(imagePreview);
-                }}
-              />
-            </div>
-          )}
+              <div>
+                <label htmlFor="fecha" className="block text-gray-700">
+                  Fecha
+                </label>
+                <input
+                  type="date"
+                  id="fecha"
+                  name="fecha"
+                  value={vacancy.fecha}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 p-2 mt-1 rounded"
+                  required
+                />
+              </div>
 
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`${
-                isSubmitting
-                  ? "bg-green-300"
-                  : "bg-green-500 hover:bg-green-600"
-              } text-white py-2 px-4 rounded flex items-center gap-2`}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
-                  <span>Procesando...</span>
-                </>
-              ) : (
-                "Guardar Vacante"
+              <div>
+                <label htmlFor="estado" className="block text-gray-700">
+                  Estado
+                </label>
+                <select
+                  id="estado"
+                  name="estado"
+                  value={vacancy.estado}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 p-2 mt-1 rounded"
+                  required
+                >
+                  <option value="">Selecciona un estado</option>
+                  <option value="activo">Activo</option>
+                  <option value="terminado">Terminado</option>
+                  <option value="pausado">Pausado</option>
+                  <option value="borrador">Borrador</option>
+                  <option value="cancelado">Cancelado</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="image" className="block text-gray-700">
+                  Imagen
+                </label>
+                <input
+                  type="file"
+                  id="image"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="w-full border border-gray-300 p-2 mt-1 rounded"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Sube una imagen que represente la vacante (JPG, PNG)
+                </p>
+              </div>
+
+              {/* Vista previa de la imagen si hay imagen cargada */}
+              {imagePreview && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-700 mb-1">Vista previa:</p>
+                  <img
+                    src={imagePreview}
+                    alt="Vista previa"
+                    className="max-h-40 border rounded"
+                    onLoad={() => {
+                      // Liberar la URL temporal cuando ya no se necesite
+                      URL.revokeObjectURL(imagePreview);
+                    }}
+                  />
+                </div>
               )}
-            </button>
 
-            <button
-              type="button"
-              onClick={() => setShowForm(false)}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
-      )}
-    </div>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`${
+                    isSubmitting
+                      ? "bg-green-300"
+                      : "bg-green-500 hover:bg-green-600"
+                  } text-white py-2 px-4 rounded flex items-center gap-2`}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
+                      <span>Procesando...</span>
+                    </>
+                  ) : (
+                    "Guardar Vacante"
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 
