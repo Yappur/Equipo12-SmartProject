@@ -4,8 +4,10 @@ import logoLogin from "@/assets/img/imgfigma.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
 import Modal from "../../components/Modal";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 const LoginPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const { login, error, cargando } = useLoginFirebase();
   const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
@@ -84,15 +86,25 @@ const LoginPage = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm">Contraseña</label>
+              <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
-                  className="w-full p-2.5 mt-1 bg-gray-200 border border-white/30 rounded-md placeholder-gray-600 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
+                  className="w-full p-2.5 mt-1 bg-gray-200 border border-white/30 rounded-md placeholder-gray-600 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none pr-10"
                   placeholder="Ingresa tu contraseña"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-3xl mt-0.5"
+                >
+                  {showPassword ? (
+                    <FaRegEye className="text-[#152d53]" />
+                  ) : (
+                    <FaRegEyeSlash className="text-gray-500" />
+                  )}
+                </button>
               </div>
 
               <div className="flex items-center justify-between text-sm">
