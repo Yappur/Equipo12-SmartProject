@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
-export default function LandingNavbar() {
+const LandingNavbar = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -37,10 +37,10 @@ export default function LandingNavbar() {
         ) : (
           <>
             <button
-              onClick={() => navigate("/registro")}
+              onClick={() => navigate("/galeria/vacantes")}
               className="px-5 py-2 rounded-full text-white border border-white hover:bg-white hover:text-[#00598A] transition duration-200"
             >
-              Registrarse
+              Vacantes
             </button>
             <button
               onClick={() => navigate("/login")}
@@ -55,7 +55,6 @@ export default function LandingNavbar() {
       {/* Menú móvil */}
       {menuOpen && (
         <div className="fixed top-0 left-0 w-full h-full bg-[#00598A]/95 backdrop-blur-sm flex flex-col items-center justify-center gap-6 text-white text-lg md:hidden animate-fade-in-up z-40">
-
           {/* Título TalentMatch */}
           <h1
             className="text-white font-bold text-3xl tracking-wide mb-6 cursor-pointer"
@@ -80,13 +79,10 @@ export default function LandingNavbar() {
           ) : (
             <>
               <button
-                onClick={() => {
-                  navigate("/registro");
-                  setMenuOpen(false);
-                }}
-                className="px-6 py-3 rounded-full text-white border border-white hover:bg-white hover:text-[#00598A] transition"
+                onClick={() => navigate("/galeria/vacantes")}
+                className="px-5 py-2 rounded-full text-white border border-white hover:bg-white hover:text-[#00598A] transition duration-200"
               >
-                Registrarse
+                Vacantes
               </button>
               <button
                 onClick={() => {
@@ -101,7 +97,8 @@ export default function LandingNavbar() {
           )}
         </div>
       )}
-
     </nav>
   );
-}
+};
+
+export default LandingNavbar;

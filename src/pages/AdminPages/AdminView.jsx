@@ -12,7 +12,7 @@ const AdminView = () => {
 
       {/* Contenido principal, separado del Sidebar */}
       <div className="flex-1 ml-0 md:ml-64 pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
-      <AdminNavbar />
+        <AdminNavbar />
         <section className="flex flex-col items-center justify-center gap-3 sm:gap-4 max-w-4xl mx-auto">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center font-bold">
             ¡Bienvendio a Talent Match!
@@ -29,7 +29,7 @@ const AdminView = () => {
           >
             <FaUserPlus className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl" />
             <p className="sm:text-lg md:text-xl font-medium mt-2 text-center text-black">
-              Nueva Usuario
+              Nuevo Usuario
             </p>
           </Link>
 

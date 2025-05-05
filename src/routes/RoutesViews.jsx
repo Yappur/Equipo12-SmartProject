@@ -25,6 +25,7 @@ const RoutesViews = () => {
     <>
       <Routes>
         {/* Rutas Públicas */}
+
         <Route path="/" element={<HomePage />} />
         <Route path="/galeria/vacantes" element={<VacanciesGallery />} />
         <Route path="/ver/vacante/:id" element={<VacancyView />} />
