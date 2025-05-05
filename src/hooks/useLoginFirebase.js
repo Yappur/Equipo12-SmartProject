@@ -30,7 +30,7 @@ const traducirFirebaseError = (errorCode) => {
 export const useLoginFirebase = () => {
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(false);
-  const { setIsAuthenticated, setRole } = useAuth();
+  const { setIsAuthenticated, setRole, setNombre } = useAuth();
   const navigate = useNavigate();
 
   const login = async ({ email, password, rememberMe = false }) => {
@@ -60,6 +60,7 @@ export const useLoginFirebase = () => {
 
       setIsAuthenticated(true);
       setRole(data.role);
+      setNombre(data.displayName); // Asignar el nombre o correo al estado
 
       return data;
     } catch (err) {

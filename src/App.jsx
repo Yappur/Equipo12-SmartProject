@@ -9,12 +9,10 @@ function App() {
     <div className="flex flex-col min-h-screen">
       <Router>
         <AuthProvider>
-          <Navbar />
           <main className="flex-grow">
             {" "}
             <RoutesViews />
           </main>
-          <Footer />
         </AuthProvider>
       </Router>
     </div>
