@@ -1,6 +1,6 @@
 import React from "react";
 import UserTable from "../../components/Tables/UserTable";
-import Sidebar from "../../components/Barras de navegacion/Sidebar";
+import Sidebar from "../../components/BarrasDeNavegacion/Sidebar";
 
 const UsersDashboard = () => {
   return (
