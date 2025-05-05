@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Sidebar from "@/components/barrasDeNavegacion/Sidebar";
-import AdminNavbar from "../../components/BarrasDeNavegacion/Navbar";
+import AdminNavbar from "@/components/BarrasDeNavegacion/Navbar";
 import { FaUserGear, FaMagnifyingGlass } from "react-icons/fa6";
 import { FaUserPlus } from "react-icons/fa6";
 import { BsFillGrid1X2Fill } from "react-icons/bs";
