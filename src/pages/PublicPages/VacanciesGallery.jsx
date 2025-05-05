@@ -1,6 +1,6 @@
 import React from "react";
 import CardVacancie from "../../components/Cards/CardVacancie";
-import LandingNavbar from "../../components/BarrasDeNavegacion/LandingNavbar";
+import LandingNavbar from "@/components/barrasDeNavegacion/LandingNavbar";
 
 const VacancyGallery = () => {
   return (

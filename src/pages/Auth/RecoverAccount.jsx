@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logoLogin from "@/assets/img/mujer-hero.png";
 import Modal from "../../components/Modal";
 import { usePasswordReset } from "@/hooks/usePasswordReset";
-import LandingNavbar from "../../components/BarrasDeNavegacion/LandingNavbar";
+import LandingNavbar from "@/components/barrasDeNavegacion/LandingNavbar";
 
 const RecoverAccount = () => {
   const [email, setEmail] = useState("");

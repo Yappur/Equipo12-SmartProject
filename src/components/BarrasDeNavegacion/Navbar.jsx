@@ -8,7 +8,7 @@ export default function AdminNavbar() {
   const { nombre } = useAuth();
 
   return (
-    <header className="w-full bg-white shadow-sm border-b px-6 py-4 flex justify-between items-center">
+    <header className="w-full bg-white shadow-sm border-b pl-70 py-4 flex justify-between items-center">
       {/* Título del panel */}
       <h2 className="text-sm sm:text-base text-sky-800 font-semibold">
         Panel Reclutador
