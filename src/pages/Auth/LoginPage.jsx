@@ -98,7 +98,7 @@ const LoginPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-3xl mt-0.5"
+                  className="absolute right-2 top-[60px] transform -translate-y-1/2 text-xl mt-0.5"
                 >
                   {showPassword ? (
                     <FaRegEye className="text-[#152d53]" />

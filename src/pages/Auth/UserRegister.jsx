@@ -1,6 +1,6 @@
 import React from "react";
 import FormRegister from "../../components/Forms/FormRegister";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "@/components/Barras de Navegacion/Sidebar";
 
 const UserRegister = () => {
   return (

@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "@/components/Barras de Navegacion/Sidebar";
 import { FaUserGear, FaMagnifyingGlass, FaUserPlus } from "react-icons/fa6";
 import { BsFillGrid1X2Fill } from "react-icons/bs";
-import AdminNavbar from "../../components/Navbar";
+import AdminNavbar from "../../components/Barras de navegacion/Navbar";
 
 const AdminView = () => {
   return (

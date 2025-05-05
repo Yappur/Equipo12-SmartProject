@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "@/components/Barras de Navegacion/Sidebar";
 import { HiOutlineUser } from "react-icons/hi"; 
 //import Nav from "../../components/Nav";
 //import Footer from "../../components/Footer";

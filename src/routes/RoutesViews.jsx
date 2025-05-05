@@ -5,7 +5,6 @@ import LoginPage from "../pages/Auth/LoginPage";
 import App404 from "../pages/App404";
 import UserRegister from "../pages/Auth/UserRegister";
 import AdminView from "../pages/AdminPages/AdminView";
-import Navbar from "../components/Navbar";
 import VacanciesDashboard from "../pages/AdminPages/VacanciesDashboard";
 import UsersDashboard from "../pages/AdminPages/UsersDashboard";
 import CreateVacancies from "../pages/AdminPages/CreateVacancies";
