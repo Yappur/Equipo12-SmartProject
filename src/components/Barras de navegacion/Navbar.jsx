@@ -1,5 +1,5 @@
-import { useAuth } from "../context/AuthContext";
-import { useLoginFirebase } from "../hooks/useLoginFirebase";
+import { useAuth } from "@/context/AuthContext";
+import { useLoginFirebase } from "../../hooks/useLoginFirebase";
 import { FaUserCircle } from "react-icons/fa";
 
 export default function AdminNavbar() {
