@@ -76,7 +76,7 @@ const LoginPage = () => {
 
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-sm">Correo Electrónico</label>
+                <label className="block text-md">Correo Electrónico</label>
                 <input
                   type="email"
                   name="email"
@@ -87,6 +87,7 @@ const LoginPage = () => {
               </div>
 
               <div className="relative">
+                <label className="block text-md">Contraseña</label>
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
