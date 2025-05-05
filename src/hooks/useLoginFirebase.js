@@ -4,9 +4,8 @@ import axiosConfig from "@/helpers/axios.config";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-
-
-const traducirFirebaseError = (codigo) => {
+const traducirFirebaseError = (errorCode) => {
+  const codigo = errorCode.replace("auth/", "");
   switch (codigo) {
     case "EMAIL_EXISTS":
       return "Este correo ya está registrado.";
@@ -28,14 +27,13 @@ const traducirFirebaseError = (codigo) => {
   }
 };
 
-
 export const useLoginFirebase = () => {
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(false);
   const { setIsAuthenticated, setRole } = useAuth();
   const navigate = useNavigate();
 
-  const login = async ({ email, password }) => {
+  const login = async ({ email, password, rememberMe = false }) => {
     setCargando(true);
     setError(null);
 
@@ -49,7 +47,12 @@ export const useLoginFirebase = () => {
       const user = userCredential.user;
       const idToken = await user.getIdToken();
 
-      localStorage.setItem("authToken", idToken);
+      if (rememberMe) {
+        localStorage.setItem("authToken", idToken);
+      } else {
+        sessionStorage.setItem("authToken", idToken);
+        localStorage.removeItem("authToken");
+      }
 
       const { data } = await axiosConfig.post("/auth/verify-token", {
         idToken,
@@ -58,26 +61,11 @@ export const useLoginFirebase = () => {
       setIsAuthenticated(true);
       setRole(data.role);
 
-      if (data.role === "admin") {
-        navigate("/admin");
-      } else if (data.role === "user") {
-        navigate("/reclutador");
-      } else {
-        navigate("/");
-      }
-    
       return data;
     } catch (err) {
-      // Utiliza traducirFirebaseError para obtener el mensaje de error
-      const mensajeError = traducirFirebaseError(err.code);
-
-      // Establece el mensaje de error
+      console.error("Error de login:", err.code, err.message);
+      const mensajeError = traducirFirebaseError(err.code || "unknown-error");
       setError(mensajeError);
-
-      // Limpiar el error después de 5 segundos
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
 
       return null;
     } finally {
@@ -87,6 +75,7 @@ export const useLoginFirebase = () => {
 
   const logout = () => {
     localStorage.removeItem("authToken");
+    sessionStorage.removeItem("authToken");
     setIsAuthenticated(false);
     setRole(null);
     navigate("/login");
