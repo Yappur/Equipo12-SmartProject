@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Sidebar from "@/components/barrasDeNavegacion/Sidebar";
-import AdminNavbar from "@/components/barrasDeNavegacion/Navbar";
+import Sidebar from "../../components/Navigate/Sidebar";
+import AdminNavbar from "../../components/Navigate/Navbar";
 import { FaUserGear, FaMagnifyingGlass, FaUserPlus } from "react-icons/fa6";
 
 const RecruiterView = () => {
