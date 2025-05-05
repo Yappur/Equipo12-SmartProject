@@ -16,7 +16,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../context/AuthContext";
 import RecruiterView from "../pages/RecruiterPages/RecruiterView";
 import CandidatosView from "../pages/RecruiterPages/CandidatosView";
-import ChangePassword from "../pages/Auth/ChangePassword";
+import RecoverAccount from "../pages/Auth/RecoverAccount";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -30,7 +30,7 @@ const RoutesViews = () => {
         <Route path="/galeria/vacantes" element={<VacanciesGallery />} />
         <Route path="/ver/vacante/:id" element={<VacancyView />} />
         <Route path="/login" element={<LoginPage login={login} />} />
-        <Route path="/recuperar/cuenta" element={<ChangePassword />} />
+        <Route path="/recuperar/cuenta" element={<RecoverAccount />} />
 
         {/* Rutas de Reclutadores */}
         <Route
