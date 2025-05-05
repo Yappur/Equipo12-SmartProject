@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
-import Sidebar from "@/components/BarrasDeNavegacion/Sidebar";
+import Sidebar from "../../components/Navigate/Sidebar";
 import { uploadImage } from "../../firebase/uploadImage";
 import { CirclePlus } from "lucide-react";
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { useParams } from "react-router-dom";
-import Sidebar from "@/components/barrasDeNavegacion/Sidebar";
+import Sidebar from "../../components/Navigate/Sidebar";
 import {
   FiUser,
   FiCheckCircle,
