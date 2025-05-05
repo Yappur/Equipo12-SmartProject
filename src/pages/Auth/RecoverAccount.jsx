@@ -1,15 +1,45 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logoLogin from "@/assets/img/imgfigma.png";
+import Modal from "../../components/Modal";
 import { usePasswordReset } from "@/hooks/usePasswordReset";
 
 const RecoverAccount = () => {
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const [successModal, setSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   const { resetPassword, error, cargando, success } = usePasswordReset();
+
+  useEffect(() => {
+    if (error) {
+      setModalMessage(error);
+      setErrorModal(true);
+    }
+  }, [error]);
+
+  const showSuccessMessage = (message) => {
+    setModalMessage(message || "Correo enviado. Revise su bandeja de entrada.");
+    setSuccessModal(true);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     resetPassword(email);
+    showSuccessMessage("Correo enviado. Revise su bandeja de entrada.");
+  };
+
+  const handleCloseSuccessModal = () => {
+    setSuccessModal(false);
+    if (success) {
+      navigate("/login");
+    }
+  };
+
+  const handleCloseErrorModal = () => {
+    setErrorModal(false);
   };
 
   return (
@@ -34,13 +64,7 @@ const RecoverAccount = () => {
                   required
                 />
               </div>
-              {success && (
-                <p className="text-green-600 text-center">{success}</p>
-              )}
-              {error && <p className="text-red-600 text-center">{error}</p>}
-              {cargando && (
-                <p className="text-blue-600 text-center">Enviando...</p>
-              )}
+
               <button
                 type="submit"
                 disabled={cargando}
@@ -67,6 +91,26 @@ const RecoverAccount = () => {
           />
         </div>
       </div>
+
+      <Modal
+        isOpen={successModal}
+        onClose={handleCloseSuccessModal}
+        tipo="success"
+        titulo="Inicio de sesión exitoso"
+        mensaje={modalMessage}
+        btnPrimario="Aceptar"
+        accionPrimaria={handleCloseSuccessModal}
+      />
+
+      <Modal
+        isOpen={errorModal}
+        onClose={handleCloseErrorModal}
+        tipo="error"
+        titulo="Error de autenticación"
+        mensaje={modalMessage}
+        btnPrimario="Entendido"
+        accionPrimaria={handleCloseErrorModal}
+      />
     </div>
   );
 };
