@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import logoLogin from "@/assets/img/imgfigma.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
@@ -116,12 +116,12 @@ const LoginPage = () => {
               </button>
 
               <div>
-                <a
-                  href="*"
+                <Link
+                  to="/recuperar/cuenta"
                   className="hover:underline flex items-center justify-center"
                 >
                   ¿Has olvidado tu contraseña?
-                </a>
+                </Link>
               </div>
             </form>
           </div>
