@@ -3,7 +3,7 @@ import HeroSection from "../components/LandingPage/HeroSection";
 import CandidatoSection from "../components/LandingPage/CandidatoSection";
 import ServiciosSection from "../components/LandingPage/ServiciosSection";
 import SuscripcionSection from "../components/LandingPage/SuscripcionSection";
-import LandingNavbar from "@/components/barrasDeNavegacion/LandingNavbar";
+import LandingNavbar from "../components/barrasDeNavegacion/LandingNavbar";
 
 const HomePage = () => {
   return (
