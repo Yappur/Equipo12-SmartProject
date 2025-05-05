@@ -5,12 +5,19 @@
 
 html,
 body {
-  height: 100%; /* Asegura que el cuerpo y html ocupen toda la altura de la ventana */
-  margin: 0; /* Elimina márgenes por defecto que pueden afectar el diseño */
-  font-family: "Poppins", sans-serif;
+  height: 100%;
+  margin: 0;
+  font-family: "Poppins", "Inter", sans-serif;
 }
 
-.inter-font {
+.poppins {
+  font-family: "Poppins", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-inter {
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
@@ -19,6 +26,34 @@ body {
 
 .image-container img {
   width: 100%;
-  height: auto; /* Esto mantiene la relación de aspecto */
-  object-fit: cover; /* Esto asegura que la imagen se recorte bien si es necesario */
+  height: auto;
+  object-fit: cover;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out both;
 }

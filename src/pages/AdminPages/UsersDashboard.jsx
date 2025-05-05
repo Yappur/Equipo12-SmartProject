@@ -1,16 +1,15 @@
 import React from "react";
 import UserTable from "../../components/Tables/UserTable";
-import { Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import Sidebar from "../../components/Barras de navegacion/Sidebar";
 
 const UsersDashboard = () => {
   return (
     <>
-      <div className="container mx-auto my-20">
-        <Link to="/admin" className="mt-5 text-blue-500 flex">
-          Volver atras <ChevronRight />
-        </Link>
-        <UserTable />
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <div className="flex-1 ml-0 md:ml-64 pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
+          <UserTable />
+        </div>
       </div>
     </>
   );

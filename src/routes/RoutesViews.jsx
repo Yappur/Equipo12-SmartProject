@@ -5,7 +5,6 @@ import LoginPage from "../pages/Auth/LoginPage";
 import App404 from "../pages/App404";
 import UserRegister from "../pages/Auth/UserRegister";
 import AdminView from "../pages/AdminPages/AdminView";
-import Navbar from "../components/Navbar";
 import VacanciesDashboard from "../pages/AdminPages/VacanciesDashboard";
 import UsersDashboard from "../pages/AdminPages/UsersDashboard";
 import CreateVacancies from "../pages/AdminPages/CreateVacancies";
@@ -15,6 +14,8 @@ import Perfil from "../pages/UserPages/Perfil";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../context/AuthContext";
 import RecruiterView from "../pages/RecruiterPages/RecruiterView";
+import CandidatosView from "../pages/RecruiterPages/CandidatosView";
+import RecoverAccount from "../pages/Auth/RecoverAccount";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -22,13 +23,14 @@ const RoutesViews = () => {
 
   return (
     <>
-      <Navbar isAuthenticated={isAuthenticated} role={role} logout={logout} />
       <Routes>
         {/* Rutas Públicas */}
+
         <Route path="/" element={<HomePage />} />
         <Route path="/galeria/vacantes" element={<VacanciesGallery />} />
         <Route path="/ver/vacante/:id" element={<VacancyView />} />
         <Route path="/login" element={<LoginPage login={login} />} />
+        <Route path="/recuperar/cuenta" element={<RecoverAccount />} />
 
         {/* Rutas de Reclutadores */}
         <Route
@@ -36,6 +38,14 @@ const RoutesViews = () => {
           element={
             <ProtectedRoute allowedRoles={["admin", "user"]}>
               <RecruiterView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reclutador/candidatos"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "user"]}>
+              <CandidatosView />
             </ProtectedRoute>
           }
         />

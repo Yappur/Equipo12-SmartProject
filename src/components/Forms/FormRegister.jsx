@@ -102,13 +102,16 @@ const FormRegister = () => {
 
       console.log("Datos enviados:", usuario);
 
-      setMensaje("Usuario registrado correctamente");
+      setMensaje("Dirigete a la pantalla de candidatos para vizualizar los detalles del candidato o generar cambios");
       setUsuario({
         displayName: "",
         email: "",
         password: "",
         confirmarPassword: "",
       });
+      setTimeout(() => {
+        setMensaje("");  // Limpiar el mensaje de éxito
+      }, 5000);
     } catch (err) {
       setErrors({
         serverError:
@@ -121,150 +124,152 @@ const FormRegister = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#00254B] text-white flex items-center justify-center p-4">
-      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden w-full max-w-md shadow-2xl backdrop-blur-md">
-        <div className="p-8 text-white flex flex-col justify-center">
-          <h2 className="text-3xl font-bold text-center mb-2">
-            Crea un Usuario en{" "}
-            <span className="text-[#008080] drop-shadow">???</span>
-          </h2>
-          <p className="text-gray-300 text-center mb-6">
-            ¡Solicita acceso a un Reclutador!
-          </p>
-
-          <div className="flex items-center text-gray-400 mb-6">
-            <div className="flex-grow h-px bg-white/20" />
+    <div className="min-h-screen bg-white w-full text-gray-700 flex items-center justify-center p-6">
+      <div className="w-full max-w-6xl bg-white rounded-md shadow-md border border-gray-200 flex flex-col lg:flex-row overflow-hidden">
+        
+        {/* Perfil a la izquierda */}
+        <div className="w-full lg:w-1/3 bg-gray-100 flex flex-col items-center justify-center p-10 border-r">
+          <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mb-4">
+            <svg
+              className="w-10 h-10 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5.121 17.804A8.003 8.003 0 0112 16a8.003 8.003 0 016.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
           </div>
-
-          {/* Mostramos mensajes de éxito */}
+          <p className="text-sm font-semibold">Nombre</p>
+          <p className="text-sm text-gray-500">Rol</p>
+        </div>
+  
+        {/* Formulario */}
+        <div className="w-full lg:w-2/3 p-10">
+          <h2 className="text-xl font-semibold mb-6 border-b pb-2">
+            Crear nuevo usuario
+          </h2>
+  
           {mensaje && (
-            <div className="bg-green-500/20 text-green-300 p-3 rounded-md mb-4 text-center">
-              {mensaje}
+            <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded mb-4">
+              <p className="font-semibold">¡El candidato se ha registrado correctamente!</p>
+              <p className="text-sm">{mensaje}</p>
             </div>
           )}
-
-          {/* Mostramos error general del servidor */}
+  
           {errors.serverError && (
-            <div className="bg-red-500/20 text-red-300 p-3 rounded-md mb-4 text-center">
+            <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-4 text-sm">
               {errors.serverError}
             </div>
           )}
-
-          {/* Formulario conectado al estado y handlers */}
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label className="flex text-sm text-gray-300 items-center">
-                Nombre/s y Apellido/s
-              </label>
-              <input
-                type="text"
-                name="displayName"
-                value={usuario.displayName}
-                onChange={handleChange}
-                className={`w-full p-2.5 mt-1 bg-white/10 border rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none ${
-                  errors.errorDisplayName ? "border-red-500" : "border-white/30"
-                }`}
-                placeholder="Ingresa Nombre y Apellido"
-              />
-              {errors.errorDisplayName && (
-                <p className="text-red-400 text-xs mt-1">
-                  {errors.errorDisplayName}
-                </p>
-              )}
+  
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm mb-1">Nombre y Apellido*</label>
+                <input
+                  type="text"
+                  name="displayName"
+                  value={usuario.displayName}
+                  onChange={handleChange}
+                  placeholder="Escribe aquí"
+                  className="w-full border border-gray-300 rounded-md p-2"
+                />
+                {errors.errorDisplayName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.errorDisplayName}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Número de Teléfono*</label>
+                <input
+                  type="text"
+                  name="telefono"
+                  placeholder="Escribe tu número"
+                  className="w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Rol*</label>
+                <select
+                  name="role"
+                  value={usuario.role}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md p-2"
+                >
+                  <option value="">Elige tu rol</option>
+                  <option value="user">Reclutador</option>
+                  <option value="admin">Super Admin</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm mb-1">E-mail*</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={usuario.email}
+                  onChange={handleChange}
+                  placeholder="Ingresa tu email"
+                  className="w-full border border-gray-300 rounded-md p-2"
+                />
+                {errors.errorEmail && (
+                  <p className="text-red-500 text-sm mt-1">{errors.errorEmail}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Contraseña*</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={usuario.password}
+                  onChange={handleChange}
+                  placeholder="Ingresa tu contraseña"
+                  className="w-full border border-gray-300 rounded-md p-2"
+                />
+                {errors.errorPassword && (
+                  <p className="text-red-500 text-sm mt-1">{errors.errorPassword}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Repetir Contraseña*</label>
+                <input
+                  type="password"
+                  name="confirmarPassword"
+                  value={usuario.confirmarPassword}
+                  onChange={handleChange}
+                  placeholder="Ingresa tu contraseña"
+                  className="w-full border border-gray-300 rounded-md p-2"
+                />
+                {errors.errorConfirmarPassword && (
+                  <p className="text-red-500 text-sm mt-1">{errors.errorConfirmarPassword}</p>
+                )}
+              </div>
             </div>
-            <div>
-              <label className="flex text-sm text-gray-300 items-center">
-                Correo Electrónico
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={usuario.email}
-                onChange={handleChange}
-                className={`w-full p-2.5 mt-1 bg-white/10 border rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none ${
-                  errors.errorEmail ? "border-red-500" : "border-white/30"
-                }`}
-                placeholder="Ingresa tu correo"
-              />
-              {errors.errorEmail && (
-                <p className="text-red-400 text-xs mt-1">{errors.errorEmail}</p>
-              )}
-            </div>
-
-            {/* Contraseña */}
-            <div>
-              <label className="flex text-sm text-gray-300 items-center">
-                Contraseña
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={usuario.password}
-                onChange={handleChange}
-                className={`w-full p-2.5 mt-1 bg-white/10 border rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none ${
-                  errors.errorPassword ? "border-red-500" : "border-white/30"
-                }`}
-                placeholder="Contraseña (mínimo 8 caracteres, incluir letra y número)"
-              />
-              {errors.errorPassword && (
-                <p className="text-red-400 text-xs mt-1">
-                  {errors.errorPassword}
-                </p>
-              )}
-            </div>
-
-            {/* Confirmar Contraseña */}
-            <div>
-              <label className="flex text-sm text-gray-300 items-center">
-                Confirmar Contraseña
-              </label>
-              <input
-                type="password"
-                name="confirmarPassword"
-                value={usuario.confirmarPassword}
-                onChange={handleChange}
-                className={`w-full p-2.5 mt-1 bg-white/10 border rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none ${
-                  errors.errorConfirmarPassword
-                    ? "border-red-500"
-                    : "border-white/30"
-                }`}
-                placeholder="Confirma tu contraseña"
-              />
-              {errors.errorConfirmarPassword && (
-                <p className="text-red-400 text-xs mt-1">
-                  {errors.errorConfirmarPassword}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="flex text-sm text-gray-300 items-center">
-                Rol
-              </label>
-              <select
-                name="role"
-                value={usuario.role}
-                onChange={handleChange}
-                className="w-full p-2.5 mt-1 bg-white border rounded-md text-black text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none border-white/30"
+  
+            <div className="flex justify-end gap-4 mt-8">
+              <button
+                type="button"
+                className="px-5 py-2 rounded-md border border-gray-400 text-gray-700 hover:bg-gray-100"
               >
-                <option value="user">Reclutador</option>
-                <option value="admin">Super Admin</option>
-              </select>
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={cargando}
+                className="px-5 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-60"
+              >
+                {cargando ? "Procesando..." : "Guardar"}
+              </button>
             </div>
-
-            {/* Botón de registro */}
-            <button
-              type="submit"
-              disabled={cargando}
-              className="w-full bg-[#008080] hover:bg-[#006666] text-white font-semibold py-2.5 rounded-md text-sm transition shadow disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {cargando ? "Procesando..." : "Registrar Usuario"}
-            </button>
           </form>
         </div>
       </div>
     </div>
   );
+  
 };
 
 export default FormRegister;

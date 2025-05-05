@@ -1,107 +1,178 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import logoLinkedin from "@/assets/img/logo-linkedin.png";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import logoLogin from "@/assets/img/mujer-hero.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
+import Modal from "../../components/Modal";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import LandingNavbar from "../../components/Barras de navegacion/LandingNavbar";
 
 const LoginPage = () => {
-  const [success, setSuccess] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const { login, error, cargando } = useLoginFirebase();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
+
+  const [successModal, setSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      setModalMessage(error);
+      setErrorModal(true);
+    }
+  }, [error]);
+
+  const showSuccessMessage = (message) => {
+    setModalMessage(message || "Inicio de sesión exitoso");
+    setSuccessModal(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const resultado = await login({ email, password });
+    const resultado = await login({ email, password, rememberMe });
     if (resultado) {
-      setSuccess("¡Inicio de sesión exitoso!");
+      showSuccessMessage("Inicio de sesión exitoso");
     }
   };
 
+  const handleRememberMeChange = (e) => {
+    setRememberMe(e.target.checked);
+  };
+
+  const handleCloseSuccessModal = () => {
+    setSuccessModal(false);
+    if (isAuthenticated) {
+      if (role === "admin") {
+        navigate("/admin");
+      } else if (role === "user") {
+        navigate("/reclutador");
+      } else {
+        navigate("/");
+      }
+    }
+  };
+
+  const handleCloseErrorModal = () => {
+    setErrorModal(false);
+  };
+
   return (
-    <div className="min-h-screen bg-[#00254B] flex items-center justify-center p-4 pt-16">
-      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-2xl backdrop-blur-md">
-        <div className="p-8 md:p-12 text-white flex flex-col justify-center">
-          <h2 className="text-3xl font-bold text-center mb-2">
-            Bienvenido de nuevo a{" "}
-            <span className="text-[#008080] drop-shadow">Gestion</span>
-          </h2>
-          <p className="text-gray-300 text-center mb-6">Accede a tu cuenta</p>
+    <>
+      <LandingNavbar />
 
-          <button className="flex items-center justify-center w-full border border-white/20 rounded-md py-2.5 px-4 text-white bg-[#14599A]/30 hover:bg-[#14599A]/50 transition mb-6">
-            <img
-              src={logoLinkedin}
-              alt="Logo LinkedIn"
-              className="w-5 h-5 mr-3"
-            />
-            Iniciar sesión con LinkedIn
-          </button>
+      <div className="poppins py-40 bg-white flex items-center justify-center p-4 ">
+        <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+            <div className="p-8 md:p-12 text-black flex flex-col justify-center">
+              <h1 className="text-5xl text-center mb-2 drop-shadow text-[#152d53]">
+                Talent <span className="font-semibold italic ">Match</span>
+              </h1>
 
-          <div className="flex items-center text-gray-400 mb-6">
-            <div className="flex-grow h-px bg-white/20" />
-            <span className="px-3 text-sm">O</span>
-            <div className="flex-grow h-px bg-white/20" />
+              <div className="flex items-center text-gray-400 mb-6">
+                <div className="flex-grow h-px bg-white/20" />
+              </div>
+
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div>
+                  <label className="block text-md">Correo Electrónico</label>
+                  <input
+                    type="email"
+                    name="email"
+                    className="w-full p-2.5 mt-1 bg-gray-200 border border-white/30 rounded-md placeholder-gray-600 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
+                    placeholder="Ingresa tu correo"
+                    required
+                  />
+                </div>
+
+                <div className="relative">
+                  <label className="block text-md">Contraseña</label>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    className="w-full p-2.5 mt-1 bg-gray-200 border border-white/30 rounded-md placeholder-gray-600 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none pr-10"
+                    placeholder="Ingresa tu contraseña"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-3xl mt-4"
+                  >
+                    {showPassword ? (
+                      <FaRegEye className="text-[#152d53]" />
+                    ) : (
+                      <FaRegEyeSlash className="text-gray-500" />
+                    )}
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2 accent-[#152d53]"
+                      checked={rememberMe}
+                      onChange={handleRememberMeChange}
+                    />
+                    Recuérdame
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  className="inter text-xl w-1/2 flex items-center justify-center mx-auto bg-[#152d53] hover:bg-[#181f31] text-white font-semibold py-2.5 rounded-md transition shadow"
+                  disabled={cargando}
+                >
+                  {cargando ? "Iniciando..." : "Iniciar Sesión"}
+                </button>
+
+                <div>
+                  <Link
+                    to="/recuperar/cuenta"
+                    className="hover:underline flex items-center justify-center"
+                  >
+                    ¿Has olvidado tu contraseña?
+                  </Link>
+                </div>
+              </form>
+            </div>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-sm text-gray-300">
-                Correo Electrónico
-              </label>
-              <input
-                type="email"
-                name="email"
-                className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
-                placeholder="Ingresa tu correo"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-300">Contraseña</label>
-              <input
-                type="password"
-                name="password"
-                className="w-full p-2.5 mt-1 bg-white/10 border border-white/30 rounded-md placeholder-gray-400 text-sm focus:ring-2 focus:ring-[#14599A] focus:outline-none"
-                placeholder="Ingresa tu contraseña"
-                required
-              />
-            </div>
-
-            <div className="flex items-center justify-between text-sm text-gray-300">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2 accent-[#008080]" />
-                Recuérdame
-              </label>
-              <a href="*" className="text-[#008080] hover:underline">
-                ¿Olvidaste tu contraseña?
-              </a>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-[#008080] hover:bg-[#006666] text-white font-semibold py-2.5 rounded-md text-sm transition shadow"
-              disabled={cargando}
-            >
-              {cargando ? "Iniciando..." : "Iniciar Sesión"}
-            </button>
-
-            {success && (
-              <p className="text-green-400 text-sm mt-2">{success}</p>
-            )}
-
-            {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
-          </form>
+          <div className="hidden md:block rounded-xl overflow-hidden shadow-2xl h-120">
+            <img
+              src={logoLogin || "/placeholder.svg"}
+              alt="Talent Match"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
+        <Modal
+          isOpen={successModal}
+          onClose={handleCloseSuccessModal}
+          tipo="success"
+          titulo="Inicio de sesión exitoso"
+          mensaje={modalMessage}
+          btnPrimario="Aceptar"
+          accionPrimaria={handleCloseSuccessModal}
+        />
 
-        <div className="hidden md:block bg-[#14599A] w-full h-full">
-          {/* Aquí irá el banner */}
-        </div>
+        <Modal
+          isOpen={errorModal}
+          onClose={handleCloseErrorModal}
+          tipo="error"
+          titulo="Error de autenticación"
+          mensaje={modalMessage}
+          btnPrimario="Entendido"
+          accionPrimaria={handleCloseErrorModal}
+        />
       </div>
-    </div>
+    </>
   );
 };
 
