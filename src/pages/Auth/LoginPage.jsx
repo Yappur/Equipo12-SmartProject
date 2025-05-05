@@ -5,7 +5,7 @@ import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
 import Modal from "../../components/Modal";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import LandingNavbar from "@/components/barrasDeNavegacion/LandingNavbar";
+import LandingNavbar from "@/components/LandingNavbar";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
