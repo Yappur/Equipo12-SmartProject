@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
+import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 
 const customStyles = {
@@ -90,7 +91,17 @@ const VacanciesTable = () => {
   const columns = [
     {
       name: "Titulo",
-      selector: (row) => row.nombre || "Sin título",
+      cell: (row) => (
+        <div className="group relative">
+          <a
+            href={`/reclutador/ver/candidatos/${row.id}`}
+            className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
+            title={`Ver dashboard de ${row.nombre || "Sin título"}`}
+          >
+            {row.nombre || "Sin título"}
+          </a>
+        </div>
+      ),
       sortable: true,
     },
     {
