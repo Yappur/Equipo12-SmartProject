@@ -188,6 +188,25 @@ const UserTable = () => {
       sortable: true,
     },
     {
+      name: "Número",
+      selector: (row) => {
+        const telefono = row.phoneNumber;
+        const mostrar =
+          !telefono || telefono.toLowerCase() === "no disponible"
+            ? "Sin Número"
+            : telefono;
+
+        return (
+          <span
+            className={mostrar === "Sin Número" ? "text-red-500 italic" : ""}
+          >
+            {mostrar}
+          </span>
+        );
+      },
+      sortable: true,
+    },
+    {
       name: "Creacion",
       selector: (row) => row.fecha,
       sortable: true,
