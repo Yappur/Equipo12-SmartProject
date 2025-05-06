@@ -2,7 +2,7 @@ import { useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import axiosConfig from "@/helpers/axios.config";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const traducirFirebaseError = (errorCode) => {
   const codigo = errorCode.replace("auth/", "");
@@ -32,7 +32,6 @@ export const useLoginFirebase = () => {
   const [cargando, setCargando] = useState(false);
   const { setIsAuthenticated, setRole, setNombre } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const login = async ({ email, password, rememberMe = false }) => {
     setCargando(true);
@@ -63,11 +62,6 @@ export const useLoginFirebase = () => {
       setIsAuthenticated(true);
       setRole(data.role);
       setNombre(data.displayName || email); // Asignar el nombre o correo al estado
-
-      const from =
-        location.state?.from ||
-        (data.role === "admin" ? "/admin" : "/reclutador");
-      navigate(from, { replace: true });
 
       return data;
     } catch (err) {

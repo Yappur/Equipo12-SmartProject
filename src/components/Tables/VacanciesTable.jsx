@@ -40,7 +40,6 @@ const VacanciesTable = () => {
   const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshCounter, setRefreshCounter] = useState(0); // Contador para forzar actualizaciones
 
   const obtenerVacantes = async () => {
     try {
@@ -59,11 +58,7 @@ const VacanciesTable = () => {
 
   useEffect(() => {
     obtenerVacantes();
-  }, [refreshCounter]);
-
-  const refreshVacantes = () => {
-    setRefreshCounter((prev) => prev + 1);
-  };
+  }, []);
 
   const handleDelete = async (id) => {
     if (!id) {
@@ -224,28 +219,6 @@ const VacanciesTable = () => {
             onChange={(e) => setFiltrarVacantes(e.target.value)}
             disabled={loading}
           />
-
-          <button
-            onClick={refreshVacantes}
-            className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center"
-            disabled={loading}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-            Actualizar
-          </button>
         </div>
       </div>
 
