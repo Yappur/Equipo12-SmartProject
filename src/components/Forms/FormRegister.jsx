@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosConfig from "../../helpers/axios.config";
+import Modal from "../Modal";
 
 const FormRegister = () => {
   const [usuario, setUsuario] = useState({
@@ -11,9 +12,32 @@ const FormRegister = () => {
     role: "user",
   });
 
-  const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const [successModal, setSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
+  useEffect(() => {
+    if (errors.serverError) {
+      setModalMessage(errors.serverError);
+      setErrorModal(true);
+    }
+  }, [errors]);
+
+  const showSuccessMessage = (message) => {
+    setModalMessage(message || "Registro exitoso");
+    setSuccessModal(true);
+  };
+
+  const handleCloseSuccessModal = () => {
+    setSuccessModal(false);
+  };
+
+  const handleCloseErrorModal = () => {
+    setErrorModal(false);
+  };
 
   // Función para validar el formato del correo electrónico
   const validarEmail = (email) => {
@@ -28,16 +52,26 @@ const FormRegister = () => {
   };
 
   const validarTelefono = (phoneNumber) => {
-    const regex = /^\+[1-9]\d{1,14}$/; // Cambiar en caso de que sea mas de 10 dígitos
+    const regex = /^\+[1-9]\d{6,14}$/;
     return regex.test(phoneNumber);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUsuario({
-      ...usuario,
-      [name]: value,
-    });
+
+    // Limpieza específica para phoneNumber (solo permitir números y +)
+    if (name === "phoneNumber") {
+      const cleanedValue = value.replace(/[^\d+]/g, "");
+      setUsuario({
+        ...usuario,
+        [name]: cleanedValue,
+      });
+    } else {
+      setUsuario({
+        ...usuario,
+        [name]: value,
+      });
+    }
 
     if (errors[`error${name.charAt(0).toUpperCase() + name.slice(1)}`]) {
       setErrors((prev) => ({
@@ -100,7 +134,7 @@ const FormRegister = () => {
       isValid = false;
     } else if (!validarTelefono(phoneNumber)) {
       newErrors.errorPhoneNumber =
-        "El número de teléfono debe tener 10 dígitos";
+        "El número debe comenzar con + seguido del código de país y tener al menos 8 dígitos en total";
       isValid = false;
     }
 
@@ -111,23 +145,30 @@ const FormRegister = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       setCargando(true);
 
-      const response = await axiosConfig.post("/auth/register", {
-        displayName: usuario.displayName,
-        email: usuario.email,
+      const datosProcesados = {
+        displayName: usuario.displayName.trim(),
+        email: usuario.email.trim(),
         password: usuario.password,
         role: usuario.role,
-        phoneNumber: usuario.phoneNumber,
-      });
+        phoneNumber: usuario.phoneNumber.trim(),
+      };
 
-      console.log("Datos enviados:", usuario);
-
-      setMensaje(
-        "Dirigete a la pantalla de candidatos para vizualizar los detalles del candidato o generar cambios"
+      const response = await axiosConfig.post(
+        "/auth/register",
+        datosProcesados
       );
+
+      showSuccessMessage(
+        "El usuario se ha registrado correctamente. Dirígete a la pantalla de candidatos para visualizar los detalles del candidato o generar cambios"
+      );
+
       setUsuario({
         displayName: "",
         email: "",
@@ -136,16 +177,27 @@ const FormRegister = () => {
         phoneNumber: "",
         role: "user",
       });
-      setTimeout(() => {
-        setMensaje("");
-      }, 5000);
     } catch (err) {
       console.error("Error completo:", err);
-      console.error("Respuesta del servidor:", err.response?.data);
+
+      let mensajeError = "Error al registrar usuario";
+
+      if (
+        err.response?.data?.mensaje?.includes("teléfono") ||
+        err.response?.status === 400
+      ) {
+        mensajeError =
+          "El formato del número de teléfono es incorrecto. Debe incluir el código de país precedido por + y el número sin espacios ni guiones.";
+      } else if (err.response?.data?.mensaje) {
+        mensajeError = err.response.data.mensaje;
+      }
+
       setErrors({
-        serverError:
-          err.response?.data?.mensaje || "Error al registrar usuario",
+        serverError: mensajeError,
       });
+
+      setModalMessage(mensajeError);
+      setErrorModal(true);
     } finally {
       setCargando(false);
     }
@@ -181,32 +233,29 @@ const FormRegister = () => {
             Crear nuevo usuario
           </h2>
 
-          {mensaje && (
-            <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded mb-4">
-              <p className="font-semibold">
-                ¡El candidato se ha registrado correctamente!
-              </p>
-              <p className="text-sm">{mensaje}</p>
-            </div>
-          )}
-
           {errors.serverError && (
             <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-4 text-sm">
               {errors.serverError}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm mb-1">Nombre y Apellido*</label>
+                <label className="block text-sm mb-1">
+                  Nombre y Apellido<span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   name="displayName"
                   value={usuario.displayName}
                   onChange={handleChange}
                   placeholder="Escribe aquí"
-                  className="w-full border border-gray-300 rounded-md p-2"
+                  className={`w-full border ${
+                    errors.errorDisplayName
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-md p-2`}
                 />
                 {errors.errorDisplayName && (
                   <p className="text-red-500 text-sm mt-1">
@@ -216,19 +265,23 @@ const FormRegister = () => {
               </div>
               <div>
                 <label className="block text-sm mb-1">
-                  Número de Teléfono*
+                  Número de Teléfono<span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="text"
+                  type="tel"
                   name="phoneNumber"
                   value={usuario.phoneNumber}
                   onChange={handleChange}
                   placeholder="+5491123456789"
-                  className="w-full border border-gray-300 rounded-md p-2"
+                  className={`w-full border ${
+                    errors.errorPhoneNumber
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-md p-2`}
                 />
                 <p className="text-gray-500 text-xs mt-1">
                   Debe incluir el símbolo + y el código de país (ej: +54 para
-                  Argentina)
+                  Argentina) sin espacios ni guiones
                 </p>
                 {errors.errorPhoneNumber && (
                   <p className="text-red-500 text-sm mt-1">
@@ -237,12 +290,16 @@ const FormRegister = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm mb-1">Rol*</label>
+                <label className="block text-sm mb-1">
+                  Rol<span className="text-red-500">*</span>
+                </label>
                 <select
                   name="role"
                   value={usuario.role}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md p-2"
+                  className={`w-full border ${
+                    errors.errorRole ? "border-red-500" : "border-gray-300"
+                  } rounded-md p-2`}
                 >
                   <option value="">Elige tu rol</option>
                   <option value="user">Reclutador</option>
@@ -255,14 +312,18 @@ const FormRegister = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm mb-1">E-mail*</label>
+                <label className="block text-sm mb-1">
+                  E-mail<span className="text-red-500">*</span>
+                </label>
                 <input
                   type="email"
                   name="email"
                   value={usuario.email}
                   onChange={handleChange}
                   placeholder="Ingresa tu email"
-                  className="w-full border border-gray-300 rounded-md p-2"
+                  className={`w-full border ${
+                    errors.errorEmail ? "border-red-500" : "border-gray-300"
+                  } rounded-md p-2`}
                 />
                 {errors.errorEmail && (
                   <p className="text-red-500 text-sm mt-1">
@@ -271,14 +332,18 @@ const FormRegister = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm mb-1">Contraseña*</label>
+                <label className="block text-sm mb-1">
+                  Contraseña<span className="text-red-500">*</span>
+                </label>
                 <input
                   type="password"
                   name="password"
                   value={usuario.password}
                   onChange={handleChange}
                   placeholder="Ingresa tu contraseña"
-                  className="w-full border border-gray-300 rounded-md p-2"
+                  className={`w-full border ${
+                    errors.errorPassword ? "border-red-500" : "border-gray-300"
+                  } rounded-md p-2`}
                 />
                 {errors.errorPassword && (
                   <p className="text-red-500 text-sm mt-1">
@@ -288,15 +353,19 @@ const FormRegister = () => {
               </div>
               <div>
                 <label className="block text-sm mb-1">
-                  Repetir Contraseña*
+                  Repetir Contraseña<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
                   name="confirmarPassword"
                   value={usuario.confirmarPassword}
                   onChange={handleChange}
-                  placeholder="Ingresa tu contraseña"
-                  className="w-full border border-gray-300 rounded-md p-2"
+                  placeholder="Repite tu contraseña"
+                  className={`w-full border ${
+                    errors.errorConfirmarPassword
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-md p-2`}
                 />
                 {errors.errorConfirmarPassword && (
                   <p className="text-red-500 text-sm mt-1">
@@ -324,6 +393,26 @@ const FormRegister = () => {
           </form>
         </div>
       </div>
+
+      <Modal
+        isOpen={successModal}
+        onClose={handleCloseSuccessModal}
+        tipo="success"
+        titulo="Registro exitoso"
+        mensaje={modalMessage}
+        btnPrimario="Aceptar"
+        accionPrimaria={handleCloseSuccessModal}
+      />
+
+      <Modal
+        isOpen={errorModal}
+        onClose={handleCloseErrorModal}
+        tipo="error"
+        titulo="Error de registro"
+        mensaje={modalMessage}
+        btnPrimario="Entendido"
+        accionPrimaria={handleCloseErrorModal}
+      />
     </div>
   );
 };
