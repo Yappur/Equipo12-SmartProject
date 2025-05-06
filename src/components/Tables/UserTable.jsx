@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
+import SearchBar from "./SearchBar";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
@@ -285,30 +286,11 @@ const UserTable = () => {
         </Link>
       </div>
 
-      <div className="border-8 border-[#152d53] mb-3 rounded-md">
-        <div className="flex items-center border-8 border-[#152d53]">
-          <div className="relative flex-grow">
-            <input
-              className=" py-2 pl-10 pr-4 w-full"
-              type="text"
-              placeholder="Búsqueda"
-              value={filtrarUsuarios}
-              onChange={(e) => setFiltrarUsuarios(e.target.value)}
-              disabled={loading}
-            />
-            <FaMagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          </div>
-          <div className="border-l-10 border-[#152d53]">
-            <button
-              className=" bg-[#152d53] hover:bg-[#0c1b33] text-white border-white border  py-2 px-10 flex items-center"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <IoOptions className="mr-2 h-6 w-6" />
-              Filtros
-            </button>
-          </div>
-        </div>
-      </div>
+      <SearchBar
+        value={filtrarUsuarios}
+        onChange={(e) => setFiltrarUsuarios(e)}
+        disabled={loading}
+      />
       <div>
         <p className="text-gray-500 text-sm mb-3">
           {filtrarData.length} Usuarios Encontrados

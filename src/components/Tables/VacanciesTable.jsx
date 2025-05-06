@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
+import SearchBar from "./SearchBar";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 
@@ -205,20 +206,14 @@ const VacanciesTable = () => {
           <h1 className="text-2xl font-bold text-gray-600">
             Lista de Vacantes
           </h1>
+          <SearchBar
+            value={filtrarVacantes}
+            onChange={setFiltrarVacantes}
+            disabled={loading}
+          />
           <p className="text-gray-500 text-sm">
             {vacantes.length} vacantes en total
           </p>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <input
-            className="border border-gray-400 rounded py-2 px-4"
-            type="text"
-            placeholder="Buscar por nombre o descripción"
-            value={filtrarVacantes}
-            onChange={(e) => setFiltrarVacantes(e.target.value)}
-            disabled={loading}
-          />
         </div>
       </div>
 
