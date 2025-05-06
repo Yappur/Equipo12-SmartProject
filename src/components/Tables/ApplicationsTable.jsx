@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import DataTable from "react-data-table-component";
-import Modal from "../Modal";
+import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
-import { a } from "framer-motion/client";
+import PdfModal from "../Modals/PdfModal";
 
 const customStyles = {
   headCells: {
@@ -41,6 +41,8 @@ const ApplicationsTable = () => {
   const { id } = useParams();
   const [postulaciones, setPostulaciones] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCV, setSelectedCV] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -71,6 +73,15 @@ const ApplicationsTable = () => {
     }
   };
 
+  const handleViewCV = (fileUrl) => {
+    setSelectedCV(fileUrl);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedCV(null);
+  };
   const columns = [
     {
       name: "Nombre",
@@ -133,9 +144,32 @@ const ApplicationsTable = () => {
     {
       name: "CV",
       cell: (row) => (
-        <Link to={`${row.file}`} target="_blank">
+        <button
+          onClick={() => handleViewCV(row.file)}
+          className="text-blue-600 underline hover:text-blue-800 flex items-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            />
+          </svg>
           Ver CV
-        </Link>
+        </button>
       ),
     },
   ];
@@ -163,6 +197,14 @@ const ApplicationsTable = () => {
             progressComponent={<div>Cargando datos...</div>}
           />
         </div>
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg p-4 w-11/12 h-5/6 max-w-4xl relative flex flex-col">
+              {/* Aquí usamos nuestro componente PdfViewer */}
+              <PdfModal fileUrl={selectedCV} onClose={handleCloseModal} />
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logoLogin from "@/assets/img/mujer-hero.png";
-import Modal from "../../components/Modal";
+import Modal from "../../components/Modals/Modal";
 import { usePasswordReset } from "@/hooks/usePasswordReset";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 

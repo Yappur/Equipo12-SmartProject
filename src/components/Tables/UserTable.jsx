@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
-import Modal from "../Modal";
+import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
