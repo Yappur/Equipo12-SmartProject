@@ -54,6 +54,14 @@ const RoutesViews = () => {
             }
           />
           <Route
+            path="/reclutador/crear/candidato"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
+                <FormCandidatosView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/reclutador/ver/candidatos/:id"
             element={
               <ProtectedRoute allowedRoles={["admin", "user"]}>

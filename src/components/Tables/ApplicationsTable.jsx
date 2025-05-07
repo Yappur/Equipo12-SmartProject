@@ -147,7 +147,7 @@ const ApplicationsTable = () => {
       name: "CV",
       cell: (row) => (
         <button
-          onClick={() => handleViewCV(row.file)}
+          onClick={() => handleViewCV(row.cvUrl)}
           className="text-blue-600 underline hover:text-blue-800 flex items-center"
         >
           <svg

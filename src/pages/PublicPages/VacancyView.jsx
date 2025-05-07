@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { useParams } from "react-router-dom";
-import Sidebar from "../../components/Navigate/Sidebar";
 import {
   FiUser,
   FiCheckCircle,
@@ -19,13 +18,11 @@ const VacancyView = () => {
 
   const obtenerVacante = async () => {
     try {
-      setLoading(true);
       const response = await axiosConfig.get(`/vacancies/${id}`);
       setVacante(response.data);
-      setLoading(false);
     } catch (error) {
       setError("No se pudo cargar la vacante");
-      setLoading(false);
+      console.log(error);
     }
   };
 
@@ -38,8 +35,6 @@ const VacancyView = () => {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
-
       <div className="flex-1 pt-24 p-10 max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">
           {vacante.nombre || "Desarrollador"}
@@ -50,7 +45,6 @@ const VacancyView = () => {
             <span className="pb-2 border-b-2 border-black font-medium">
               Descripción
             </span>
-            <span className="pb-2 text-gray-500">Candidatos en proceso</span>
           </nav>
         </div>
 
@@ -60,24 +54,20 @@ const VacancyView = () => {
             <section className="bg-gray-100 rounded-lg p-4">
               <h2 className="text-lg font-semibold mb-2">Resumen</h2>
               <p className="text-sm text-gray-700">
-                {vacante.resumen || "Lorem ipsum dolor sit amet consectetur..."}
+                {vacante.descripcion ||
+                  "Lorem ipsum dolor sit amet consectetur..."}
               </p>
-              <h2 className="text-lg font-semibold mb-2">Requisitos</h2>
+              <h2 className="text-lg font-semibold mb-2">Ubicacion</h2>
               <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
-                {(
-                  vacante.requisitos || [
-                    "React",
-                    "Node.js",
-                    "Trabajo en equipo",
-                  ]
-                ).map((req, i) => (
-                  <li key={i}>{req}</li>
-                ))}
+                {(vacante.ubicacion || "Buenos Aires, Argentina").map(
+                  (req, i) => (
+                    <li key={i}>{req}</li>
+                  )
+                )}
               </ul>
-              <h2 className="text-lg font-semibold mb-2">Responsabilidades</h2>
+              <h2 className="text-lg font-semibold mb-2">Modalidad</h2>
               <p className="text-sm text-gray-700">
-                {vacante.responsabilidades ||
-                  "Responsabilidades generales del puesto..."}
+                {vacante.modalidad || "Remoto"}
               </p>
             </section>
           </div>
@@ -93,7 +83,7 @@ const VacancyView = () => {
             <div className="flex items-center space-x-2">
               <FiCheckCircle />
               <span>
-                <strong>Estado:</strong> {vacante.estado || "Abierta"}
+                <strong>Estado:</strong> {vacante.status || "Abierta"}
               </span>
             </div>
             <div className="flex items-center space-x-2">
