@@ -51,7 +51,6 @@ const FormRegister = () => {
       const regex = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/;
       return regex.test(nombre.trim());
     };
-    
 
     if (!displayName || displayName.trim() === "") {
       newErrors.errorDisplayName = "Por favor, ingresa tu nombre y apellido";
@@ -61,10 +60,6 @@ const FormRegister = () => {
         "El nombre solo debe contener letras y espacios, sin números ni símbolos";
       isValid = false;
     }
-    
-
-
-
 
     if (!email || !validarEmail(email)) {
       newErrors.errorEmail = "Por favor, ingresa un email válido";
@@ -102,7 +97,9 @@ const FormRegister = () => {
 
       console.log("Datos enviados:", usuario);
 
-      setMensaje("Dirigete a la pantalla de candidatos para vizualizar los detalles del candidato o generar cambios");
+      setMensaje(
+        "Dirigete a la pantalla de candidatos para vizualizar los detalles del candidato o generar cambios"
+      );
       setUsuario({
         displayName: "",
         email: "",
@@ -110,7 +107,7 @@ const FormRegister = () => {
         confirmarPassword: "",
       });
       setTimeout(() => {
-        setMensaje("");  // Limpiar el mensaje de éxito
+        setMensaje("");
       }, 5000);
     } catch (err) {
       setErrors({
@@ -124,9 +121,8 @@ const FormRegister = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white w-full text-gray-700 flex items-center justify-center p-6">
+    <div className=" bg-white w-full text-gray-700 flex items-center justify-center p-6">
       <div className="w-full max-w-6xl bg-white rounded-md shadow-md border border-gray-200 flex flex-col lg:flex-row overflow-hidden">
-        
         {/* Perfil a la izquierda */}
         <div className="w-full lg:w-1/3 bg-gray-100 flex flex-col items-center justify-center p-10 border-r">
           <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mb-4">
@@ -147,26 +143,28 @@ const FormRegister = () => {
           <p className="text-sm font-semibold">Nombre</p>
           <p className="text-sm text-gray-500">Rol</p>
         </div>
-  
+
         {/* Formulario */}
         <div className="w-full lg:w-2/3 p-10">
           <h2 className="text-xl font-semibold mb-6 border-b pb-2">
             Crear nuevo usuario
           </h2>
-  
+
           {mensaje && (
             <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded mb-4">
-              <p className="font-semibold">¡El candidato se ha registrado correctamente!</p>
+              <p className="font-semibold">
+                ¡El candidato se ha registrado correctamente!
+              </p>
               <p className="text-sm">{mensaje}</p>
             </div>
           )}
-  
+
           {errors.serverError && (
             <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-4 text-sm">
               {errors.serverError}
             </div>
           )}
-  
+
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -180,11 +178,15 @@ const FormRegister = () => {
                   className="w-full border border-gray-300 rounded-md p-2"
                 />
                 {errors.errorDisplayName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.errorDisplayName}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.errorDisplayName}
+                  </p>
                 )}
               </div>
               <div>
-                <label className="block text-sm mb-1">Número de Teléfono*</label>
+                <label className="block text-sm mb-1">
+                  Número de Teléfono*
+                </label>
                 <input
                   type="text"
                   name="telefono"
@@ -216,7 +218,9 @@ const FormRegister = () => {
                   className="w-full border border-gray-300 rounded-md p-2"
                 />
                 {errors.errorEmail && (
-                  <p className="text-red-500 text-sm mt-1">{errors.errorEmail}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.errorEmail}
+                  </p>
                 )}
               </div>
               <div>
@@ -230,11 +234,15 @@ const FormRegister = () => {
                   className="w-full border border-gray-300 rounded-md p-2"
                 />
                 {errors.errorPassword && (
-                  <p className="text-red-500 text-sm mt-1">{errors.errorPassword}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.errorPassword}
+                  </p>
                 )}
               </div>
               <div>
-                <label className="block text-sm mb-1">Repetir Contraseña*</label>
+                <label className="block text-sm mb-1">
+                  Repetir Contraseña*
+                </label>
                 <input
                   type="password"
                   name="confirmarPassword"
@@ -244,11 +252,13 @@ const FormRegister = () => {
                   className="w-full border border-gray-300 rounded-md p-2"
                 />
                 {errors.errorConfirmarPassword && (
-                  <p className="text-red-500 text-sm mt-1">{errors.errorConfirmarPassword}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.errorConfirmarPassword}
+                  </p>
                 )}
               </div>
             </div>
-  
+
             <div className="flex justify-end gap-4 mt-8">
               <button
                 type="button"
@@ -269,7 +279,6 @@ const FormRegister = () => {
       </div>
     </div>
   );
-  
 };
 
 export default FormRegister;

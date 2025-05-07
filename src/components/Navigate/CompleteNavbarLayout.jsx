@@ -7,9 +7,9 @@ export default function CompleteNavbarLayout() {
     <div className="flex min-h-screen">
       <Sidebar />
 
-      <div className="flex flex-col flex-1 ml-64">
+      <div className="flex flex-col flex-1 w-full ml-0 md:ml-64">
         <AdminNavbar />
-        <main className="p-6">
+        <main className="p-4 md:p-6">
           <Outlet />
         </main>
       </div>

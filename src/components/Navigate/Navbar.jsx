@@ -21,9 +21,9 @@ export default function AdminNavbar() {
   }, []);
 
   return (
-    <header className="w-full bg-white shadow-sm border-b pl-4 py-6 flex justify-between items-center sticky top-0">
-      <h2 className="text-sm sm:text-base text-sky-800 font-semibold">
-        Panel {role === "admin" ? "de Administración" : "de Recursos Humanos"}
+    <header className="w-full bg-white shadow-sm border-b border-gray-200 pl-4 py-6 flex justify-between items-center sticky top-0">
+      <h2 className="text-sm sm:text-base text-sky-800 font-semibold md:pl-3 sm:pl-12">
+        Panel {role === "admin" ? "Super Administrador" : "de Recursos Humanos"}
       </h2>
 
       <div
