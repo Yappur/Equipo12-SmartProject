@@ -168,7 +168,6 @@ const FormRegister = () => {
       showSuccessMessage(
         "El usuario se ha registrado correctamente. Dirígete a la pantalla de candidatos para visualizar los detalles del candidato o generar cambios"
       );
-
       setUsuario({
         displayName: "",
         email: "",
@@ -177,6 +176,7 @@ const FormRegister = () => {
         phoneNumber: "",
         role: "user",
       });
+
     } catch (err) {
       console.error("Error completo:", err);
 
@@ -204,7 +204,7 @@ const FormRegister = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white w-full text-gray-700 flex items-center justify-center p-6">
+    <div className=" bg-white w-full text-gray-700 flex items-center justify-center p-6">
       <div className="w-full max-w-6xl bg-white rounded-md shadow-md border border-gray-200 flex flex-col lg:flex-row overflow-hidden">
         {/* Perfil a la izquierda */}
         <div className="w-full lg:w-1/3 bg-gray-100 flex flex-col items-center justify-center p-10 border-r">
@@ -232,6 +232,7 @@ const FormRegister = () => {
           <h2 className="text-xl font-semibold mb-6 border-b pb-2">
             Crear nuevo usuario
           </h2>
+
 
           {errors.serverError && (
             <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-4 text-sm">
@@ -265,6 +266,7 @@ const FormRegister = () => {
               </div>
               <div>
                 <label className="block text-sm mb-1">
+
                   Número de Teléfono<span className="text-red-500">*</span>
                 </label>
                 <input

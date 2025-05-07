@@ -10,7 +10,6 @@ const LandingNavbar = () => {
 
   return (
     <nav className="bg-[#00598A] shadow-md px-6 py-4 flex justify-between items-center sticky top-0 z-50 font-poppins">
-      {/* Logo */}
       <h1
         className="text-white font-bold text-2xl tracking-wide cursor-pointer"
         onClick={() => navigate("/")}

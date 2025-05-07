@@ -1,0 +1,232 @@
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import DataTable from "react-data-table-component";
+import Modal from "../Modals/Modal";
+import axiosConfig from "../../helpers/axios.config";
+import PdfModal from "../Modals/PdfModal";
+import SearchBar from "./SearchBar";
+
+const customStyles = {
+  headCells: {
+    style: {
+      backgroundColor: "#f8fafc",
+      color: "#152D53",
+      fontWeight: "bold",
+      fontSize: "14px",
+      borderBottom: "1px solid #e2e8f0",
+      paddingLeft: "16px",
+      paddingRight: "16px",
+    },
+  },
+  rows: {
+    style: {
+      fontSize: "14px",
+      minHeight: "56px",
+      borderBottom: "1px solid #f1f5f9",
+      "&:hover": {
+        backgroundColor: "#f8fafc",
+      },
+      paddingLeft: "16px",
+      paddingRight: "16px",
+    },
+  },
+  pagination: {
+    style: {
+      backgroundColor: "#ffffff",
+      borderTop: "1px solid #e2e8f0",
+    },
+  },
+};
+
+const ApplicationsTable = () => {
+  const { id } = useParams();
+  const [postulaciones, setPostulaciones] = useState([]);
+  const [filtrarPostulaciones, setFiltrarPostulaciones] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [selectedCV, setSelectedCV] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      obtenerPostulaciones(id);
+    }
+  }, [id]);
+
+  const obtenerPostulaciones = async (vacancyId) => {
+    try {
+      setLoading(true);
+      const response = await axiosConfig.get("/applications", {
+        params: { vacancyId },
+      });
+      setPostulaciones(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error al obtener postulaciones:", error);
+      setLoading(false);
+    }
+  };
+
+  const actualizarEstado = async (id, status, vacancyId) => {
+    try {
+      await axiosConfig.patch(`/applications/${id}/status`, { status });
+      obtenerPostulaciones(vacancyId);
+    } catch (error) {
+      console.error("Error al actualizar el estado:", error);
+    }
+  };
+
+  const handleViewCV = (fileUrl) => {
+    setSelectedCV(fileUrl);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedCV(null);
+  };
+  const columns = [
+    {
+      name: "Nombre",
+      selector: (row) => row.fullName,
+      sortable: true,
+    },
+    {
+      name: "Correo",
+      selector: (row) => row.email,
+      sortable: true,
+    },
+    {
+      name: "Telefono",
+      selector: (row) => row.phone,
+      sortable: true,
+    },
+    {
+      name: "Habilidades",
+      selector: (row) => row.skills,
+      sortable: true,
+    },
+    {
+      name: "Estado",
+      cell: (row) => {
+        const estados = [
+          "Recibido",
+          "En revisión",
+          "Entrevista",
+          "Finalista",
+          "Descartado",
+        ];
+
+        let colorClass = "bg-gray-200 text-gray-800";
+        if (row.status === "Finalista")
+          colorClass = "bg-green-200 text-green-800";
+        if (row.status === "Recibido" || row.status === "En revisión")
+          colorClass = "bg-yellow-200 text-yellow-800";
+        if (row.status === "Entrevista")
+          colorClass = "bg-blue-200 text-blue-800";
+        if (row.status === "Descartado") colorClass = "bg-red-200 text-red-800";
+
+        return (
+          <div className="flex flex-col">
+            <select
+              value={row.status}
+              onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
+              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}  `}
+            >
+              {estados.map((estado) => (
+                <option key={estado} value={estado}>
+                  {estado}
+                </option>
+              ))}
+            </select>
+          </div>
+        );
+      },
+      sortable: false,
+    },
+    {
+      name: "CV",
+      cell: (row) => (
+        <button
+          onClick={() => handleViewCV(row.file)}
+          className="text-blue-600 underline hover:text-blue-800 flex items-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            />
+          </svg>
+          Ver CV
+        </button>
+      ),
+    },
+  ];
+
+  const filtrarData = postulaciones.filter((postulacion) => {
+    const searchTerm = filtrarPostulaciones.toLowerCase();
+    const nombre = (postulacion.fullName || "").toLowerCase();
+    const correo = (postulacion.email || "").toLowerCase();
+    const telefono = (postulacion.phone || "").toLowerCase();
+    const habilidades = (postulacion.skills || "").toLowerCase();
+    return (
+      nombre.includes(searchTerm) ||
+      correo.includes(searchTerm) ||
+      telefono.includes(searchTerm) ||
+      habilidades.includes(searchTerm)
+    );
+  });
+
+  return (
+    <>
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold ">
+            Lista de Postulaciones de la Vacante
+          </h1>
+        </div>
+        <SearchBar
+          value={filtrarPostulaciones}
+          onChange={setFiltrarPostulaciones}
+          disabled={loading}
+        />
+        <div>
+          <p>Cantidad de postulados: {postulaciones.length}</p>
+        </div>
+        <DataTable
+          columns={columns}
+          data={filtrarData}
+          pagination
+          highlightOnHover
+          customStyles={customStyles}
+          noDataComponent="No hay postulantes disponibles"
+          progressPending={loading}
+          progressComponent={<div>Cargando datos...</div>}
+        />
+
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg p-4 w-11/12 h-5/6 max-w-4xl relative flex flex-col">
+              <PdfModal fileUrl={selectedCV} onClose={handleCloseModal} />
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default ApplicationsTable;

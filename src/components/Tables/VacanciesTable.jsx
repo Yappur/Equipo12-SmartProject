@@ -1,28 +1,39 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
+import SearchBar from "./SearchBar";
+import Modal from "../Modals/Modal";
+import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 
 const customStyles = {
   headCells: {
     style: {
-      backgroundColor: "#f97316",
-      color: "white",
+      backgroundColor: "#f8fafc",
+      color: "#152D53",
       fontWeight: "bold",
-      fontSize: "16px",
+      fontSize: "14px",
+      borderBottom: "1px solid #e2e8f0",
+      paddingLeft: "16px",
+      paddingRight: "16px",
     },
   },
   rows: {
     style: {
       fontSize: "14px",
-      minHeight: "48px",
+      minHeight: "56px",
+      borderBottom: "1px solid #f1f5f9",
       "&:hover": {
-        backgroundColor: "#fef3c7",
+        backgroundColor: "#f8fafc",
       },
+      paddingLeft: "16px",
+      paddingRight: "16px",
     },
   },
   pagination: {
     style: {
-      backgroundColor: "#f1f5f9",
+      backgroundColor: "#ffffff",
+      borderTop: "1px solid #e2e8f0",
     },
   },
 };
@@ -39,7 +50,11 @@ const VacanciesTable = () => {
   const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshCounter, setRefreshCounter] = useState(0); // Contador para forzar actualizaciones
+
+  const [selectedVacancy, setSelectedVacancy] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [successModal, setSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const obtenerVacantes = async () => {
     try {
@@ -58,31 +73,28 @@ const VacanciesTable = () => {
 
   useEffect(() => {
     obtenerVacantes();
-  }, [refreshCounter]);
+  }, []);
 
-  const refreshVacantes = () => {
-    setRefreshCounter((prev) => prev + 1);
+  const openDeleteModal = (vacancy) => {
+    setSelectedVacancy(vacancy);
+    setDeleteModal(true);
+  };
+
+  const showSuccessMessage = (message) => {
+    setSuccessMessage(message);
+    setSuccessModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (!id) {
-      alert("ID de vacante no válido");
-      return;
-    }
-
-    const confirm = window.confirm(
-      "¿Estás seguro de que querés eliminar la vacante?"
-    );
-
-    if (!confirm) return;
-
     try {
-      setLoading(true);
       const response = await axiosConfig.delete(`/vacancies/${id}`);
-      refreshVacantes();
-      alert("Vacante eliminada con éxito");
+      obtenerVacantes();
+      setDeleteModal(false);
+      showSuccessMessage(
+        `La Vacante ${selectedVacancy.nombre} ha sido eliminada correctamente`
+      );
     } catch (error) {
-      alert(`Error al eliminar: ${error.message}`);
+      console.error("Error al eliminar la vacante:", error);
       setLoading(false);
     }
   };
@@ -90,7 +102,17 @@ const VacanciesTable = () => {
   const columns = [
     {
       name: "Titulo",
-      selector: (row) => row.nombre || "Sin título",
+      cell: (row) => (
+        <div className="group relative">
+          <a
+            href={`/reclutador/ver/candidatos/${row.id}`}
+            className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
+            title={`Ver dashboard de ${row.nombre || "Sin título"}`}
+          >
+            {row.nombre || "Sin título"}
+          </a>
+        </div>
+      ),
       sortable: true,
     },
     {
@@ -170,15 +192,14 @@ const VacanciesTable = () => {
       sortable: false,
     },
     {
-      name: "Acciones",
+      name: "Eliminar",
       cell: (row) => (
-        <div className="flex space-x-2">
-          <button
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => handleDelete(row.id || row._id)}
-          >
-            Eliminar
-          </button>
+        <div className="flex gap-2 transform hover:scale-135 transition-all duration-400 cursor-pointer">
+          <FaRegTrashAlt
+            size={28}
+            onClick={() => openDeleteModal(row)}
+            className="text-gray-600 hover:text-red-500 transition-colors duration-600"
+          />
         </div>
       ),
     },
@@ -194,82 +215,82 @@ const VacanciesTable = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Lista de Vacantes</h1>
+          <Link
+            to={"/crear/vacante"}
+            className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
+          >
+            <FaPlus className="mr-2" /> Crear Vacante
+          </Link>
+        </div>
+        <SearchBar
+          value={filtrarVacantes}
+          onChange={setFiltrarVacantes}
+          disabled={loading}
+        />
         <div>
-          <h1 className="text-2xl font-bold text-gray-600">
-            Lista de Vacantes
-          </h1>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-sm mb-3">
             {vacantes.length} vacantes en total
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <input
-            className="border border-gray-400 rounded py-2 px-4"
-            type="text"
-            placeholder="Buscar por nombre o descripción"
-            value={filtrarVacantes}
-            onChange={(e) => setFiltrarVacantes(e.target.value)}
-            disabled={loading}
-          />
-
-          <button
-            onClick={refreshVacantes}
-            className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center"
-            disabled={loading}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+            <button
+              onClick={refreshVacantes}
+              className="ml-4 bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded text-sm"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-            Actualizar
-          </button>
-        </div>
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {loading ? (
+          <Loader />
+        ) : (
+          <div className="bg-white rounded-lg shadow">
+            <DataTable
+              columns={columns}
+              data={filtrarData}
+              pagination
+              highlightOnHover
+              pointerOnHover
+              customStyles={customStyles}
+              noDataComponent={
+                <div className="p-6 text-center text-gray-500">
+                  No hay vacantes disponibles
+                </div>
+              }
+              progressPending={loading}
+            />
+          </div>
+        )}
       </div>
+      <Modal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        tipo="delete"
+        titulo="Eliminar Vacante"
+        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${
+          selectedVacancy?.nombre || ""
+        }? Esta acción no se puede deshacer.`}
+        btnPrimario="Sí, eliminar"
+        btnSecundario="Cancelar"
+        accionPrimaria={() => handleDelete(selectedVacancy.id)}
+      />
 
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-          <button
-            onClick={refreshVacantes}
-            className="ml-4 bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded text-sm"
-          >
-            Reintentar
-          </button>
-        </div>
-      )}
-
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="bg-white rounded-lg shadow">
-          <DataTable
-            columns={columns}
-            data={filtrarData}
-            pagination
-            highlightOnHover
-            pointerOnHover
-            customStyles={customStyles}
-            noDataComponent={
-              <div className="p-6 text-center text-gray-500">
-                No hay vacantes disponibles
-              </div>
-            }
-            progressPending={loading}
-          />
-        </div>
-      )}
+      <Modal
+        isOpen={successModal}
+        onClose={() => setSuccessModal(false)}
+        tipo="success"
+        titulo="La vacante ha sido eliminada correctamente"
+        mensaje={successMessage}
+        btnPrimario="Aceptar"
+        accionPrimaria={() => setSuccessModal(false)}
+      />
     </>
   );
 };

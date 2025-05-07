@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import logoLogin from "@/assets/img/mujer-hero.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
-import Modal from "../../components/Modal";
+import Modal from "../../components/Modals/Modal";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 

@@ -13,22 +13,30 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const token = localStorage.getItem("authToken");
+        const token =
+          localStorage.getItem("authToken") ||
+          sessionStorage.getItem("authToken");
 
         if (token) {
-          // Verificar el token con el backend
           const { data } = await axiosConfig.post("/auth/verify-token", {
             idToken: token,
           });
           // Si el token es válido, establecer estados
           setIsAuthenticated(true);
           setRole(data.role);
+          setNombre(data.displayName || data.email || "Usuario");
+        } else {
+          setIsAuthenticated(false);
+          setRole(null);
+          setNombre(null);
         }
       } catch (error) {
         console.error("Error al verificar token:", error);
         localStorage.removeItem("authToken");
+        sessionStorage.removeItem("authToken");
         setIsAuthenticated(false);
         setRole(null);
+        setNombre(null);
       } finally {
         setLoading(false);
       }
@@ -39,7 +47,15 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, role, setRole, nombre, setNombre, loading }}
+      value={{
+        isAuthenticated,
+        setIsAuthenticated,
+        role,
+        setRole,
+        nombre,
+        setNombre,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

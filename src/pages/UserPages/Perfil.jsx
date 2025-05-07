@@ -102,32 +102,103 @@ const Perfil = () => {
         } finally {
             setLoading(false);
         }
+
+        const uid = user.uid;
+        const response = await axiosConfig.get(`/users/${uid}`);
+        setUserData(response.data);
+
+        setValue("nombre", response.data.displayName || "");
+        setValue("email", response.data.email || "");
+        setValue(
+          "telefono",
+          response.data.phoneNumber !== "No disponible"
+            ? response.data.phoneNumber
+            : ""
+        );
+        setValue("rol", response.data.role || "");
+      } catch (err) {
+        console.error("Error al obtener datos del usuario:", err);
+        setError(
+          "Error al cargar los datos del usuario. Asegúrate de haber iniciado sesión correctamente."
+        );
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const onSubmitSeguridad = async (data) => {
-        try {
-            setLoading(true);
+    fetchUserData();
+  }, [setValue]);
 
-            const auth = getAuth();
-            const user = auth.currentUser;
+  const onSubmitPerfil = async (data) => {
+    try {
+      setLoading(true);
 
-            if (!user) {
-                throw new Error("Usuario no autenticado");
-            }
+      const auth = getAuth();
+      const user = auth.currentUser;
 
-            const uid = user.uid;
+      if (!user) {
+        throw new Error("Usuario no autenticado");
+      }
+
+      const uid = user.uid;
+
+      const updateData = {
+        displayName: data.nombre,
+      };
+
+      if (data.telefono) {
+        updateData.phoneNumber = data.telefono;
+      }
+
+      await axiosConfig.put(`/users/${uid}`, updateData);
+      alert("Perfil actualizado correctamente");
+
+      setUserData((prevData) => ({
+        ...prevData,
+        displayName: data.nombre,
+        phoneNumber: data.telefono || prevData.phoneNumber,
+      }));
+    } catch (err) {
+      console.error("Error al actualizar el perfil:", err);
+      setError(
+        "Error al actualizar el perfil. Verifica que hayas iniciado sesión."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSubmitSeguridad = async (data) => {
+    try {
+      setLoading(true);
+
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+        throw new Error("Usuario no autenticado");
+      }
+
 
             await axiosConfig.patch(`/users/${uid}/password`, {
                 password: data.passwordNueva
             });
 
-            alert("Contraseña actualizada correctamente");
+      await axiosConfig.patch(`/users/${uid}/password`, {
+        oldPassword: data.passwordActual,
+        newPassword: data.passwordNueva,
+      });
+
 
             document.getElementById("passwordNueva").value = "";
             document.getElementById("passwordConfirmacion").value = "";
 
-        } catch (err) {
-            console.error("Error al cambiar la contraseña:", err);
+      document.getElementById("passwordActual").value = "";
+      document.getElementById("passwordNueva").value = "";
+      document.getElementById("passwordConfirmacion").value = "";
+    } catch (err) {
+      console.error("Error al cambiar la contraseña:", err);
+
 
             if (err.response && err.response.data && err.response.data.message) {
                 setError(`Error: ${err.response.data.message}`);
@@ -146,19 +217,131 @@ const Perfil = () => {
                 <span className="ml-2">Cargando...</span>
             </div>
         );
+      }
+    } finally {
+      setLoading(false);
     }
+  };
 
+  if (loading && !userData) {
     return (
-        <div className="pt-16 flex flex-col items-center justify-center w-full min-h-[100vh] px-4 sm:px-6 py-8 sm:py-12">
-            {error && (
-                <div className="w-full max-w-4xl mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-                    {error}
-                </div>
-            )}
+      <div className="pt-16 flex items-center justify-center h-screen">
+        <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+        <span className="ml-2">Cargando...</span>
+      </div>
+    );
+  }
 
-            <section className="flex flex-col items-center justify-center mb-8 w-full">
-                <div className="mb-4">
-                    <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
+  return (
+    <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12">
+      {error && (
+        <div className="w-full max-w-4xl mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+          {error}
+        </div>
+      )}
+
+      <section className="flex flex-col items-center justify-center mb-8 w-full">
+        <div className="mb-4">
+          <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+          {userData?.displayName || "Nombre y apellido"}
+        </h2>
+        <p className="text-lg text-gray-600">
+          {userData?.role === "admin" ? "Super Admin" : "Reclutador"}
+        </p>
+      </section>
+
+      <section className="w-full max-w-4xl bg-white rounded-lg shadow-md overflow-hidden">
+        <article className="flex border-b border-gray-200">
+          <button
+            onClick={() => setActiveTab("perfil")}
+            className={`flex-1 py-4 px-6 text-center font-medium text-lg transition-colors duration-200 focus:outline-none
+                            ${
+                              activeTab === "perfil"
+                                ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
+                                : "text-gray-600 hover:bg-gray-50"
+                            }`}
+          >
+            Mi perfil
+          </button>
+          <button
+            onClick={() => setActiveTab("seguridad")}
+            className={`flex-1 py-4 px-6 text-center font-medium text-lg transition-colors duration-200 focus:outline-none
+                            ${
+                              activeTab === "seguridad"
+                                ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
+                                : "text-gray-600 hover:bg-gray-50"
+                            }`}
+          >
+            Seguridad
+          </button>
+        </article>
+
+        {activeTab === "perfil" && (
+          <article className="p-6">
+            <form
+              onSubmit={handleSubmitPerfil(onSubmitPerfil)}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="nombre"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Nombre y apellido
+                  </label>
+                  <input
+                    type="text"
+                    id="nombre"
+                    {...registerPerfil("nombre", {
+                      required: "El nombre y apellido es obligatorio",
+                      minLength: {
+                        value: 4,
+                        message: "El nombre debe tener al menos 4 caracteres",
+                      },
+                    })}
+                    className={`border ${
+                      errorsPerfil.nombre ? "border-red-500" : "border-gray-300"
+                    } rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                    placeholder="Escribe tu nombre y apellido"
+                  />
+                  {errorsPerfil.nombre && (
+                    <span className="text-red-500 text-xs mt-1">
+                      {errorsPerfil.nombre.message}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="telefono"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Número de teléfono
+                  </label>
+                  <input
+                    type="tel"
+                    id="telefono"
+                    {...registerPerfil("telefono", {
+                      pattern: {
+                        value: /^[0-9]{10}$/,
+                        message: "Ingrese un número válido de 10 dígitos",
+                      },
+                    })}
+                    className={`border ${
+                      errorsPerfil.telefono
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                    placeholder="Escribe tu número de teléfono"
+                  />
+                  {errorsPerfil.telefono && (
+                    <span className="text-red-500 text-xs mt-1">
+                      {errorsPerfil.telefono.message}
+                    </span>
+                  )}
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
                     {userData?.displayName}
@@ -330,6 +513,7 @@ const Perfil = () => {
             </section>
         </div>
     );
+
 };
 
 export default Perfil;
