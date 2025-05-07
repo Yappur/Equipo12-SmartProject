@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import SearchBar from "./SearchBar";
+import Modal from "../Modals/Modal";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 
 const customStyles = {
   headCells: {
@@ -50,6 +51,11 @@ const VacanciesTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [selectedVacancy, setSelectedVacancy] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [successModal, setSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
   const obtenerVacantes = async () => {
     try {
       setLoading(true);
@@ -69,25 +75,26 @@ const VacanciesTable = () => {
     obtenerVacantes();
   }, []);
 
+  const openDeleteModal = (vacancy) => {
+    setSelectedVacancy(vacancy);
+    setDeleteModal(true);
+  };
+
+  const showSuccessMessage = (message) => {
+    setSuccessMessage(message);
+    setSuccessModal(true);
+  };
+
   const handleDelete = async (id) => {
-    if (!id) {
-      alert("ID de vacante no válido");
-      return;
-    }
-
-    const confirm = window.confirm(
-      "¿Estás seguro de que querés eliminar la vacante?"
-    );
-
-    if (!confirm) return;
-
     try {
-      setLoading(true);
       const response = await axiosConfig.delete(`/vacancies/${id}`);
-      refreshVacantes();
-      alert("Vacante eliminada con éxito");
+      obtenerVacantes();
+      setDeleteModal(false);
+      showSuccessMessage(
+        `La Vacante ${selectedVacancy.nombre} ha sido eliminada correctamente`
+      );
     } catch (error) {
-      alert(`Error al eliminar: ${error.message}`);
+      console.error("Error al eliminar la vacante:", error);
       setLoading(false);
     }
   };
@@ -185,15 +192,14 @@ const VacanciesTable = () => {
       sortable: false,
     },
     {
-      name: "Acciones",
+      name: "Eliminar",
       cell: (row) => (
-        <div className="flex space-x-2">
-          <button
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => handleDelete(row.id || row._id)}
-          >
-            Eliminar
-          </button>
+        <div className="flex gap-2 transform hover:scale-135 transition-all duration-400 cursor-pointer">
+          <FaRegTrashAlt
+            size={28}
+            onClick={() => openDeleteModal(row)}
+            className="text-gray-600 hover:text-red-500 transition-colors duration-600"
+          />
         </div>
       ),
     },
@@ -263,6 +269,28 @@ const VacanciesTable = () => {
           </div>
         )}
       </div>
+      <Modal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        tipo="delete"
+        titulo="Eliminar Vacante"
+        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${
+          selectedVacancy?.nombre || ""
+        }? Esta acción no se puede deshacer.`}
+        btnPrimario="Sí, eliminar"
+        btnSecundario="Cancelar"
+        accionPrimaria={() => handleDelete(selectedVacancy.id)}
+      />
+
+      <Modal
+        isOpen={successModal}
+        onClose={() => setSuccessModal(false)}
+        tipo="success"
+        titulo="La vacante ha sido eliminada correctamente"
+        mensaje={successMessage}
+        btnPrimario="Aceptar"
+        accionPrimaria={() => setSuccessModal(false)}
+      />
     </>
   );
 };

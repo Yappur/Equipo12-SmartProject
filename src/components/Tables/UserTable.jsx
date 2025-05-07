@@ -5,8 +5,6 @@ import Modal from "../Modals/Modal";
 import SearchBar from "./SearchBar";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import { IoOptions } from "react-icons/io5";
 
 const customStyles = {
   headCells: {
@@ -367,7 +365,7 @@ const UserTable = () => {
         isOpen={successModal}
         onClose={() => setSuccessModal(false)}
         tipo="success"
-        titulo="Operación Exitosa"
+        titulo="El cambio se realizo con exito"
         mensaje={successMessage}
         btnPrimario="Aceptar"
         accionPrimaria={() => setSuccessModal(false)}

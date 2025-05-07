@@ -4,7 +4,7 @@ import VacanciesTable from "../../components/Tables/VacanciesTable";
 const VacanciesDashboard = () => {
   return (
     <>
-      <div className="flex min-h-screen">
+      <div className="">
         <VacanciesTable />
       </div>
     </>

@@ -5,7 +5,7 @@ import Sidebar from "../../components/Navigate/Sidebar";
 const UsersDashboard = () => {
   return (
     <>
-      <div className="flex min-h-screen">
+      <div className="">
         <UserTable />
       </div>
     </>
