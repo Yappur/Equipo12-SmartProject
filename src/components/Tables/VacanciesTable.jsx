@@ -3,28 +3,36 @@ import DataTable from "react-data-table-component";
 import SearchBar from "./SearchBar";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
+import { FaPlus } from "react-icons/fa";
 
 const customStyles = {
   headCells: {
     style: {
-      backgroundColor: "#f97316",
-      color: "white",
+      backgroundColor: "#f8fafc",
+      color: "#152D53",
       fontWeight: "bold",
-      fontSize: "16px",
+      fontSize: "14px",
+      borderBottom: "1px solid #e2e8f0",
+      paddingLeft: "16px",
+      paddingRight: "16px",
     },
   },
   rows: {
     style: {
       fontSize: "14px",
-      minHeight: "48px",
+      minHeight: "56px",
+      borderBottom: "1px solid #f1f5f9",
       "&:hover": {
-        backgroundColor: "#fef3c7",
+        backgroundColor: "#f8fafc",
       },
+      paddingLeft: "16px",
+      paddingRight: "16px",
     },
   },
   pagination: {
     style: {
-      backgroundColor: "#f1f5f9",
+      backgroundColor: "#ffffff",
+      borderTop: "1px solid #e2e8f0",
     },
   },
 };
@@ -201,54 +209,60 @@ const VacanciesTable = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Lista de Vacantes</h1>
+          <Link
+            to={"/crear/vacante"}
+            className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
+          >
+            <FaPlus className="mr-2" /> Crear Vacante
+          </Link>
+        </div>
+        <SearchBar
+          value={filtrarVacantes}
+          onChange={setFiltrarVacantes}
+          disabled={loading}
+        />
         <div>
-          <h1 className="text-2xl font-bold text-gray-600">
-            Lista de Vacantes
-          </h1>
-          <SearchBar
-            value={filtrarVacantes}
-            onChange={setFiltrarVacantes}
-            disabled={loading}
-          />
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-sm mb-3">
             {vacantes.length} vacantes en total
           </p>
         </div>
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+            <button
+              onClick={refreshVacantes}
+              className="ml-4 bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded text-sm"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {loading ? (
+          <Loader />
+        ) : (
+          <div className="bg-white rounded-lg shadow">
+            <DataTable
+              columns={columns}
+              data={filtrarData}
+              pagination
+              highlightOnHover
+              pointerOnHover
+              customStyles={customStyles}
+              noDataComponent={
+                <div className="p-6 text-center text-gray-500">
+                  No hay vacantes disponibles
+                </div>
+              }
+              progressPending={loading}
+            />
+          </div>
+        )}
       </div>
-
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-          <button
-            onClick={refreshVacantes}
-            className="ml-4 bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded text-sm"
-          >
-            Reintentar
-          </button>
-        </div>
-      )}
-
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="bg-white rounded-lg shadow">
-          <DataTable
-            columns={columns}
-            data={filtrarData}
-            pagination
-            highlightOnHover
-            pointerOnHover
-            customStyles={customStyles}
-            noDataComponent={
-              <div className="p-6 text-center text-gray-500">
-                No hay vacantes disponibles
-              </div>
-            }
-            progressPending={loading}
-          />
-        </div>
-      )}
     </>
   );
 };

@@ -16,7 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import RecruiterView from "../pages/RecruiterPages/RecruiterView";
 import CandidatosView from "../pages/RecruiterPages/CandidatosView";
 import RecoverAccount from "../pages/Auth/RecoverAccount";
-import ApplicationsTable from "../components/Tables/ApplicationsTable";
+import CandidatosDashboard from "../pages/RecruiterPages/CandidatosDashboard";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -54,7 +54,7 @@ const RoutesViews = () => {
           path="/reclutador/ver/candidatos/:id"
           element={
             <ProtectedRoute allowedRoles={["admin", "user"]}>
-              <ApplicationsTable />
+              <CandidatosDashboard />
             </ProtectedRoute>
           }
         />

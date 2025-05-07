@@ -4,6 +4,7 @@ import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import PdfModal from "../Modals/PdfModal";
+import SearchBar from "./SearchBar";
 
 const customStyles = {
   headCells: {
@@ -40,6 +41,7 @@ const customStyles = {
 const ApplicationsTable = () => {
   const { id } = useParams();
   const [postulaciones, setPostulaciones] = useState([]);
+  const [filtrarPostulaciones, setFiltrarPostulaciones] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedCV, setSelectedCV] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -174,33 +176,50 @@ const ApplicationsTable = () => {
     },
   ];
 
+  const filtrarData = postulaciones.filter((postulacion) => {
+    const searchTerm = filtrarPostulaciones.toLowerCase();
+    const nombre = (postulacion.fullName || "").toLowerCase();
+    const correo = (postulacion.email || "").toLowerCase();
+    const telefono = (postulacion.phone || "").toLowerCase();
+    const habilidades = (postulacion.skills || "").toLowerCase();
+    return (
+      nombre.includes(searchTerm) ||
+      correo.includes(searchTerm) ||
+      telefono.includes(searchTerm) ||
+      habilidades.includes(searchTerm)
+    );
+  });
+
   return (
     <>
-      <div className="bg-white p-6 rounded-lg shadow-sm mx-50 my-30 ">
-        <div className="flex  items-center mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-600">
-              Lista de Postulaciones de la Vacante
-            </h1>
-            <p>Cantidad de postulados: {postulaciones.length}</p>
-          </div>
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold ">
+            Lista de Postulaciones de la Vacante
+          </h1>
         </div>
-        <div className="">
-          <DataTable
-            columns={columns}
-            data={postulaciones}
-            pagination
-            highlightOnHover
-            customStyles={customStyles}
-            noDataComponent="No hay postulantes disponibles"
-            progressPending={loading}
-            progressComponent={<div>Cargando datos...</div>}
-          />
+        <SearchBar
+          value={filtrarPostulaciones}
+          onChange={setFiltrarPostulaciones}
+          disabled={loading}
+        />
+        <div>
+          <p>Cantidad de postulados: {postulaciones.length}</p>
         </div>
+        <DataTable
+          columns={columns}
+          data={filtrarData}
+          pagination
+          highlightOnHover
+          customStyles={customStyles}
+          noDataComponent="No hay postulantes disponibles"
+          progressPending={loading}
+          progressComponent={<div>Cargando datos...</div>}
+        />
+
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
             <div className="bg-white rounded-lg p-4 w-11/12 h-5/6 max-w-4xl relative flex flex-col">
-              {/* Aquí usamos nuestro componente PdfViewer */}
               <PdfModal fileUrl={selectedCV} onClose={handleCloseModal} />
             </div>
           </div>
