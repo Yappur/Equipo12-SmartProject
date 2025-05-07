@@ -49,12 +49,19 @@ const VacanciesTable = () => {
   const [filtrarVacantes, setFiltrarVacantes] = useState("");
   const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
+  const [updateError, setUpdateError] = useState(null);
 
   const [selectedVacancy, setSelectedVacancy] = useState(null);
   const [deleteModal, setDeleteModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [changePrioridadModal, setChangePrioridadModal] = useState(false);
+  const [changeStatusModal, setChangeStatusModal] = useState(false);
+
+  const [tempFieldValue, setTempFieldValue] = useState("");
+  const [tempFieldName, setTempFieldName] = useState("");
 
   const obtenerVacantes = async () => {
     try {
@@ -75,9 +82,27 @@ const VacanciesTable = () => {
     obtenerVacantes();
   }, []);
 
+  const refreshVacantes = () => {
+    obtenerVacantes();
+  };
+
   const openDeleteModal = (vacancy) => {
     setSelectedVacancy(vacancy);
     setDeleteModal(true);
+  };
+
+  const openChangeStatusModal = (vacancy, newStatus) => {
+    setSelectedVacancy(vacancy);
+    setTempFieldName("estado");
+    setTempFieldValue(newStatus);
+    setChangeStatusModal(true);
+  };
+
+  const openChangePrioridadModal = (vacancy, newPrioridad) => {
+    setSelectedVacancy(vacancy);
+    setTempFieldName("prioridad");
+    setTempFieldValue(newPrioridad);
+    setChangePrioridadModal(true);
   };
 
   const showSuccessMessage = (message) => {
@@ -96,6 +121,50 @@ const VacanciesTable = () => {
     } catch (error) {
       console.error("Error al eliminar la vacante:", error);
       setLoading(false);
+    }
+  };
+
+  const actualizarParametro = async () => {
+    if (!selectedVacancy || !tempFieldName || tempFieldValue === undefined) {
+      return;
+    }
+
+    setUpdating(true);
+    setError(null);
+
+    try {
+      const datosActualizados = {
+        [tempFieldName]: tempFieldValue,
+      };
+
+      await axiosConfig.patch(
+        `/vacancies/${selectedVacancy.id}`,
+        datosActualizados
+      );
+
+      setVacantes(
+        vacantes.map((vacante) =>
+          vacante.id === selectedVacancy.id
+            ? { ...vacante, [tempFieldName]: tempFieldValue }
+            : vacante
+        )
+      );
+
+      if (tempFieldName === "prioridad") {
+        setChangePrioridadModal(false);
+      } else if (tempFieldName === "estado") {
+        setChangeStatusModal(false);
+      }
+
+      showSuccessMessage(
+        `El campo ${tempFieldName} ha sido actualizado correctamente`
+      );
+    } catch (error) {
+      console.error("Error al actualizar el campo:", error);
+      setUpdateError(`Error al actualizar el campo: ${error.message}`);
+      obtenerVacantes();
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -125,7 +194,6 @@ const VacanciesTable = () => {
       selector: (row) => row.modalidad || "No especificado",
       sortable: true,
     },
-
     {
       name: "Estado",
       cell: (row) => {
@@ -149,8 +217,8 @@ const VacanciesTable = () => {
           <div className="flex flex-col">
             <select
               value={row.estado}
-              // onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
-              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}  `}
+              onChange={(e) => openChangeStatusModal(row, e.target.value)}
+              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
             >
               {estados.map((estado) => (
                 <option key={estado} value={estado}>
@@ -179,8 +247,8 @@ const VacanciesTable = () => {
           <div className="flex flex-col">
             <select
               value={row.prioridad}
-              // onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
-              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}  `}
+              onChange={(e) => openChangePrioridadModal(row, e.target.value)}
+              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
             >
               {prioridades.map((prioridade) => (
                 <option key={prioridade} value={prioridade}>
@@ -296,6 +364,7 @@ const VacanciesTable = () => {
           </div>
         )}
       </div>
+
       <Modal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}
@@ -310,10 +379,36 @@ const VacanciesTable = () => {
       />
 
       <Modal
+        isOpen={changePrioridadModal}
+        onClose={() => setChangePrioridadModal(false)}
+        tipo="confirm"
+        titulo="Cambiar Prioridad de Vacante"
+        mensaje={`¿Estás seguro de cambiar la prioridad de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
+        btnPrimario="Confirmar Cambio"
+        btnSecundario="Cancelar"
+        accionPrimaria={actualizarParametro}
+      />
+
+      <Modal
+        isOpen={changeStatusModal}
+        onClose={() => setChangeStatusModal(false)}
+        tipo="confirm"
+        titulo="Cambiar Estado de Vacante"
+        mensaje={`¿Estás seguro de cambiar el estado de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
+        btnPrimario="Confirmar Cambio"
+        btnSecundario="Cancelar"
+        accionPrimaria={actualizarParametro}
+      />
+
+      <Modal
         isOpen={successModal}
         onClose={() => setSuccessModal(false)}
         tipo="success"
-        titulo="La vacante ha sido eliminada correctamente"
+        titulo="Operación exitosa"
         mensaje={successMessage}
         btnPrimario="Aceptar"
         accionPrimaria={() => setSuccessModal(false)}
