@@ -15,7 +15,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../context/AuthContext";
 import RecruiterView from "../pages/RecruiterPages/RecruiterView";
 import CandidatosView from "../pages/RecruiterPages/CandidatosView";
+import FormCandidatosView from "../pages/RecruiterPages/FormCandidatosView";
 import RecoverAccount from "../pages/Auth/RecoverAccount";
+import CandidatosDashboard from "../pages/RecruiterPages/CandidatosDashboard";
+import CompleteNavbarLayout from "../components/Navigate/CompleteNavbarLayout";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -33,73 +36,83 @@ const RoutesViews = () => {
         <Route path="/recuperar/cuenta" element={<RecoverAccount />} />
 
         {/* Rutas de Reclutadores */}
-        <Route
-          path="/reclutador"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "user"]}>
-              <RecruiterView />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/reclutador/candidatos"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "user"]}>
-              <CandidatosView />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/crear/vacante"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "user"]}>
-              <CreateVacancies />
-            </ProtectedRoute>
-          }
-        />
+        <Route element={<CompleteNavbarLayout logout={logout} />}>
+          <Route
+            path="/reclutador"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
+                <RecruiterView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reclutador/candidatos"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
+                <CandidatosView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reclutador/ver/candidatos/:id"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
+                <CandidatosDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/crear/vacante"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
+                <CreateVacancies />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/perfil"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "user"]}>
-              <Perfil />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
+                <Perfil />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Rutas de Administracion */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminView />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/panelUsuarios"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <UsersDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/panelVacantes"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <VacanciesDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/crear/usuario"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <UserRegister />
-            </ProtectedRoute>
-          }
-        />
+          {/* Rutas de Administracion */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/panelUsuarios"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <UsersDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/panelVacantes"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <VacanciesDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/crear/usuario"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <UserRegister />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
 
         {/* Ruta 404 */}
         <Route path="*" element={<App404 />} />
