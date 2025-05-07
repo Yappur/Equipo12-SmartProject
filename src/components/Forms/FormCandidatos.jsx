@@ -1,45 +1,107 @@
-export default function NuevoCandidato() {
+import { useEffect, useState } from "react";
+import axiosConfig from "../../helpers/axios.config";
+import { useParams } from "react-router-dom";
+
+const FormCandidatos = ({ onClose, vacancyId }) => {
+  const [candidatos, setCandidatos] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    cvUrl: "",
+    skills: ["", ""],
+    status: "Recibido",
+  });
+  const [cargando, setCargando] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCandidato({
+      ...candidato,
+      [name]: value,
+    });
+  };
+
+  const handleSkillChange = (index, value) => {
+    const updatedSkills = [...candidato.skills];
+    updatedSkills[index] = value;
+    setCandidato({
+      ...candidato,
+      skills: updatedSkills,
+    });
+  };
+
+  const newSkill = () => {
+    setCandidato({
+      ...candidato,
+      skills: [...candidato.skills, ""],
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setCargando(true);
+    try {
+      const filtredSkills = candidato.skills.filter((apt) => apt !== "");
+
+      const response = await axiosConfig.post("/applications", {
+        fullName: candidato.fullName,
+        email: candidato.email,
+        phone: candidato.phone,
+        cvUrl: candidato.cvUrl,
+        skills: filtredSkills,
+        status: candidato.status,
+        vacancyId: vacancyId,
+      });
+
+      alert("Candidato creado exitosamente");
+      onClose();
+    } catch (error) {
+      console.error(error);
+      alert("Error al crear el candidato");
+    } finally {
+      setCargando(false);
+    }
+  };
   return (
-    <div className="w-full p-6">
-      {/* TÍTULO PRINCIPAL */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-black">Candidatos</h2>
-      </div>
-
-      {/* CONTENEDOR DEL FORMULARIO */}
-      <h2 className="text-2xl font-semibold text-black">Candidatos</h2>
-      <div className="border border-gray-400 rounded bg-white p-6 shadow-sm w-full max-w-5xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-4">Nuevo candidato</h2>
-
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="w-full p-4">
+      <div className="bg-white w-full">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
           <div>
-            <label className="block text-sm font-medium mb-1">Nombre y apellido*</label>
+            <label className="block text-sm font-medium mb-1">
+              Nombre y apellido*
+            </label>
             <input
               type="text"
+              name="fullName"
+              value={candidato.fullName}
+              onChange={handleChange}
               className="w-full border border-gray-400 bg-gray-100 rounded p-2"
               placeholder="Nombre completo"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Candidato a*</label>
-            <input
-              type="text"
-              className="w-full border border-gray-400 bg-gray-100 rounded p-2"
-              placeholder="Posición"
+              required
             />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Mail*</label>
             <input
               type="email"
+              name="email"
+              value={candidato.email}
+              onChange={handleChange}
               className="w-full border border-gray-400 bg-gray-100 rounded p-2"
               placeholder="email@ejemplo.com"
+              required
             />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Teléfono*</label>
             <input
               type="tel"
+              name="phone"
+              value={candidato.phone}
+              onChange={handleChange}
               className="w-full border border-gray-400 bg-gray-100 rounded p-2"
               placeholder="+123456789"
             />
@@ -57,22 +119,23 @@ export default function NuevoCandidato() {
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-2">Aptitudes</label>
             <div className="flex flex-wrap gap-2">
-              <input
-                type="text"
-                className="flex-1 border border-gray-400 bg-gray-100 rounded p-2"
-                placeholder="Palabra clave"
-              />
-              <input
-                type="text"
-                className="flex-1 border border-gray-400 bg-gray-100 rounded p-2"
-                placeholder="Palabra clave"
-              />
+              {candidato.skills.map((skills, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  value={skills}
+                  onChange={(e) => handleSkillChange(index, e.target.value)}
+                  className="flex-1 border border-gray-400 bg-gray-100 rounded p-2"
+                  placeholder="Palabra clave"
+                />
+              ))}
             </div>
           </div>
 
           <div className="col-span-2">
             <button
               type="button"
+              onClick={newSkill}
               className="border border-gray-400 bg-white rounded px-4 py-2 text-sm"
             >
               + Agregar aptitud
@@ -82,19 +145,23 @@ export default function NuevoCandidato() {
           <div className="col-span-2 flex justify-end gap-2 mt-6">
             <button
               type="button"
+              onClick={onClose}
               className="px-4 py-2 border border-gray-400 rounded bg-white text-black"
             >
               Cancelar
             </button>
             <button
               type="submit"
+              disabled={cargando}
               className="px-4 py-2 rounded bg-blue-900 text-white"
             >
-              Guardar
+              {cargando ? "Cargando..." : "Guardar"}
             </button>
           </div>
         </form>
       </div>
     </div>
   );
-}
+};
+
+export default FormCandidatos;
