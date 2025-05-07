@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosConfig from "../../helpers/axios.config";
-import Modal from "../Modal";
+import Modal from "../Modals/Modal";
 
 const FormRegister = () => {
   const [usuario, setUsuario] = useState({
@@ -176,7 +176,6 @@ const FormRegister = () => {
         phoneNumber: "",
         role: "user",
       });
-
     } catch (err) {
       console.error("Error completo:", err);
 
@@ -233,7 +232,6 @@ const FormRegister = () => {
             Crear nuevo usuario
           </h2>
 
-
           {errors.serverError && (
             <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-4 text-sm">
               {errors.serverError}
@@ -266,7 +264,6 @@ const FormRegister = () => {
               </div>
               <div>
                 <label className="block text-sm mb-1">
-
                   Número de Teléfono<span className="text-red-500">*</span>
                 </label>
                 <input
