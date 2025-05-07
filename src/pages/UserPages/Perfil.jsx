@@ -46,6 +46,7 @@ const Perfil = () => {
                 setLoading(true);
                 const auth = getAuth();
                 const user = auth.currentUser;
+                console.log("🚀 ~ fetchUserData ~ user:", user)
 
                 if (!user) {
                     throw new Error("Usuario no autenticado");
@@ -57,7 +58,7 @@ const Perfil = () => {
 
                 setValue("nombre", response.data.displayName || "");
                 setValue("email", response.data.email || "");
-                setValue("telefono", response.data.phoneNumber !== "No disponible" ? response.data.phoneNumber : "");
+                setValue("telefono", response.data.phoneNumber || "");
                 setValue("rol", response.data.role || "");
 
             } catch (err) {
@@ -168,10 +169,10 @@ const Perfil = () => {
                     <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-                    {userData?.displayName || "Nombre y apellido"}
+                    {userData.displayName}
                 </h2>
                 <p className="text-lg text-gray-600">
-                    {userData?.role === "admin" ? "Super Admin" : "Reclutador"}
+                    {userData.role}
                 </p>
             </section>
 
