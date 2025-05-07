@@ -19,7 +19,6 @@ const Perfil = () => {
         defaultValues: {
             nombre: "",
             telefono: "",
-            fechadenacimiento: "",
             email: "",
             rol: ""
         }
@@ -32,7 +31,6 @@ const Perfil = () => {
         formState: { errors: errorsSeguridad }
     } = useForm({
         defaultValues: {
-            passwordActual: "",
             passwordNueva: "",
             passwordConfirmacion: ""
         }
@@ -46,7 +44,6 @@ const Perfil = () => {
                 setLoading(true);
                 const auth = getAuth();
                 const user = auth.currentUser;
-                console.log("🚀 ~ fetchUserData ~ user:", user)
 
                 if (!user) {
                     throw new Error("Usuario no autenticado");
@@ -85,15 +82,12 @@ const Perfil = () => {
 
             const uid = user.uid;
 
-            const updateData = {
-                displayName: data.nombre
-            };
-
-            if (data.telefono) {
-                updateData.phoneNumber = data.telefono;
-            }
-
-            await axiosConfig.put(`/users/${uid}`, updateData);
+            await axiosConfig.patch(`/users/${uid}`, {
+                email: data.email,
+                nombre: data.nombre,
+                telefono: data.telefono || ""
+            });
+            
             alert("Perfil actualizado correctamente");
 
             setUserData(prevData => ({
@@ -124,13 +118,11 @@ const Perfil = () => {
             const uid = user.uid;
 
             await axiosConfig.patch(`/users/${uid}/password`, {
-                oldPassword: data.passwordActual,
-                newPassword: data.passwordNueva
+                password: data.passwordNueva
             });
 
             alert("Contraseña actualizada correctamente");
 
-            document.getElementById("passwordActual").value = "";
             document.getElementById("passwordNueva").value = "";
             document.getElementById("passwordConfirmacion").value = "";
 
@@ -140,7 +132,7 @@ const Perfil = () => {
             if (err.response && err.response.data && err.response.data.message) {
                 setError(`Error: ${err.response.data.message}`);
             } else {
-                setError("Error al cambiar la contraseña. Verifica que la contraseña actual sea correcta.");
+                setError("Error al cambiar la contraseña.");
             }
         } finally {
             setLoading(false);
@@ -169,10 +161,10 @@ const Perfil = () => {
                     <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-                    {userData.displayName}
+                    {userData?.displayName}
                 </h2>
                 <p className="text-lg text-gray-600">
-                    {userData.role}
+                    {userData?.role === "admin" ? "Super Admin" : "Reclutador"}
                 </p>
             </section>
 
@@ -210,7 +202,7 @@ const Perfil = () => {
                                                 message: "El nombre debe tener al menos 4 caracteres"
                                             }
                                         })}
-                                        className={`border ${errorsPerfil.nombre ? 'border-red-500' : 'border-gray-300'} rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                                        className={`border ${errorsPerfil.nombre ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
                                         placeholder="Escribe tu nombre y apellido"
                                     />
                                     {errorsPerfil.nombre && <span className="text-red-500 text-xs mt-1">{errorsPerfil.nombre.message}</span>}
@@ -227,7 +219,7 @@ const Perfil = () => {
                                                 message: "Ingrese un número válido de 10 dígitos"
                                             }
                                         })}
-                                        className={`border ${errorsPerfil.telefono ? 'border-red-500' : 'border-gray-300'} rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                                        className={`border ${errorsPerfil.telefono ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
                                         placeholder="Escribe tu número de teléfono"
                                     />
                                     {errorsPerfil.telefono && <span className="text-red-500 text-xs mt-1">{errorsPerfil.telefono.message}</span>}
@@ -283,24 +275,6 @@ const Perfil = () => {
                         <form onSubmit={handleSubmitSeguridad(onSubmitSeguridad)} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                                 <div className="flex flex-col gap-1">
-                                    <label htmlFor="passwordActual" className="text-sm font-medium text-gray-700">Contraseña actual</label>
-                                    <input
-                                        type="password"
-                                        id="passwordActual"
-                                        {...registerSeguridad("passwordActual", {
-                                            required: "La contraseña actual es obligatoria",
-                                            minLength: {
-                                                value: 6,
-                                                message: "La contraseña debe tener al menos 6 caracteres"
-                                            }
-                                        })}
-                                        className={`border ${errorsSeguridad.passwordActual ? 'border-red-500' : 'border-gray-300'} rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                                        placeholder="Ingresa tu contraseña actual"
-                                    />
-                                    {errorsSeguridad.passwordActual && <span className="text-red-500 text-xs mt-1">{errorsSeguridad.passwordActual.message}</span>}
-                                </div>
-
-                                <div className="flex flex-col gap-1">
                                     <label htmlFor="passwordNueva" className="text-sm font-medium text-gray-700">Nueva contraseña</label>
                                     <input
                                         type="password"
@@ -308,15 +282,11 @@ const Perfil = () => {
                                         {...registerSeguridad("passwordNueva", {
                                             required: "La nueva contraseña es obligatoria",
                                             minLength: {
-                                                value: 8,
-                                                message: "La contraseña debe tener al menos 8 caracteres"
-                                            },
-                                            pattern: {
-                                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-                                                message: "La contraseña debe incluir mayúsculas, minúsculas y números"
+                                                value: 5,
+                                                message: "La contraseña debe tener al menos 5 caracteres"
                                             }
                                         })}
-                                        className={`border ${errorsSeguridad.passwordNueva ? 'border-red-500' : 'border-gray-300'} rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                                        className={`border ${errorsSeguridad.passwordNueva ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
                                         placeholder="Crea una nueva contraseña"
                                     />
                                     {errorsSeguridad.passwordNueva && <span className="text-red-500 text-xs mt-1">{errorsSeguridad.passwordNueva.message}</span>}
@@ -331,7 +301,7 @@ const Perfil = () => {
                                             required: "Debes confirmar la contraseña",
                                             validate: value => value === watchNuevaPassword || "Las contraseñas no coinciden"
                                         })}
-                                        className={`border ${errorsSeguridad.passwordConfirmacion ? 'border-red-500' : 'border-gray-300'} rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                                        className={`border ${errorsSeguridad.passwordConfirmacion ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
                                         placeholder="Confirma tu nueva contraseña"
                                     />
                                     {errorsSeguridad.passwordConfirmacion && <span className="text-red-500 text-xs mt-1">{errorsSeguridad.passwordConfirmacion.message}</span>}
