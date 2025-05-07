@@ -105,10 +105,7 @@ const CreateVacancies = () => {
 
   return (
     <>
-      {" "}
       <div className="">
-        <Sidebar />
-
         <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 mx-auto my-8">
           <h1 className="text-2xl font-bold text-gray-600 mb-4">Vacantes</h1>
 

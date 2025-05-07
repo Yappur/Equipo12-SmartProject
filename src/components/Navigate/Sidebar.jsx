@@ -23,7 +23,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Botón hamburguesa */}
       <button
         className="md:hidden fixed top-4 left-4 z-50 bg-[#00254B] text-white p-2 rounded-md shadow"
         onClick={() => setMenuOpen(!menuOpen)}
@@ -81,7 +80,7 @@ const Sidebar = () => {
 
       {/* Sidebar fijo en pantallas grandes */}
       <aside className="hidden md:fixed md:flex flex-col w-64 bg-[#00254B] text-white shadow-lg p-6 h-screen top-0 left-0 z-30">
-      <div className="mb-8">
+        <div className="mb-8">
           <h2 className="text-xl font-bold">Talent Match</h2>
         </div>
 

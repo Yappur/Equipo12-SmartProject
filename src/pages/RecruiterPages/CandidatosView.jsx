@@ -1,22 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Sidebar from "../../components/Navigate/Sidebar";
 import { HiOutlineUser } from "react-icons/hi";
-//import Nav from "../../components/Nav";
-//import Footer from "../../components/Footer";
 import { FaUser } from "react-icons/fa6";
 
 const CandidatosView = () => {
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar a la izquierda */}
-      <Sidebar />
-
-      {/* Contenido principal */}
       <div className="flex flex-col w-full">
-        {/* Nav arriba */}
-
-        {/* Contenido de la página */}
         <main className="flex-grow p-6 flex flex-col items-center justify-center gap-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-center mt-6">
             Gestión de Candidatos
