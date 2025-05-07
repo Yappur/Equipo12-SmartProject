@@ -1,20 +1,11 @@
 import React from "react";
-import FormCandidatos from "../../components/forms/FormCandidatos";
-import Sidebar from "../../components/Navigate/Sidebar";
+import FormCandidatos from "@/components/Forms/FormCandidatos";
 const FormCandidatosView = () => {
-    return (
-      <section className="pt-16 min-h-screen flex">
-        <div className="flex ">
-      {/* Sidebar fijo a la izquierda */}
-      <Sidebar />
-      </div>
-  
-        <main className="flex-grow flex items-center justify-center bg-white">
-          <FormCandidatos />
-        </main>
-      </section>
-    );
-  };
-  
-  export default FormCandidatosView;
-  
+  return (
+    <main className="flex-grow flex items-center justify-center bg-white">
+      <FormCandidatos />
+    </main>
+  );
+};
+
+export default FormCandidatosView;
