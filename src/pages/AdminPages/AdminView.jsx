@@ -23,7 +23,7 @@ const AdminView = () => {
 
         <section className="flex flex-col sm:flex-row gap-6 sm:gap-12 md:gap-16 lg:gap-28 text-gray-500">
           <Link
-            to="/admin/crear/usuario"
+            to="/Home/About"
             className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl transition-all hover:bg-slate-50 duration-300 transform hover:scale-[1.02]"
           >
             <div>

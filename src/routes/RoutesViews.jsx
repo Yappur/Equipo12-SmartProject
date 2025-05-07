@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { useLoginFirebase } from "../hooks/useLoginFirebase";
 import HomePage from "../pages/HomePage";
+import AboutPage from "../pages/AboutPage";
 import LoginPage from "../pages/Auth/LoginPage";
 import App404 from "../pages/App404";
 import UserRegister from "../pages/Auth/UserRegister";
@@ -34,6 +35,14 @@ const RoutesViews = () => {
         <Route path="/recuperar/cuenta" element={<RecoverAccount />} />
 
         {/* Rutas de Reclutadores */}
+        <Route
+          path="/Home/About"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "user"]}>
+              <AboutPage/>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/reclutador"
           element={
