@@ -116,55 +116,82 @@ const VacanciesTable = () => {
       sortable: true,
     },
     {
-      name: "Descripcion",
-      selector: (row) => {
-        const desc = row.descripcion || "Sin descripción";
-        return desc.length > 50 ? `${desc.substring(0, 50)}...` : desc;
-      },
-      sortable: true,
-    },
-    {
-      name: "Fecha",
-      selector: (row) => {
-        try {
-          return new Date(row.fecha).toLocaleDateString("es-AR");
-        } catch {
-          return row.fecha || "Fecha inválida";
-        }
-      },
-      sortable: true,
-    },
-    {
-      name: "Sector",
-      selector: (row) => row.sector || "No especificado",
+      name: "Ubicación",
+      selector: (row) => row.ubicacion || "No especificado",
       sortable: true,
     },
     {
       name: "Modalidad",
-      selector: (row) => row.sector || "No especificado",
+      selector: (row) => row.modalidad || "No especificado",
       sortable: true,
     },
+
     {
       name: "Estado",
       cell: (row) => {
-        const estado = row.estado || "desconocido";
-        let colorClass = "bg-gray-200 text-gray-800";
+        const estados = [
+          "activo",
+          "pausado",
+          "borrador",
+          "terminado",
+          "cancelado",
+        ];
 
-        if (estado === "activo") colorClass = "bg-green-200 text-green-800";
-        if (estado === "pausado") colorClass = "bg-yellow-200 text-yellow-800";
-        if (estado === "borrador") colorClass = "bg-blue-200 text-blue-800";
-        if (estado === "terminado" || estado === "cancelado")
+        let colorClass = "bg-gray-200 text-gray-800";
+        if (row.estado === "activo") colorClass = "bg-green-200 text-green-800";
+        if (row.estado === "pausado")
+          colorClass = "bg-yellow-200 text-yellow-800";
+        if (row.estado === "borrador") colorClass = "bg-blue-200 text-blue-800";
+        if (row.estado === "terminado" || row.estado === "cancelado")
           colorClass = "bg-red-200 text-red-800";
 
         return (
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}
-          >
-            {estado.charAt(0).toUpperCase() + estado.slice(1)}
-          </span>
+          <div className="flex flex-col">
+            <select
+              value={row.estado}
+              // onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
+              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}  `}
+            >
+              {estados.map((estado) => (
+                <option key={estado} value={estado}>
+                  {estado}
+                </option>
+              ))}
+            </select>
+          </div>
         );
       },
       sortable: true,
+    },
+    {
+      name: "Prioridad",
+      cell: (row) => {
+        const prioridades = ["baja", "media", "alta"];
+
+        let colorClass = "bg-gray-200 text-gray-800";
+        if (row.prioridad === "baja")
+          colorClass = "bg-green-200 text-green-800";
+        if (row.prioridad === "media")
+          colorClass = "bg-yellow-200 text-yellow-800";
+        if (row.prioridad === "alta") colorClass = "bg-red-200 text-red-800";
+
+        return (
+          <div className="flex flex-col">
+            <select
+              value={row.prioridad}
+              // onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
+              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}  `}
+            >
+              {prioridades.map((prioridade) => (
+                <option key={prioridade} value={prioridade}>
+                  {prioridade}
+                </option>
+              ))}
+            </select>
+          </div>
+        );
+      },
+      sortable: false,
     },
     {
       name: "Imagen",
