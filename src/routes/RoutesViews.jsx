@@ -15,6 +15,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../context/AuthContext";
 import RecruiterView from "../pages/RecruiterPages/RecruiterView";
 import CandidatosView from "../pages/RecruiterPages/CandidatosView";
+import FormCandidatosView from "../pages/RecruiterPages/FormCandidatosView";
 import RecoverAccount from "../pages/Auth/RecoverAccount";
 import CandidatosDashboard from "../pages/RecruiterPages/CandidatosDashboard";
 import CompleteNavbarLayout from "../components/Navigate/CompleteNavbarLayout";
