@@ -38,7 +38,7 @@ const LandingNavbar = () => {
           ) : (
             <>
               <Link
-                to={"/about"}
+                to={"/About"}
                 className="text-sm text-gray-800 border border-gray-800 rounded-full px-10 py-1.5 hover:bg-gray-300"
               >
                 Quiénes somos
