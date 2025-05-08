@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import { useLoginFirebase } from "../hooks/useLoginFirebase";
-import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/Auth/LoginPage";
 import App404 from "../pages/App404";
 import UserRegister from "../pages/Auth/UserRegister";
@@ -19,6 +18,7 @@ import FormCandidatosView from "../pages/RecruiterPages/FormCandidatosView";
 import RecoverAccount from "../pages/Auth/RecoverAccount";
 import CandidatosDashboard from "../pages/RecruiterPages/CandidatosDashboard";
 import CompleteNavbarLayout from "../components/Navigate/CompleteNavbarLayout";
+import LandingView from "../pages/PublicPages/LandingView";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -29,7 +29,7 @@ const RoutesViews = () => {
       <Routes>
         {/* Rutas Públicas */}
 
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<LandingView />} />
         <Route path="/galeria/vacantes" element={<VacanciesGallery />} />
         <Route path="/ver/vacante/:id" element={<VacancyView />} />
         <Route path="/login" element={<LoginPage login={login} />} />
@@ -50,6 +50,14 @@ const RoutesViews = () => {
             element={
               <ProtectedRoute allowedRoles={["admin", "user"]}>
                 <CandidatosView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reclutador/crear/candidato"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
+                <FormCandidatosView />
               </ProtectedRoute>
             }
           />
