@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import PropTypes from "prop-types";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const PdfModal = ({ cvUrl, onClose }) => {
   const [numPages, setNumPages] = useState(null);
@@ -15,7 +15,6 @@ const PdfModal = ({ cvUrl, onClose }) => {
   const [pdfUrl, setPdfUrl] = useState("");
 
   useEffect(() => {
-    // Convertir la URL a absoluta si es necesario
     const fullUrl = cvUrl.startsWith("/")
       ? `${window.location.origin}${cvUrl}`
       : cvUrl;

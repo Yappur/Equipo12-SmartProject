@@ -75,8 +75,8 @@ const ApplicationsTable = () => {
     }
   };
 
-  const handleViewCV = (fileUrl) => {
-    setSelectedCV(fileUrl);
+  const handleViewCV = (cvUrl) => {
+    setSelectedCV(cvUrl);
     setShowModal(true);
   };
 
@@ -181,7 +181,8 @@ const ApplicationsTable = () => {
     const nombre = (postulacion.fullName || "").toLowerCase();
     const correo = (postulacion.email || "").toLowerCase();
     const telefono = (postulacion.phone || "").toLowerCase();
-    const habilidades = (postulacion.skills || "").toLowerCase();
+    const habilidades = (postulacion.skills || []).join(" ").toLowerCase();
+
     return (
       nombre.includes(searchTerm) ||
       correo.includes(searchTerm) ||
@@ -218,11 +219,14 @@ const ApplicationsTable = () => {
         />
 
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg p-4 w-11/12 h-5/6 max-w-4xl relative flex flex-col">
-              <PdfModal fileUrl={selectedCV} onClose={handleCloseModal} />
+          <>
+            <div className="fixed inset-0 z-40 bg-black/50"></div>
+            <div className="fixed inset-0 flex justify-center items-center z-50">
+              <div className="bg-white rounded-lg p-4 w-11/12 h-5/6 max-w-4xl relative flex flex-col">
+                <PdfModal cvUrl={selectedCV} onClose={handleCloseModal} />
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </>
