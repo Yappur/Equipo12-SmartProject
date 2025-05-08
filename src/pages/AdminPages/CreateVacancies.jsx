@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
-import { uploadImage } from "../../firebase/uploadImage";
+import { uploadImage } from "../../firebase/Upload/uploadImage";
 import { CirclePlus } from "lucide-react";
 
 const CreateVacancies = () => {

@@ -9,8 +9,9 @@ import {
   FiBriefcase,
   FiCalendar,
   FiClipboard,
+  FiUserPlus,
 } from "react-icons/fi";
-import FormRegister from "../../components/Forms/FormRegister";
+import FormCandidatos from "../../components/Forms/FormCandidatos";
 
 const VacancyView = () => {
   const [vacante, setVacante] = useState({});
@@ -51,9 +52,18 @@ const VacancyView = () => {
       <LandingNavbar />
       <div className="flex min-h-screen">
         <div className="flex-1 pt-24 p-10 max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">
-            {vacante.nombre || "Desarrollador"}
-          </h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">
+              {vacante.nombre || "Desarrollador"}
+            </h1>
+            <button
+              onClick={handleOpenModal}
+              className="flex items-center bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 transition-colors"
+            >
+              <FiUserPlus className="mr-2" />
+              Nuevo Candidato
+            </button>
+          </div>
 
           <div className="border-b border-gray-300 mb-4">
             <nav className="flex space-x-6">
@@ -126,38 +136,39 @@ const VacancyView = () => {
           </div>
         </div>
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="w-full max-w-6xl max-h-[90vh] overflow-y-auto">
-              <div className="relative bg-white rounded-lg shadow-xl">
-                <div className="flex justify-between items-center p-4 border-b">
-                  <h2 className="text-xl font-semibold">
-                    Postularme a la vacante
-                  </h2>
-                  <button
-                    onClick={handleCloseModal}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+          <>
+            <div className="fixed inset-0 z-40 bg-black/50"></div>
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+                <div className="relative bg-white rounded-lg shadow-xl">
+                  <div className="flex justify-between items-center p-4 border-b">
+                    <h2 className="text-xl font-semibold">Postularme</h2>
+                    <button
+                      onClick={handleCloseModal}
+                      className="text-gray-500 hover:text-gray-700"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <div>
-                  <FormRegister onClose={handleCloseModal} />
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <div>
+                    <FormCandidatos onClose={handleCloseModal} vacancyId={id} />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </>

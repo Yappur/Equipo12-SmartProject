@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { useParams } from "react-router-dom";
+import { uploadCV } from "../../firebase/Upload/uploadPDF";
 
 const FormCandidatos = ({ onClose, vacancyId }) => {
-  const [candidatos, setCandidatos] = useState({
+  const [candidato, setCandidato] = useState({
     fullName: "",
     email: "",
     phone: "",
+    birthDate: "",
     cvUrl: "",
     skills: ["", ""],
     status: "Recibido",
@@ -19,6 +21,17 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
       ...candidato,
       [name]: value,
     });
+  };
+
+  const handleFileUpload = async (file) => {
+    if (!file) return;
+
+    try {
+      const downloadURL = await uploadCV(file);
+      setCandidato((prev) => ({ ...prev, cvUrl: downloadURL }));
+    } catch (error) {
+      console.error("Error subiendo CV:", error);
+    }
   };
 
   const handleSkillChange = (index, value) => {
@@ -39,6 +52,11 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!candidato.birthDate || candidato.birthDate.trim() === "") {
+      alert("Por favor completá la fecha de nacimiento.");
+      return;
+    }
     setCargando(true);
     try {
       const filtredSkills = candidato.skills.filter((apt) => apt !== "");
@@ -47,6 +65,7 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
         fullName: candidato.fullName,
         email: candidato.email,
         phone: candidato.phone,
+        birthDate: candidato.birthDate,
         cvUrl: candidato.cvUrl,
         skills: filtredSkills,
         status: candidato.status,
@@ -96,6 +115,19 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
             />
           </div>
           <div>
+            <label className="block text-sm font-medium mb-1">
+              Fecha de nacimiento*
+            </label>
+            <input
+              type="date"
+              name="birthDate"
+              value={candidato.birthDate}
+              onChange={handleChange}
+              className="w-full border border-gray-400 bg-gray-100 rounded p-2"
+              required
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium mb-1">Teléfono*</label>
             <input
               type="tel"
@@ -104,18 +136,21 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
               onChange={handleChange}
               className="w-full border border-gray-400 bg-gray-100 rounded p-2"
               placeholder="+123456789"
+              required
             />
           </div>
 
           <div className="col-span-2">
-            <button
-              type="button"
-              className="border border-gray-400 bg-white rounded px-4 py-2 text-sm"
-            >
-              + Importar CV
-            </button>
+            <label className="block text-sm font-medium mb-1">
+              Importar CV (PDF)*
+            </label>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={(e) => handleFileUpload(e.target.files[0])}
+              className="w-full border border-gray-400 bg-gray-100 rounded p-2"
+            />
           </div>
-
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-2">Aptitudes</label>
             <div className="flex flex-wrap gap-2">
