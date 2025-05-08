@@ -303,8 +303,6 @@ export default function LandingView() {
                         </div>
                     </div>
                 </section>
-
-                <DemoSection />
             </main>
             <Footer />
         </div>
