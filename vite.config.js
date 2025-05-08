@@ -8,16 +8,24 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
+  optimizeDeps: {
+    include: ["react-pdf"],
+  },
+  build: {
+    commonjsOptions: {
+      include: [/react-pdf/, /node_modules/],
     },
   },
   server: {
     proxy: {
-      '/auth': {
-        target: 'https://backend-foo-talent.onrender.com',
+      "/auth": {
+        target: "https://backend-foo-talent.onrender.com",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/auth/, '/auth'),
+        rewrite: (path) => path.replace(/^\/auth/, "/auth"),
       },
     },
   },

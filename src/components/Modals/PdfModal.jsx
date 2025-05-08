@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import PropTypes from "prop-types";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-const PdfModal = ({ fileUrl, onClose }) => {
+const PdfModal = ({ cvUrl, onClose }) => {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [zoomLevel, setZoomLevel] = useState(1.0);
@@ -15,15 +15,14 @@ const PdfModal = ({ fileUrl, onClose }) => {
   const [pdfUrl, setPdfUrl] = useState("");
 
   useEffect(() => {
-    // Convertir la URL a absoluta si es necesario
-    const fullUrl = fileUrl.startsWith("/")
-      ? `${window.location.origin}${fileUrl}`
-      : fileUrl;
+    const fullUrl = cvUrl.startsWith("/")
+      ? `${window.location.origin}${cvUrl}`
+      : cvUrl;
 
     setPdfUrl(fullUrl);
     setLoading(true);
     setPdfError(null);
-  }, [fileUrl]);
+  }, [cvUrl]);
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
@@ -296,7 +295,7 @@ const PdfModal = ({ fileUrl, onClose }) => {
 };
 
 PdfModal.propTypes = {
-  fileUrl: PropTypes.string.isRequired,
+  cvUrl: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 

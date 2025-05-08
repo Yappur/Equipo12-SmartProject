@@ -1,10 +1,12 @@
 import React from "react";
+import LandingNavbar from "../components/Navigate/LandingNavbar";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 
 const App404 = () => {
   return (
     <div>
+      <LandingNavbar />
       <div className="flex flex-col items-center justify-center min-h-screen ">
         <h1 className="text-4xl font-bold uppercase">Error 404 </h1>
         <span>Página no encontrada :( {""}</span>

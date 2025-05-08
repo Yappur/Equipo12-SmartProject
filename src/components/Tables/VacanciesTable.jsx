@@ -49,12 +49,19 @@ const VacanciesTable = () => {
   const [filtrarVacantes, setFiltrarVacantes] = useState("");
   const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
+  const [updateError, setUpdateError] = useState(null);
 
   const [selectedVacancy, setSelectedVacancy] = useState(null);
   const [deleteModal, setDeleteModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [changePrioridadModal, setChangePrioridadModal] = useState(false);
+  const [changeStatusModal, setChangeStatusModal] = useState(false);
+
+  const [tempFieldValue, setTempFieldValue] = useState("");
+  const [tempFieldName, setTempFieldName] = useState("");
 
   const obtenerVacantes = async () => {
     try {
@@ -75,9 +82,27 @@ const VacanciesTable = () => {
     obtenerVacantes();
   }, []);
 
+  const refreshVacantes = () => {
+    obtenerVacantes();
+  };
+
   const openDeleteModal = (vacancy) => {
     setSelectedVacancy(vacancy);
     setDeleteModal(true);
+  };
+
+  const openChangeStatusModal = (vacancy, newStatus) => {
+    setSelectedVacancy(vacancy);
+    setTempFieldName("estado");
+    setTempFieldValue(newStatus);
+    setChangeStatusModal(true);
+  };
+
+  const openChangePrioridadModal = (vacancy, newPrioridad) => {
+    setSelectedVacancy(vacancy);
+    setTempFieldName("prioridad");
+    setTempFieldValue(newPrioridad);
+    setChangePrioridadModal(true);
   };
 
   const showSuccessMessage = (message) => {
@@ -99,6 +124,50 @@ const VacanciesTable = () => {
     }
   };
 
+  const actualizarParametro = async () => {
+    if (!selectedVacancy || !tempFieldName || tempFieldValue === undefined) {
+      return;
+    }
+
+    setUpdating(true);
+    setError(null);
+
+    try {
+      const datosActualizados = {
+        [tempFieldName]: tempFieldValue,
+      };
+
+      await axiosConfig.patch(
+        `/vacancies/${selectedVacancy.id}`,
+        datosActualizados
+      );
+
+      setVacantes(
+        vacantes.map((vacante) =>
+          vacante.id === selectedVacancy.id
+            ? { ...vacante, [tempFieldName]: tempFieldValue }
+            : vacante
+        )
+      );
+
+      if (tempFieldName === "prioridad") {
+        setChangePrioridadModal(false);
+      } else if (tempFieldName === "estado") {
+        setChangeStatusModal(false);
+      }
+
+      showSuccessMessage(
+        `El campo ${tempFieldName} ha sido actualizado correctamente`
+      );
+    } catch (error) {
+      console.error("Error al actualizar el campo:", error);
+      setUpdateError(`Error al actualizar el campo: ${error.message}`);
+      obtenerVacantes();
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const columns = [
     {
       name: "Titulo",
@@ -116,55 +185,81 @@ const VacanciesTable = () => {
       sortable: true,
     },
     {
-      name: "Descripcion",
-      selector: (row) => {
-        const desc = row.descripcion || "Sin descripción";
-        return desc.length > 50 ? `${desc.substring(0, 50)}...` : desc;
-      },
-      sortable: true,
-    },
-    {
-      name: "Fecha",
-      selector: (row) => {
-        try {
-          return new Date(row.fecha).toLocaleDateString("es-AR");
-        } catch {
-          return row.fecha || "Fecha inválida";
-        }
-      },
-      sortable: true,
-    },
-    {
-      name: "Sector",
-      selector: (row) => row.sector || "No especificado",
+      name: "Ubicación",
+      selector: (row) => row.ubicacion || "No especificado",
       sortable: true,
     },
     {
       name: "Modalidad",
-      selector: (row) => row.sector || "No especificado",
+      selector: (row) => row.modalidad || "No especificado",
       sortable: true,
     },
     {
       name: "Estado",
       cell: (row) => {
-        const estado = row.estado || "desconocido";
-        let colorClass = "bg-gray-200 text-gray-800";
+        const estados = [
+          "activo",
+          "pausado",
+          "borrador",
+          "terminado",
+          "cancelado",
+        ];
 
-        if (estado === "activo") colorClass = "bg-green-200 text-green-800";
-        if (estado === "pausado") colorClass = "bg-yellow-200 text-yellow-800";
-        if (estado === "borrador") colorClass = "bg-blue-200 text-blue-800";
-        if (estado === "terminado" || estado === "cancelado")
+        let colorClass = "bg-gray-200 text-gray-800";
+        if (row.estado === "activo") colorClass = "bg-green-200 text-green-800";
+        if (row.estado === "pausado")
+          colorClass = "bg-yellow-200 text-yellow-800";
+        if (row.estado === "borrador") colorClass = "bg-blue-200 text-blue-800";
+        if (row.estado === "terminado" || row.estado === "cancelado")
           colorClass = "bg-red-200 text-red-800";
 
         return (
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}
-          >
-            {estado.charAt(0).toUpperCase() + estado.slice(1)}
-          </span>
+          <div className="flex flex-col">
+            <select
+              value={row.estado}
+              onChange={(e) => openChangeStatusModal(row, e.target.value)}
+              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
+            >
+              {estados.map((estado) => (
+                <option key={estado} value={estado}>
+                  {estado}
+                </option>
+              ))}
+            </select>
+          </div>
         );
       },
       sortable: true,
+    },
+    {
+      name: "Prioridad",
+      cell: (row) => {
+        const prioridades = ["baja", "media", "alta"];
+
+        let colorClass = "bg-gray-200 text-gray-800";
+        if (row.prioridad === "baja")
+          colorClass = "bg-green-200 text-green-800";
+        if (row.prioridad === "media")
+          colorClass = "bg-yellow-200 text-yellow-800";
+        if (row.prioridad === "alta") colorClass = "bg-red-200 text-red-800";
+
+        return (
+          <div className="flex flex-col">
+            <select
+              value={row.prioridad}
+              onChange={(e) => openChangePrioridadModal(row, e.target.value)}
+              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
+            >
+              {prioridades.map((prioridade) => (
+                <option key={prioridade} value={prioridade}>
+                  {prioridade}
+                </option>
+              ))}
+            </select>
+          </div>
+        );
+      },
+      sortable: false,
     },
     {
       name: "Imagen",
@@ -269,6 +364,7 @@ const VacanciesTable = () => {
           </div>
         )}
       </div>
+
       <Modal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}
@@ -283,10 +379,36 @@ const VacanciesTable = () => {
       />
 
       <Modal
+        isOpen={changePrioridadModal}
+        onClose={() => setChangePrioridadModal(false)}
+        tipo="confirm"
+        titulo="Cambiar Prioridad de Vacante"
+        mensaje={`¿Estás seguro de cambiar la prioridad de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
+        btnPrimario="Confirmar Cambio"
+        btnSecundario="Cancelar"
+        accionPrimaria={actualizarParametro}
+      />
+
+      <Modal
+        isOpen={changeStatusModal}
+        onClose={() => setChangeStatusModal(false)}
+        tipo="confirm"
+        titulo="Cambiar Estado de Vacante"
+        mensaje={`¿Estás seguro de cambiar el estado de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
+        btnPrimario="Confirmar Cambio"
+        btnSecundario="Cancelar"
+        accionPrimaria={actualizarParametro}
+      />
+
+      <Modal
         isOpen={successModal}
         onClose={() => setSuccessModal(false)}
         tipo="success"
-        titulo="La vacante ha sido eliminada correctamente"
+        titulo="Operación exitosa"
         mensaje={successMessage}
         btnPrimario="Aceptar"
         accionPrimaria={() => setSuccessModal(false)}
