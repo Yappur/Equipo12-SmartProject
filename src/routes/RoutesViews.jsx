@@ -19,6 +19,7 @@ import RecoverAccount from "../pages/Auth/RecoverAccount";
 import CandidatosDashboard from "../pages/RecruiterPages/CandidatosDashboard";
 import CompleteNavbarLayout from "../components/Navigate/CompleteNavbarLayout";
 import LandingView from "../pages/PublicPages/LandingView";
+import AboutPage from "../pages/AboutPage";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -30,10 +31,14 @@ const RoutesViews = () => {
         {/* Rutas Públicas */}
 
         <Route path="/" element={<LandingView />} />
+        <Route path="/About" element={<AboutPage />} />
         <Route path="/galeria/vacantes" element={<VacanciesGallery />} />
         <Route path="/ver/vacante/:id" element={<VacancyView />} />
         <Route path="/login" element={<LoginPage login={login} />} />
         <Route path="/recuperar/cuenta" element={<RecoverAccount />} />
+
+        
+
 
         {/* Rutas de Reclutadores */}
         <Route element={<CompleteNavbarLayout logout={logout} />}>

@@ -71,7 +71,10 @@ const LoginPage = () => {
           <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
             <div className="p-8 md:p-12 text-black flex flex-col justify-center">
               <h1 className="text-5xl text-center mb-2 drop-shadow text-[#152d53]">
-                Talent <span className="font-semibold italic ">Match</span>
+                Talent{" "}
+                <span className="text-orange-500 italic font-semibold">
+                  Match
+                </span>
               </h1>
 
               <div className="flex items-center text-gray-400 mb-6">
