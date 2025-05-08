@@ -1,7 +1,10 @@
 import React from "react";
+import DemoSection from "./LandingPage/DemoSection";
 
 const Footer = () => {
   return (
+    <>
+    <DemoSection />
     <footer className="bg-[#162C4D] text-white py-10 px-6">
       
 
@@ -10,6 +13,7 @@ const Footer = () => {
         &copy; {new Date().getFullYear()} Talen Match - Foo Talent
       </div>
     </footer>
+    </>
   );
 };
 
