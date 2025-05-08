@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import Modal from "../Modals/Modal";
 
@@ -9,7 +9,7 @@ const FormRegister = () => {
     password: "",
     confirmarPassword: "",
     phoneNumber: "",
-    role: "user",
+    role: "",
   });
 
   const [cargando, setCargando] = useState(false);
@@ -174,7 +174,7 @@ const FormRegister = () => {
         password: "",
         confirmarPassword: "",
         phoneNumber: "",
-        role: "user",
+        role: "",
       });
     } catch (err) {
       console.error("Error completo:", err);
@@ -202,34 +202,34 @@ const FormRegister = () => {
     }
   };
 
+  const getRoleText = () => {
+    if (!usuario.role) return "";
+    return usuario.role === "admin" ? "Superadmin" : "Reclutador";
+  };
+
   return (
-    <div className=" bg-white w-full text-gray-700 flex items-center justify-center p-6">
-      <div className="w-full max-w-6xl bg-white rounded-md shadow-md border border-gray-200 flex flex-col lg:flex-row overflow-hidden">
-        {/* Perfil a la izquierda */}
-        <div className="w-full lg:w-1/3 bg-gray-100 flex flex-col items-center justify-center p-10 border-r">
-          <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mb-4">
-            <svg
-              className="w-10 h-10 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5.121 17.804A8.003 8.003 0 0112 16a8.003 8.003 0 016.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
+    <div className="bg-white w-full text-gray-700 flex p-8 mt-8">
+      <div className="w-full max-w-6xl bg-white flex flex-col lg:flex-row overflow-hidden">
+        <div className="w-full lg:w-1/3 flex flex-col items-center ">
+          <div className="w-34 h-34 bg-gray-300 rounded-full overflow-hidden mb-4">
+            <img
+              src="https://storage.googleapis.com/reclutamiento-12537.firebasestorage.app/default-avatars/default-avatar.png"
+              alt="Avatar"
+              className="w-full h-full object-cover"
+            />
           </div>
-          <p className="text-sm font-semibold">Nombre</p>
-          <p className="text-sm text-gray-500">Rol</p>
+          <h3 className="text-base font-medium text-center">
+            {usuario.displayName || "Nombre y Apellido"}
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">{getRoleText() || "Rol"}</p>
         </div>
 
         {/* Formulario */}
-        <div className="w-full lg:w-2/3 p-10">
-          <h2 className="text-xl font-semibold mb-6 border-b pb-2">
-            Crear nuevo usuario
+        <div className="w-full lg:w-2/3 p-8 ">
+          <h2 className="text-2xl font-medium mb-6 pb-2">
+            <span className="border-b-4 border-amber-500">
+              Crear nuevo usuario
+            </span>
           </h2>
 
           {errors.serverError && (
@@ -238,7 +238,7 @@ const FormRegister = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm mb-1">
@@ -253,8 +253,8 @@ const FormRegister = () => {
                   className={`w-full border ${
                     errors.errorDisplayName
                       ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-md p-2`}
+                      : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorDisplayName && (
                   <p className="text-red-500 text-sm mt-1">
@@ -275,38 +275,12 @@ const FormRegister = () => {
                   className={`w-full border ${
                     errors.errorPhoneNumber
                       ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-md p-2`}
+                      : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
-                <p className="text-gray-500 text-xs mt-1">
-                  Debe incluir el símbolo + y el código de país (ej: +54 para
-                  Argentina) sin espacios ni guiones
-                </p>
                 {errors.errorPhoneNumber && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.errorPhoneNumber}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm mb-1">
-                  Rol<span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="role"
-                  value={usuario.role}
-                  onChange={handleChange}
-                  className={`w-full border ${
-                    errors.errorRole ? "border-red-500" : "border-gray-300"
-                  } rounded-md p-2`}
-                >
-                  <option value="">Elige tu rol</option>
-                  <option value="user">Reclutador</option>
-                  <option value="admin">Super Admin</option>
-                </select>
-                {errors.errorRole && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.errorRole}
                   </p>
                 )}
               </div>
@@ -319,14 +293,36 @@ const FormRegister = () => {
                   name="email"
                   value={usuario.email}
                   onChange={handleChange}
-                  placeholder="Ingresa tu email"
+                  placeholder="ejemplo@correo.com"
                   className={`w-full border ${
-                    errors.errorEmail ? "border-red-500" : "border-gray-300"
-                  } rounded-md p-2`}
+                    errors.errorEmail ? "border-red-500" : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorEmail && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.errorEmail}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm mb-1">
+                  Rol<span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="role"
+                  value={usuario.role}
+                  onChange={handleChange}
+                  className={`w-full border ${
+                    errors.errorRole ? "border-red-500" : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
+                >
+                  <option value="">Seleccionar rol</option>
+                  <option value="user">Reclutador</option>
+                  <option value="admin">Super Admin</option>
+                </select>
+                {errors.errorRole && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.errorRole}
                   </p>
                 )}
               </div>
@@ -341,8 +337,8 @@ const FormRegister = () => {
                   onChange={handleChange}
                   placeholder="Ingresa tu contraseña"
                   className={`w-full border ${
-                    errors.errorPassword ? "border-red-500" : "border-gray-300"
-                  } rounded-md p-2`}
+                    errors.errorPassword ? "border-red-500" : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorPassword && (
                   <p className="text-red-500 text-sm mt-1">
@@ -363,8 +359,8 @@ const FormRegister = () => {
                   className={`w-full border ${
                     errors.errorConfirmarPassword
                       ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-md p-2`}
+                      : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorConfirmarPassword && (
                   <p className="text-red-500 text-sm mt-1">
@@ -377,14 +373,14 @@ const FormRegister = () => {
             <div className="flex justify-end gap-4 mt-8">
               <button
                 type="button"
-                className="px-5 py-2 rounded-md border border-gray-400 text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={cargando}
-                className="px-5 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-60"
+                className="px-5 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-60"
               >
                 {cargando ? "Procesando..." : "Guardar"}
               </button>
