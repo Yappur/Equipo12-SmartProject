@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import { useLoginFirebase } from "../hooks/useLoginFirebase";
-import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/Auth/LoginPage";
 import App404 from "../pages/App404";
 import UserRegister from "../pages/Auth/UserRegister";
@@ -30,8 +29,7 @@ const RoutesViews = () => {
       <Routes>
         {/* Rutas Públicas */}
 
-        <Route path="/" element={<HomePage />} />
-        <Route path="/landing" element={<LandingView />} />
+        <Route path="/" element={<LandingView />} />
         <Route path="/galeria/vacantes" element={<VacanciesGallery />} />
         <Route path="/ver/vacante/:id" element={<VacancyView />} />
         <Route path="/login" element={<LoginPage login={login} />} />
