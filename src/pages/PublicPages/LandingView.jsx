@@ -70,14 +70,6 @@ export default function LandingView() {
                             </p>
                             <div>
                                 <VacancieTable isPublic/>
-                                <div className="mt-6 grid grid-cols-1 gap-4 mb-6">
-                                    <Link
-                                        to="/galeria/vacantes"
-                                        className="w-full text-center bg-orange-400 hover:bg-orange-500 text-white rounded-full px-6 py-2"
-                                    >
-                                        Ver todas las vacantes activas
-                                    </Link>
-                                </div>
                             </div>
                         </div>
                     </div>

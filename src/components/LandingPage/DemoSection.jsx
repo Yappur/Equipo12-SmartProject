@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 
 const DemoSection = () => {
     return (
-        <section className="md-px-0 px-5">
+        <section className="md-px-0 px-5 mt-10">
             <div className="container bg-[#162C4D] py-12 mx-auto px-2 text-center rounded-t-xl">
                 <div className="flex flex-col md:flex-row items-center justify-around">
                     <div className="mb-6 md:mb-0">
