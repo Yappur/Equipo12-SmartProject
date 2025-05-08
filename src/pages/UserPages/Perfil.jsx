@@ -54,7 +54,6 @@ const Perfil = () => {
                 const response = await axiosConfig.get(`/users/${uid}`);
                 setUserData(response.data);
 
-                // Asignar valores exactamente como vienen de la API
                 setValue("displayName", response.data.displayName || "");
                 setValue("email", response.data.email || "");
                 setValue(
@@ -88,19 +87,15 @@ const Perfil = () => {
 
             const uid = user.uid;
 
-            // Simplifica los datos enviados para evitar campos problemáticos
             const updateData = {
-                nombre: data.displayName,   // Usa "nombre" en lugar de "displayName"
-                telefono: data.phoneNumber || "", // Usa "telefono" en lugar de "phoneNumber"
-                // No enviar email ni photoURL para evitar conflictos
+                nombre: data.displayName,
+                telefono: data.phoneNumber || "",
             };
 
-            // Intenta la solicitud con los campos ajustados
             await axiosConfig.patch(`/users/${uid}`, updateData);
-            
+
             alert("Perfil actualizado correctamente");
 
-            // Actualiza la interfaz localmente
             setUserData((prevData) => ({
                 ...prevData,
                 displayName: data.displayName,
@@ -108,8 +103,7 @@ const Perfil = () => {
             }));
         } catch (err) {
             console.error("Error al actualizar el perfil:", err);
-            
-            // Muestra mensaje de error más detallado si está disponible
+
             if (err.response && err.response.data) {
                 setError(`Error: ${err.response.data.message || JSON.stringify(err.response.data)}`);
             } else {
@@ -133,7 +127,6 @@ const Perfil = () => {
 
             const uid = user.uid;
 
-            // Enviar solo el parámetro password
             await axiosConfig.patch(`/users/${uid}/password`, {
                 password: data.password,
             });
