@@ -3,6 +3,8 @@ import fotoMujer from '../assets/img/FotoAboutMujer.png';
 import fotoSofia from '../assets/img/sofiaAbout.png';
 import fotoLucas from  '../assets/img/LucasFernandezAbout.png'
 import fotoMariana from '../assets/img/MariaLopezAbout.png';
+import LandingNavbar from "../components/Navigate/LandingNavbar";
+import Footer from "../components/Footer";
 const Componente = () => {
   return (
     <img src={fotoMujer} alt="Foto de mujer" />
@@ -14,16 +16,7 @@ const Componente = () => {
 export default function TalentMatchPage() {
   return (
     <div className="font-sans bg-[#f4f6fb] text-gray-800">
-      <header className="bg-white shadow-sm py-4 px-8 flex justify-between items-center">
-        <div className="text-2xl font-bold text-[#162C4D]">
-          Talent <span className="text-[#ff7b00]">Match</span>
-        </div>
-        <nav className="space-x-4">
-          <button className="text-gray-700 hover:text-[#ff7b00]">Quiénes somos</button>
-          <button className="bg-[#ff7b00] text-white px-4 py-2 rounded-xl font-semibold">Ver vacantes</button>
-          <button className="bg-blue-900 text-white px-4 py-2 rounded-xl font-semibold">Acceso reclutadores</button>
-        </nav>
-      </header>
+          <LandingNavbar />
 
       <main className="text-center py-16 px-4 bg-[#D8E9FF]">
         <h1 className="text-3xl md:text-5xl font-semibold mb-4">
@@ -210,7 +203,7 @@ export default function TalentMatchPage() {
 
 
 
-
+  <Footer />
 
     </div>
   );
