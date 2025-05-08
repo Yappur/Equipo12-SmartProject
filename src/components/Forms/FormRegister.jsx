@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import Modal from "../Modals/Modal";
+import { uploadProfileImage } from "../../firebase/Upload/uploadProfileImage";
+import editarImagenIcon from "@/assets/img/editarImagenIcon.svg";
 
 const FormRegister = () => {
   const [usuario, setUsuario] = useState({
@@ -13,11 +15,14 @@ const FormRegister = () => {
   });
 
   const [cargando, setCargando] = useState(false);
+  const [subiendoImagen, setSubiendoImagen] = useState(false);
   const [errors, setErrors] = useState({});
+  const [previewImage, setPreviewImage] = useState(null);
 
   const [successModal, setSuccessModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (errors.serverError) {
@@ -39,13 +44,11 @@ const FormRegister = () => {
     setErrorModal(false);
   };
 
-  // Función para validar el formato del correo electrónico
   const validarEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
-  // Función para validar la seguridad de la contraseña
   const validarPassword = (password) => {
     const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return regex.test(password);
@@ -78,6 +81,57 @@ const FormRegister = () => {
         ...prev,
         [`error${name.charAt(0).toUpperCase() + name.slice(1)}`]: false,
       }));
+    }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  // Manejador para cuando se selecciona un archivo
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      // Validar que sea una imagen
+      if (!file.type.startsWith("image/")) {
+        setErrors({
+          ...errors,
+          errorPhotoUrl: "El archivo debe ser una imagen",
+        });
+        return;
+      }
+
+      // Crear una URL para previsualizar la imagen
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewImage(objectUrl);
+
+      // Subir la imagen a Firebase
+      setSubiendoImagen(true);
+      const photoUrl = await uploadProfileImage(file);
+
+      // Actualizar el estado con la URL de la imagen
+      setUsuario({
+        ...usuario,
+        photoUrl,
+      });
+
+      // Limpiar cualquier error previo
+      if (errors.errorPhotoUrl) {
+        setErrors({
+          ...errors,
+          errorPhotoUrl: false,
+        });
+      }
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      setErrors({
+        ...errors,
+        errorPhotoUrl: "Error al subir la imagen. Inténtalo de nuevo.",
+      });
+    } finally {
+      setSubiendoImagen(false);
     }
   };
 
@@ -158,6 +212,7 @@ const FormRegister = () => {
         password: usuario.password,
         role: usuario.role,
         phoneNumber: usuario.phoneNumber.trim(),
+        photoUrl: usuario.photoUrl || undefined,
       };
 
       const response = await axiosConfig.post(
@@ -175,6 +230,7 @@ const FormRegister = () => {
         confirmarPassword: "",
         phoneNumber: "",
         role: "",
+        photoUrl: "",
       });
     } catch (err) {
       console.error("Error completo:", err);
@@ -204,20 +260,55 @@ const FormRegister = () => {
 
   const getRoleText = () => {
     if (!usuario.role) return "";
-    return usuario.role === "admin" ? "Superadmin" : "Reclutador";
+    return usuario.role === "admin" ? "Super Admin" : "Reclutador";
   };
 
   return (
     <div className="bg-white w-full text-gray-700 flex p-8 mt-8">
       <div className="w-full max-w-6xl bg-white flex flex-col lg:flex-row overflow-hidden">
         <div className="w-full lg:w-1/3 flex flex-col items-center ">
-          <div className="w-34 h-34 bg-gray-300 rounded-full overflow-hidden mb-4">
-            <img
-              src="https://storage.googleapis.com/reclutamiento-12537.firebasestorage.app/default-avatars/default-avatar.png"
-              alt="Avatar"
-              className="w-full h-full object-cover"
-            />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/*"
+          />
+
+          {/* Imagen de perfil clickeable */}
+          <div
+            className="w-38 h-38  bg-gray-300 rounded-full overflow-hidden mb-4 cursor-pointer relative"
+            onClick={handleImageClick}
+          >
+            {subiendoImagen && (
+              <div className="absolute inset-0 flex items-center justify-center text-black">
+                <span className="text-xs">Subiendo...</span>
+              </div>
+            )}
+            {previewImage ? (
+              <img
+                src={previewImage || "@/assets/img/editarImagenIcon.svg"}
+                alt="Vista previa"
+                className="w-38 h-38 object-cover"
+              />
+            ) : (
+              <img
+                src={editarImagenIcon}
+                alt="Editar imagen"
+                className="w-full h-full object-contain"
+              />
+            )}
+            <div className="absolute inset-0 flex items-center justify-center transition-all duration-200">
+              <span className=" text-xs opacity-0 hover:opacity-100">
+                Cambiar foto
+              </span>
+            </div>
           </div>
+          {errors.errorPhotoUrl && (
+            <p className="text-red-500 text-xs mt-1 mb-2">
+              {errors.errorPhotoUrl}
+            </p>
+          )}
           <h3 className="text-base font-medium text-center">
             {usuario.displayName || "Nombre y Apellido"}
           </h3>
