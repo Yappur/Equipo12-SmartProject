@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosConfig from "../../helpers/axios.config";
-import Modal from "../Modal";
+import Modal from "../Modals/Modal";
 
 const FormRegister = () => {
   const [usuario, setUsuario] = useState({
@@ -168,7 +168,6 @@ const FormRegister = () => {
       showSuccessMessage(
         "El usuario se ha registrado correctamente. Dirígete a la pantalla de candidatos para visualizar los detalles del candidato o generar cambios"
       );
-
       setUsuario({
         displayName: "",
         email: "",
@@ -204,7 +203,7 @@ const FormRegister = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white w-full text-gray-700 flex items-center justify-center p-6">
+    <div className=" bg-white w-full text-gray-700 flex items-center justify-center p-6">
       <div className="w-full max-w-6xl bg-white rounded-md shadow-md border border-gray-200 flex flex-col lg:flex-row overflow-hidden">
         {/* Perfil a la izquierda */}
         <div className="w-full lg:w-1/3 bg-gray-100 flex flex-col items-center justify-center p-10 border-r">

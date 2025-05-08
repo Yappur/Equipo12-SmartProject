@@ -1,32 +1,54 @@
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useLoginFirebase } from "../../hooks/useLoginFirebase";
 import { FaUserCircle } from "react-icons/fa";
 
 export default function AdminNavbar() {
-  const { role } = useAuth();
+  const { role, nombre } = useAuth();
   const { logout } = useLoginFirebase();
-  const { nombre } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef();
+
+  // Cerrar dropdown si se hace click afuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <header className="w-full bg-white shadow-sm border-b pl-70 py-4 flex justify-between items-center">
-      {/* Título del panel */}
-      <h2 className="text-sm sm:text-base text-sky-800 font-semibold">
-        Panel Reclutador
+    <header className="w-full bg-white shadow-sm border-b border-gray-200 pl-4 py-6 flex justify-between items-center sticky top-0">
+      <h2 className="text-sm sm:text-base text-sky-800 font-semibold md:pl-3 sm:pl-12">
+        Panel {role === "admin" ? "Super Administrador" : "de Recursos Humanos"}
       </h2>
 
-      {/* Saludo + ícono */}
-      <div className="flex items-center gap-3">
+      <div
+        className="relative flex items-center gap-3 sm:gap-4 mx-10"
+        ref={dropdownRef}
+      >
         <span className="text-sm text-gray-700 hidden sm:inline">
-          ¡Bienvenida, {nombre || "Usuario"}!
+          ¡Bienvenido/a, {""}
+          <span className="font-bold">{nombre || "Usuario"}</span>!
         </span>
-        <FaUserCircle className="text-sky-800 text-2xl" />
 
-        <button
-          onClick={logout}
-          className="hidden sm:block px-4 py-1 text-sm text-white bg-red-600 rounded-full hover:bg-red-700 transition"
-        >
-          Cerrar sesión
+        <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+          <FaUserCircle className="text-sky-800 text-4xl right-3" />
         </button>
+
+        {isDropdownOpen && (
+          <div className="absolute right-0 top-12 bg-red-500 border rounded-4xl shadow-lg py-2 w-37 z-50 hover:bg-red-900 ">
+            <button
+              onClick={logout}
+              className="block w-full text-center px-4 py-2 text-sm text-white "
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

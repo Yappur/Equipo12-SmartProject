@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
-import Sidebar from "../../components/Navigate/Sidebar";
-import { uploadImage } from "../../firebase/uploadImage";
+import { uploadImage } from "../../firebase/Upload/uploadImage";
 import { CirclePlus } from "lucide-react";
 
 const CreateVacancies = () => {
@@ -15,6 +14,9 @@ const CreateVacancies = () => {
     descripcion: "",
     fecha: new Date().toISOString().split("T")[0],
     estado: "borrador",
+    modalidad: "",
+    prioridad: "media",
+    ubicacion: "",
   });
 
   const handleInputChange = (e) => {
@@ -46,7 +48,10 @@ const CreateVacancies = () => {
       !vacancy.nombre ||
       !vacancy.descripcion ||
       !vacancy.fecha ||
-      !vacancy.estado
+      !vacancy.estado ||
+      !vacancy.modalidad ||
+      !vacancy.prioridad ||
+      !vacancy.ubicacion
     ) {
       alert("Por favor, completa todos los campos requeridos");
       setIsSubmitting(false);
@@ -85,6 +90,9 @@ const CreateVacancies = () => {
           descripcion: "",
           fecha: new Date().toISOString().split("T")[0],
           estado: "borrador",
+          modalidad: "",
+          prioridad: "media",
+          ubicacion: "",
         });
 
         setSelectedFile(null);
@@ -105,76 +113,51 @@ const CreateVacancies = () => {
 
   return (
     <>
-      {" "}
-      <div className="">
-        <Sidebar />
+      <div className="flex ">
+        <div className="flex flex-col ml-10 mt-4 sm:mr-10 ">
+          <h1 className="text-2xl font-medium text-[#00254B] mb-4">Vacantes</h1>
 
-        <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 mx-auto my-8">
-          <h1 className="text-2xl font-bold text-gray-600 mb-4">Vacantes</h1>
-
-          <button
-            className="bg-blue-500 text-white font-bold py-2 px-4 rounded-full mb-4 flex items-center gap-2"
-            onClick={() => setShowForm(!showForm)}
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-4 rounded shadow-md space-y-4 w-full max-w-3xl ml-10"
           >
-            <CirclePlus size={20} />
-            <span>Crear nueva vacante</span>
-          </button>
+            <div>
+              <h2 className="text-2xl font-medium mb-3">Nueva vacante</h2>
+              <label htmlFor="nombre" className="block ">
+                Puesto
+              </label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                value={vacancy.nombre}
+                onChange={handleInputChange}
+                className="w-100 sm:w-1/2 border border-gray-300 p-2 mt-1 rounded"
+                required
+              />
+            </div>
 
-          {showForm && (
-            <form
-              onSubmit={handleSubmit}
-              className="bg-white p-4 rounded shadow-md space-y-4"
-            >
-              <div>
-                <label htmlFor="nombre" className="block text-gray-700">
-                  Título de la vacante
-                </label>
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  value={vacancy.nombre}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 p-2 mt-1 rounded"
-                  required
-                />
-              </div>
+            <div>
+              <label htmlFor="descripcion" className="block">
+                Descripción del puesto
+              </label>
+              <textarea
+                id="descripcion"
+                name="descripcion"
+                value={vacancy.descripcion}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 p-2 mt-1 rounded"
+                rows="4"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Minimo 200 caracteres.
+              </p>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="descripcion" className="block text-gray-700">
-                  Descripción
-                </label>
-                <textarea
-                  id="descripcion"
-                  name="descripcion"
-                  value={vacancy.descripcion}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 p-2 mt-1 rounded"
-                  rows="4"
-                  required
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Minimo 200 caracteres.
-                </p>
-              </div>
-
-              <div>
-                <label htmlFor="fecha" className="block text-gray-700">
-                  Fecha
-                </label>
-                <input
-                  type="date"
-                  id="fecha"
-                  name="fecha"
-                  value={vacancy.fecha}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 p-2 mt-1 rounded"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="estado" className="block text-gray-700">
+                <label htmlFor="estado" className="block">
                   Estado
                 </label>
                 <select
@@ -193,70 +176,124 @@ const CreateVacancies = () => {
                   <option value="cancelado">Cancelado</option>
                 </select>
               </div>
-
               <div>
-                <label htmlFor="image" className="block text-gray-700">
-                  Imagen
+                <label htmlFor="modalidad" className="block">
+                  Modalidad
+                </label>
+                <select
+                  id="modalidad"
+                  name="modalidad"
+                  value={vacancy.modalidad}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 p-2 mt-1 rounded"
+                  required
+                >
+                  <option value="">Selecciona una modalidad</option>
+                  <option value="presencial">Presencial</option>
+                  <option value="remoto">Remoto</option>
+                  <option value="hibrido">Híbrido</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Nuevos campos: modalidad, prioridad y ubicación */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="prioridad" className="block">
+                  Prioridad
+                </label>
+                <select
+                  id="prioridad"
+                  name="prioridad"
+                  value={vacancy.prioridad}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 p-2 mt-1 rounded"
+                  required
+                >
+                  <option value="baja">Baja</option>
+                  <option value="media">Media</option>
+                  <option value="alta">Alta</option>
+                  <option value="urgente">Urgente</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="ubicacion" className="block">
+                  Ubicación
                 </label>
                 <input
-                  type="file"
-                  id="image"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleFileUpload}
+                  type="text"
+                  id="ubicacion"
+                  name="ubicacion"
+                  value={vacancy.ubicacion}
+                  onChange={handleInputChange}
+                  placeholder="Ciudad, País"
                   className="w-full border border-gray-300 p-2 mt-1 rounded"
+                  required
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Sube una imagen que represente la vacante (JPG, PNG)
-                </p>
               </div>
+            </div>
 
-              {/* Vista previa de la imagen si hay imagen cargada */}
-              {imagePreview && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-700 mb-1">Vista previa:</p>
-                  <img
-                    src={imagePreview}
-                    alt="Vista previa"
-                    className="max-h-40 border rounded"
-                    onLoad={() => {
-                      // Liberar la URL temporal cuando ya no se necesite
-                      URL.revokeObjectURL(imagePreview);
-                    }}
-                  />
-                </div>
-              )}
+            <div>
+              <label htmlFor="image" className="block">
+                Imagen
+              </label>
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="w-full border border-gray-300 p-2 mt-1 rounded"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Sube una imagen que represente la vacante (JPG, PNG)
+              </p>
+            </div>
 
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
-                      ? "bg-green-300"
-                      : "bg-green-500 hover:bg-green-600"
-                  } text-white py-2 px-4 rounded flex items-center gap-2`}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
-                      <span>Procesando...</span>
-                    </>
-                  ) : (
-                    "Guardar Vacante"
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded"
-                >
-                  Cancelar
-                </button>
+            {/* Vista previa de la imagen si hay imagen cargada */}
+            {imagePreview && (
+              <div className="mt-2">
+                <p className="text-sm text-gray-700 mb-1">Vista previa:</p>
+                <img
+                  src={imagePreview}
+                  alt="Vista previa"
+                  className="max-h-40 border rounded"
+                  onLoad={() => {
+                    // Liberar la URL temporal cuando ya no se necesite
+                    URL.revokeObjectURL(imagePreview);
+                  }}
+                />
               </div>
-            </form>
-          )}
+            )}
+
+            <div className="flex justify-end  gap-2">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded my-4"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`${
+                  isSubmitting
+                    ? "bg-[#00254B]"
+                    : "bg-[#00254B] hover:bg-[#1e253d]"
+                } text-white py-2 px-4 rounded my-4 gap-2`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
+                    <span>Procesando...</span>
+                  </>
+                ) : (
+                  "Guardar Vacante"
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </>

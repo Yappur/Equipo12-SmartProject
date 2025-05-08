@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { FaRegCheckCircle, FaRegTrashAlt, FaSave } from "react-icons/fa";
 import { RiCloseCircleLine } from "react-icons/ri";
-import { slideInUp, slideOutDown } from "../helpers/animate";
+import { slideInUp, slideOutDown } from "../../helpers/animate";
 export default function Modal({
   isOpen,
   onClose,

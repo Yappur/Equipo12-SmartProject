@@ -49,6 +49,7 @@ export const useLoginFirebase = () => {
 
       if (rememberMe) {
         localStorage.setItem("authToken", idToken);
+        sessionStorage.removeItem("authToken");
       } else {
         sessionStorage.setItem("authToken", idToken);
         localStorage.removeItem("authToken");
@@ -60,7 +61,7 @@ export const useLoginFirebase = () => {
 
       setIsAuthenticated(true);
       setRole(data.role);
-      setNombre(data.displayName); // Asignar el nombre o correo al estado
+      setNombre(data.displayName || email); // Asignar el nombre o correo al estado
 
       return data;
     } catch (err) {
@@ -79,6 +80,7 @@ export const useLoginFirebase = () => {
     sessionStorage.removeItem("authToken");
     setIsAuthenticated(false);
     setRole(null);
+    setNombre(null);
     navigate("/login");
   };
 
