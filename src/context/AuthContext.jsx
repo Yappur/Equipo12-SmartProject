@@ -25,8 +25,45 @@ export const AuthProvider = ({ children }) => {
           // Si el token es válido, establecer estados
           setIsAuthenticated(true);
           setRole(data.role);
-          setProfileImg(data.photoUrl);
-          setNombre(data.displayName || data.email || "Usuario");
+          let photoUrl = null;
+
+          if (data.photoUrl) {
+            photoUrl = data.photoUrl;
+            console.log("URL de imagen encontrada en data.photoUrl:", photoUrl);
+          } else if (data.photoURL) {
+            photoUrl = data.photoURL; // Caso alternativo (mayúscula)
+            console.log("URL de imagen encontrada en data.photoURL:", photoUrl);
+          } else if (data.user && data.user.photoUrl) {
+            photoUrl = data.user.photoUrl;
+            console.log(
+              "URL de imagen encontrada en data.user.photoUrl:",
+              photoUrl
+            );
+          } else if (data.user && data.user.photoURL) {
+            photoUrl = data.user.photoURL;
+            console.log(
+              "URL de imagen encontrada en data.user.photoURL:",
+              photoUrl
+            );
+          } else {
+            console.log("No se encontró URL de imagen en la respuesta");
+          }
+
+          // Verificar que photoUrl sea una cadena válida
+          if (
+            photoUrl &&
+            typeof photoUrl === "string" &&
+            photoUrl.trim() !== ""
+          ) {
+            console.log("URL de imagen de perfil válida:", photoUrl);
+            setProfileImg(photoUrl);
+          } else {
+            console.log("No se recibió una URL de imagen válida");
+            setProfileImg(null);
+          }
+
+          setNombre(data.name || "Usuario");
+          console.log("Respuesta del backend:", data);
         } else {
           setIsAuthenticated(false);
           setRole(null);
@@ -49,6 +86,10 @@ export const AuthProvider = ({ children }) => {
     verifyToken();
   }, []);
 
+  const updateProfileImage = (newImageUrl) => {
+    setProfileImg(newImageUrl);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -58,6 +99,7 @@ export const AuthProvider = ({ children }) => {
         setRole,
         profileImg,
         setProfileImg,
+        updateProfileImage,
         nombre,
         setNombre,
         loading,
