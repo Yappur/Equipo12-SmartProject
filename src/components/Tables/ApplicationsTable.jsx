@@ -5,39 +5,7 @@ import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
-
-const customStyles = {
-  headCells: {
-    style: {
-      backgroundColor: "#f8fafc",
-      color: "#152D53",
-      fontWeight: "bold",
-      fontSize: "14px",
-      borderBottom: "1px solid #e2e8f0",
-      paddingLeft: "16px",
-      paddingRight: "16px",
-    },
-  },
-  rows: {
-    style: {
-      fontSize: "14px",
-      minHeight: "56px",
-      borderBottom: "1px solid #f1f5f9",
-      "&:hover": {
-        backgroundColor: "#f8fafc",
-      },
-      paddingLeft: "16px",
-      paddingRight: "16px",
-    },
-  },
-  pagination: {
-    style: {
-      backgroundColor: "#ffffff",
-      borderTop: "1px solid #e2e8f0",
-    },
-  },
-};
-
+import customStyles from "./DashboardsStyles";
 const ApplicationsTable = () => {
   const { id } = useParams();
   const [postulaciones, setPostulaciones] = useState([]);
