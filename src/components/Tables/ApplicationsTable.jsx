@@ -149,7 +149,12 @@ const ApplicationsTable = () => {
     const nombre = (postulacion.fullName || "").toLowerCase();
     const correo = (postulacion.email || "").toLowerCase();
     const telefono = (postulacion.phone || "").toLowerCase();
-    const habilidades = (postulacion.skills || []).join(" ").toLowerCase();
+    let habilidades = "";
+    if (Array.isArray(postulacion.skills)) {
+      habilidades = postulacion.skills.join(" ").toLowerCase();
+    } else if (typeof postulacion.skills === "string") {
+      habilidades = postulacion.skills.toLowerCase();
+    }
 
     return (
       nombre.includes(searchTerm) ||
