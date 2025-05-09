@@ -1,15 +1,28 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useLoginFirebase } from "../../hooks/useLoginFirebase";
+import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
+import { User, LogOut } from "lucide-react";
 
 export default function AdminNavbar() {
-  const { role, nombre } = useAuth();
+  const { role, nombre, profileImg } = useAuth();
   const { logout } = useLoginFirebase();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const dropdownRef = useRef();
 
-  // Cerrar dropdown si se hace click afuera
+  useEffect(() => {
+    console.log("Información de perfil en Navbar:", {
+      role,
+      nombre,
+      profileImg,
+      imageError,
+      imageLoaded,
+    });
+  }, [role, nombre, profileImg, imageError, imageLoaded]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -20,6 +33,22 @@ export default function AdminNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleImageError = () => {
+    console.error("Error al cargar la imagen de perfil:", profileImg);
+    setImageLoaded(false);
+    setImageError(true);
+  };
+
+  // Función para confirmar carga exitosa
+  const handleImageLoad = () => {
+    console.log("Imagen cargada exitosamente:", profileImg);
+    setImageLoaded(true);
+    setImageError(false);
+  };
+
+  // Verificar que la URL de la imagen sea válida
+  const isValidImageUrl =
+    profileImg && typeof profileImg === "string" && profileImg.trim() !== "";
   return (
     <header className="w-full bg-white shadow-sm border-b border-gray-200 pl-4 py-6 flex justify-between items-center sticky top-0">
       <h2 className="text-sm sm:text-base text-sky-800 font-semibold md:pl-3 sm:pl-12">
@@ -32,20 +61,50 @@ export default function AdminNavbar() {
       >
         <span className="text-sm text-gray-700 hidden sm:inline">
           ¡Bienvenido/a, {""}
-          <span className="font-bold">{nombre || "Usuario"}</span>!
+          <span className="font-bold">{nombre}</span>!
         </span>
 
-        <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-          <FaUserCircle className="text-sky-800 text-4xl right-3" />
+        <button
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className="relative"
+        >
+          {isValidImageUrl && !imageError ? (
+            <>
+              <img
+                src={profileImg}
+                alt="Perfil"
+                className="h-10 w-10 rounded-full object-cover border border-gray-200"
+                onError={handleImageError}
+                onLoad={handleImageLoad}
+              />
+              {/* Indicador de estado de carga */}
+              {!imageLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50 rounded-full">
+                  <div className="w-5 h-5 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+            </>
+          ) : (
+            <FaUserCircle className="text-sky-800 text-4xl right-3" />
+          )}
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute right-0 top-12 bg-red-500 border rounded-4xl shadow-lg py-2 w-37 z-50 hover:bg-red-900 ">
+          <div className="absolute right-0 top-12 flex flex-col gap-2 z-50 w-full max-w-[220px]">
+            <Link
+              to="/perfil"
+              className="flex items-center gap-2 px-4 py-3 bg-[#0a2145] text-white rounded-full hover:bg-[#0a3060] transition-colors"
+            >
+              <User className="w-5 h-5" />
+              <span>Mi perfil</span>
+            </Link>
+
             <button
               onClick={logout}
-              className="block w-full text-center px-4 py-2 text-sm text-white "
+              className="flex items-center gap-2 px-4 py-3 bg-[#0a2145] text-white rounded-full hover:bg-[#0a3060] transition-colors w-full"
             >
-              Cerrar sesión
+              <LogOut className="w-5 h-5" />
+              <span>Cerrar sesión</span>
             </button>
           </div>
         )}
