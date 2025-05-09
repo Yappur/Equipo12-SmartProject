@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [nombre, setNombre] = useState(null);
   const [role, setRole] = useState(null);
+  const [profileImg, setProfileImg] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,10 +25,12 @@ export const AuthProvider = ({ children }) => {
           // Si el token es válido, establecer estados
           setIsAuthenticated(true);
           setRole(data.role);
+          setProfileImg(data.photoUrl);
           setNombre(data.displayName || data.email || "Usuario");
         } else {
           setIsAuthenticated(false);
           setRole(null);
+          setProfileImg(null);
           setNombre(null);
         }
       } catch (error) {
@@ -36,6 +39,7 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.removeItem("authToken");
         setIsAuthenticated(false);
         setRole(null);
+        setProfileImg(null);
         setNombre(null);
       } finally {
         setLoading(false);
@@ -52,6 +56,8 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated,
         role,
         setRole,
+        profileImg,
+        setProfileImg,
         nombre,
         setNombre,
         loading,

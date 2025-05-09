@@ -1,15 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useLoginFirebase } from "../../hooks/useLoginFirebase";
+import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
+import { User, LogOut } from "lucide-react";
 
 export default function AdminNavbar() {
-  const { role, nombre } = useAuth();
+  const { role, nombre, profileImg } = useAuth();
   const { logout } = useLoginFirebase();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef();
 
-  // Cerrar dropdown si se hace click afuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -36,16 +37,33 @@ export default function AdminNavbar() {
         </span>
 
         <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-          <FaUserCircle className="text-sky-800 text-4xl right-3" />
+          {profileImg ? (
+            <img
+              src={profileImg}
+              alt="Perfil"
+              className="h-10 w-10 rounded-full"
+            />
+          ) : (
+            <FaUserCircle className="text-sky-800 text-4xl right-3" />
+          )}
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute right-0 top-12 bg-red-500 border rounded-4xl shadow-lg py-2 w-37 z-50 hover:bg-red-900 ">
+          <div className="absolute right-0 top-12 flex flex-col gap-2 z-50 w-full max-w-[220px]">
+            <Link
+              to="/perfil"
+              className="flex items-center gap-2 px-4 py-3 bg-[#0a2145] text-white rounded-full hover:bg-[#0a3060] transition-colors"
+            >
+              <User className="w-5 h-5" />
+              <span>Mi perfil</span>
+            </Link>
+
             <button
               onClick={logout}
-              className="block w-full text-center px-4 py-2 text-sm text-white "
+              className="flex items-center gap-2 px-4 py-3 bg-[#0a2145] text-white rounded-full hover:bg-[#0a3060] transition-colors w-full"
             >
-              Cerrar sesión
+              <LogOut className="w-5 h-5" />
+              <span>Cerrar sesión</span>
             </button>
           </div>
         )}

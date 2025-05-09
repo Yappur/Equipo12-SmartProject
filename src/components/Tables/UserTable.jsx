@@ -5,6 +5,7 @@ import Modal from "../Modals/Modal";
 import SearchBar from "./SearchBar";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
+import { useAuth } from "../../context/AuthContext";
 
 const customStyles = {
   headCells: {
@@ -46,6 +47,7 @@ const Loader = () => (
 );
 
 const UserTable = () => {
+  const { profileImg } = useAuth();
   const [filtrarUsuarios, setFiltrarUsuarios] = useState("");
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -209,6 +211,16 @@ const UserTable = () => {
       name: "Creacion",
       selector: (row) => row.fecha,
       sortable: true,
+    },
+    {
+      name: "Perfil",
+      cell: (row) => (
+        <img
+          src={profileImg || ""}
+          alt="Perfil"
+          className="w-10 h-10 rounded-full object-cover"
+        />
+      ),
     },
     {
       name: "Rol",
