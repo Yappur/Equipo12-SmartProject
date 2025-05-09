@@ -5,38 +5,8 @@ import Modal from "../Modals/Modal";
 import SearchBar from "./SearchBar";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
-
-const customStyles = {
-  headCells: {
-    style: {
-      backgroundColor: "#f8fafc",
-      color: "#152D53",
-      fontWeight: "bold",
-      fontSize: "14px",
-      borderBottom: "1px solid #e2e8f0",
-      paddingLeft: "16px",
-      paddingRight: "16px",
-    },
-  },
-  rows: {
-    style: {
-      fontSize: "14px",
-      minHeight: "56px",
-      borderBottom: "1px solid #f1f5f9",
-      "&:hover": {
-        backgroundColor: "#f8fafc",
-      },
-      paddingLeft: "16px",
-      paddingRight: "16px",
-    },
-  },
-  pagination: {
-    style: {
-      backgroundColor: "#ffffff",
-      borderTop: "1px solid #e2e8f0",
-    },
-  },
-};
+import { useAuth } from "../../context/AuthContext";
+import customStyles from "./DashboardsStyles";
 
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
@@ -46,6 +16,7 @@ const Loader = () => (
 );
 
 const UserTable = () => {
+  const { profileImg } = useAuth();
   const [filtrarUsuarios, setFiltrarUsuarios] = useState("");
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -209,6 +180,16 @@ const UserTable = () => {
       name: "Creacion",
       selector: (row) => row.fecha,
       sortable: true,
+    },
+    {
+      name: "Perfil",
+      cell: (row) => (
+        <img
+          src={profileImg || ""}
+          alt="Perfil"
+          className="w-10 h-10 rounded-full object-cover"
+        />
+      ),
     },
     {
       name: "Rol",

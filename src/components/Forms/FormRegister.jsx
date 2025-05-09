@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import Modal from "../Modals/Modal";
+import { uploadProfileImage } from "../../firebase/Upload/uploadProfileImage";
+import editarImagenIcon from "@/assets/img/editarImagenIcon.svg";
 
 const FormRegister = () => {
   const [usuario, setUsuario] = useState({
@@ -9,15 +11,18 @@ const FormRegister = () => {
     password: "",
     confirmarPassword: "",
     phoneNumber: "",
-    role: "user",
+    role: "",
   });
 
   const [cargando, setCargando] = useState(false);
+  const [subiendoImagen, setSubiendoImagen] = useState(false);
   const [errors, setErrors] = useState({});
+  const [previewImage, setPreviewImage] = useState(null);
 
   const [successModal, setSuccessModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (errors.serverError) {
@@ -39,13 +44,11 @@ const FormRegister = () => {
     setErrorModal(false);
   };
 
-  // Función para validar el formato del correo electrónico
   const validarEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
-  // Función para validar la seguridad de la contraseña
   const validarPassword = (password) => {
     const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return regex.test(password);
@@ -78,6 +81,57 @@ const FormRegister = () => {
         ...prev,
         [`error${name.charAt(0).toUpperCase() + name.slice(1)}`]: false,
       }));
+    }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  // Manejador para cuando se selecciona un archivo
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      // Validar que sea una imagen
+      if (!file.type.startsWith("image/")) {
+        setErrors({
+          ...errors,
+          errorPhotoUrl: "El archivo debe ser una imagen",
+        });
+        return;
+      }
+
+      // Crear una URL para previsualizar la imagen
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewImage(objectUrl);
+
+      // Subir la imagen a Firebase
+      setSubiendoImagen(true);
+      const photoUrl = await uploadProfileImage(file);
+
+      // Actualizar el estado con la URL de la imagen
+      setUsuario({
+        ...usuario,
+        photoUrl,
+      });
+
+      // Limpiar cualquier error previo
+      if (errors.errorPhotoUrl) {
+        setErrors({
+          ...errors,
+          errorPhotoUrl: false,
+        });
+      }
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      setErrors({
+        ...errors,
+        errorPhotoUrl: "Error al subir la imagen. Inténtalo de nuevo.",
+      });
+    } finally {
+      setSubiendoImagen(false);
     }
   };
 
@@ -158,6 +212,7 @@ const FormRegister = () => {
         password: usuario.password,
         role: usuario.role,
         phoneNumber: usuario.phoneNumber.trim(),
+        photoUrl: usuario.photoUrl || undefined,
       };
 
       const response = await axiosConfig.post(
@@ -174,7 +229,8 @@ const FormRegister = () => {
         password: "",
         confirmarPassword: "",
         phoneNumber: "",
-        role: "user",
+        role: "",
+        photoUrl: "",
       });
     } catch (err) {
       console.error("Error completo:", err);
@@ -202,34 +258,69 @@ const FormRegister = () => {
     }
   };
 
+  const getRoleText = () => {
+    if (!usuario.role) return "";
+    return usuario.role === "admin" ? "Super Admin" : "Reclutador";
+  };
+
   return (
-    <div className=" bg-white w-full text-gray-700 flex items-center justify-center p-6">
-      <div className="w-full max-w-6xl bg-white rounded-md shadow-md border border-gray-200 flex flex-col lg:flex-row overflow-hidden">
-        {/* Perfil a la izquierda */}
-        <div className="w-full lg:w-1/3 bg-gray-100 flex flex-col items-center justify-center p-10 border-r">
-          <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mb-4">
-            <svg
-              className="w-10 h-10 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5.121 17.804A8.003 8.003 0 0112 16a8.003 8.003 0 016.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+    <div className="bg-white w-full text-gray-700 flex p-8 mt-8">
+      <div className="w-full max-w-6xl bg-white flex flex-col lg:flex-row overflow-hidden">
+        <div className="w-full lg:w-1/3 flex flex-col items-center ">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/*"
+          />
+
+          {/* Imagen de perfil clickeable */}
+          <div
+            className="w-38 h-38  bg-gray-300 rounded-full overflow-hidden mb-4 cursor-pointer relative"
+            onClick={handleImageClick}
+          >
+            {subiendoImagen && (
+              <div className="absolute inset-0 flex items-center justify-center text-black">
+                <span className="text-xs">Subiendo...</span>
+              </div>
+            )}
+            {previewImage ? (
+              <img
+                src={previewImage || "@/assets/img/editarImagenIcon.svg"}
+                alt="Vista previa"
+                className="w-38 h-38 object-cover"
               />
-            </svg>
+            ) : (
+              <img
+                src={editarImagenIcon}
+                alt="Editar imagen"
+                className="w-full h-full object-contain"
+              />
+            )}
+            <div className="absolute inset-0 flex items-center justify-center transition-all duration-200">
+              <span className=" text-xs opacity-0 hover:opacity-100">
+                Cambiar foto
+              </span>
+            </div>
           </div>
-          <p className="text-sm font-semibold">Nombre</p>
-          <p className="text-sm text-gray-500">Rol</p>
+          {errors.errorPhotoUrl && (
+            <p className="text-red-500 text-xs mt-1 mb-2">
+              {errors.errorPhotoUrl}
+            </p>
+          )}
+          <h3 className="text-base font-medium text-center">
+            {usuario.displayName || "Nombre y Apellido"}
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">{getRoleText() || "Rol"}</p>
         </div>
 
         {/* Formulario */}
-        <div className="w-full lg:w-2/3 p-10">
-          <h2 className="text-xl font-semibold mb-6 border-b pb-2">
-            Crear nuevo usuario
+        <div className="w-full lg:w-2/3 p-8 ">
+          <h2 className="text-2xl font-medium mb-6 pb-2">
+            <span className="border-b-4 border-amber-500">
+              Crear nuevo usuario
+            </span>
           </h2>
 
           {errors.serverError && (
@@ -238,7 +329,7 @@ const FormRegister = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm mb-1">
@@ -253,8 +344,8 @@ const FormRegister = () => {
                   className={`w-full border ${
                     errors.errorDisplayName
                       ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-md p-2`}
+                      : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorDisplayName && (
                   <p className="text-red-500 text-sm mt-1">
@@ -275,38 +366,12 @@ const FormRegister = () => {
                   className={`w-full border ${
                     errors.errorPhoneNumber
                       ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-md p-2`}
+                      : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
-                <p className="text-gray-500 text-xs mt-1">
-                  Debe incluir el símbolo + y el código de país (ej: +54 para
-                  Argentina) sin espacios ni guiones
-                </p>
                 {errors.errorPhoneNumber && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.errorPhoneNumber}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm mb-1">
-                  Rol<span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="role"
-                  value={usuario.role}
-                  onChange={handleChange}
-                  className={`w-full border ${
-                    errors.errorRole ? "border-red-500" : "border-gray-300"
-                  } rounded-md p-2`}
-                >
-                  <option value="">Elige tu rol</option>
-                  <option value="user">Reclutador</option>
-                  <option value="admin">Super Admin</option>
-                </select>
-                {errors.errorRole && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.errorRole}
                   </p>
                 )}
               </div>
@@ -319,14 +384,36 @@ const FormRegister = () => {
                   name="email"
                   value={usuario.email}
                   onChange={handleChange}
-                  placeholder="Ingresa tu email"
+                  placeholder="ejemplo@correo.com"
                   className={`w-full border ${
-                    errors.errorEmail ? "border-red-500" : "border-gray-300"
-                  } rounded-md p-2`}
+                    errors.errorEmail ? "border-red-500" : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorEmail && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.errorEmail}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm mb-1">
+                  Rol<span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="role"
+                  value={usuario.role}
+                  onChange={handleChange}
+                  className={`w-full border ${
+                    errors.errorRole ? "border-red-500" : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
+                >
+                  <option value="">Seleccionar rol</option>
+                  <option value="user">Reclutador</option>
+                  <option value="admin">Super Admin</option>
+                </select>
+                {errors.errorRole && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.errorRole}
                   </p>
                 )}
               </div>
@@ -341,8 +428,8 @@ const FormRegister = () => {
                   onChange={handleChange}
                   placeholder="Ingresa tu contraseña"
                   className={`w-full border ${
-                    errors.errorPassword ? "border-red-500" : "border-gray-300"
-                  } rounded-md p-2`}
+                    errors.errorPassword ? "border-red-500" : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorPassword && (
                   <p className="text-red-500 text-sm mt-1">
@@ -363,8 +450,8 @@ const FormRegister = () => {
                   className={`w-full border ${
                     errors.errorConfirmarPassword
                       ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-md p-2`}
+                      : "border-gray-200"
+                  } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorConfirmarPassword && (
                   <p className="text-red-500 text-sm mt-1">
@@ -377,14 +464,14 @@ const FormRegister = () => {
             <div className="flex justify-end gap-4 mt-8">
               <button
                 type="button"
-                className="px-5 py-2 rounded-md border border-gray-400 text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={cargando}
-                className="px-5 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-60"
+                className="px-5 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-60"
               >
                 {cargando ? "Procesando..." : "Guardar"}
               </button>
