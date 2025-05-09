@@ -75,7 +75,7 @@ const VacancyView = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                 {/* Columna Izquierda */}
                 <div className="md:col-span-2 +">
-                  <section className="bg-gray-100 rounded-lg p-4 ">
+                  <section className="rounded-lg p-4 ">
                     <h2 className="text-lg font-semibold ">Descripcion</h2>
                     <p className="text-sm text-gray-700">
                       {vacante.descripcion ||
@@ -91,42 +91,37 @@ const VacancyView = () => {
                 </div>
 
                 {/* Columna Derecha */}
-                <div className="space-y-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-md shadow-sm">
+                <div className="space-y-5 text-sm p-4 rounded-md">
+                  <h2 className="text-2xl font-semibold">Detalles</h2>
+                  <div className="flex items-center space-x-2">
+                    <FiClipboard className="w-6 h-6" />
+                    <span className="font-medium text-md">
+                      Experiencia: {vacante.experiencia || "Sin experiencia"}
+                    </span>
+                  </div>
                   <div className="flex items-center space-x-2">
                     <FiBriefcase />
                     <span>
-                      {/* <strong>Cliente:</strong> {vacante.cliente || "Grupo Assa"} */}
+                      <strong>Modalidad:</strong>{" "}
+                      {vacante.modalidad || "Remoto"}
                     </span>
                   </div>
+
+                  <div className="flex items-center space-x-2">
+                    <FiUsers />
+                    <span>
+                      Ubicación: {""}
+                      {vacante.ubicacion || "Argentina"}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span>Jornada: {vacante.jornada || "Full Time"}</span>
+                  </div>
+
                   <div className="flex items-center space-x-2">
                     <FiCheckCircle />
                     <span>
                       <strong>Estado:</strong> {vacante.estado || "Abierta"}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FiUsers />
-                    <span>
-                      {/* <strong>Seleccionados:</strong> {vacante.seleccionados || 15} */}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FiClipboard />
-                    <span>
-                      {/* <strong>Vacantes:</strong> {vacante.cupos || 2} */}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FiUser />
-                    <span>
-                      <strong>Reclutador:</strong>{" "}
-                      {/* {vacante.reclutador || "Lara Tancredi"} */}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FiCalendar />
-                    <span>
-                      {/* <strong>Contratación:</strong> {vacante.fecha || "15/10/26"} */}
                     </span>
                   </div>
                 </div>
