@@ -111,13 +111,17 @@ const Sidebar = () => {
 
       {/* Sidebar fijo en pantallas grandes */}
       <aside className="hidden md:fixed md:flex flex-col w-64 bg-[#00254B] text-white shadow-lg p-6 h-screen top-0 left-0 z-30">
-        <div className="mb-8">
-          <h2 className="text-xl font-bold">Talent Match</h2>
+        <div className="my-11">
+          <h1 className="font-semibold text-2xl tracking-wide">
+            {" "}
+            <span className="text-white">Talent </span>
+            <span className="text-orange-400 italic">Match</span>
+          </h1>
         </div>
 
-        <nav className="space-y-2 text-lg font-medium flex flex-col h-[calc(100%-8rem)]">
+        <nav className="space-y-3 text-lg font-medium flex flex-col h-[calc(100%-8rem)]">
           {/* Elementos principales del menú */}
-          <div className="flex-1">
+          <div className="flex-1 space-y-5">
             {menuItems.map((item) => (
               <NavLink
                 key={item.title}
