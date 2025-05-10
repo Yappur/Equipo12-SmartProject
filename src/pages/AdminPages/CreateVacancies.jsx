@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
-import { BriefcaseMedical, CirclePlus } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import bagIcon from "../../assets/img/DesingExports/bag.svg";
 
 const CreateVacancies = () => {
@@ -154,20 +154,7 @@ const CreateVacancies = () => {
                     <option value="hibrido">Híbrido</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
-                    </svg>
+                    <ChevronDown className="w-7 h-7" />
                   </div>
                 </div>
               </div>
@@ -196,20 +183,7 @@ const CreateVacancies = () => {
                     <option value="alta">Alta</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
-                    </svg>
+                    <ChevronDown className="w-7 h-7" />
                   </div>
                 </div>
               </div>
@@ -234,20 +208,7 @@ const CreateVacancies = () => {
                     <option value="medio tiempo">Medio tiempo</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
-                    </svg>
+                    <ChevronDown className="w-7 h-7" />
                   </div>
                 </div>
               </div>
@@ -296,20 +257,7 @@ const CreateVacancies = () => {
                     <option value="cancelado">Cancelado</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
-                    </svg>
+                    <ChevronDown className="w-7 h-7" />
                   </div>
                 </div>
               </div>

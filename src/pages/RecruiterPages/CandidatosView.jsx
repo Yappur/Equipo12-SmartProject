@@ -76,18 +76,18 @@ const CandidatosView = () => {
     );
   }
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-medium text-[#00254B] mb-4">
+    <div className="max-w-4xl mx-auto p-4">
+      <h1 className="text-2xl font-semibold text-[#00254B] mb-4">
         Candidatos/Nuevos Candidatos
       </h1>
 
       {!showForm ? (
         <div className="space-y-6">
           <div
-            className="flex flex-col items-center justify-center cursor-pointer py-16 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50"
+            className="flex flex-col items-center justify-center cursor-pointer py-16"
             onClick={() => handleShowForm()}
           >
-            <div className="mb-2">
+            <div className="relative mb-2">
               <img
                 src={crearUser || "/placeholder.svg"}
                 alt="crearUser"
@@ -98,7 +98,7 @@ const CandidatosView = () => {
           </div>
 
           {/* Lista de vacantes del reclutador */}
-          {vacancies.length > 0 ? (
+          {/* {vacancies.length > 0 ? (
             <div className="mt-8">
               <h2 className="text-xl font-medium text-[#00254B] mb-4">
                 Mis Vacantes
@@ -144,10 +144,10 @@ const CandidatosView = () => {
                 ellas.
               </p>
             </div>
-          )}
+          )} */}
         </div>
       ) : (
-        <div className="w-full">
+        <div className="">
           <FormCandidatos
             onClose={handleHideForm}
             vacancyId={selectedVacancy}

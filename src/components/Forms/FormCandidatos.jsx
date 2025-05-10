@@ -149,8 +149,8 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     }
   };
   return (
-    <div className="w-full p-4">
-      <div className="bg-white w-full">
+    <div className=" p-4">
+      <div className="bg-white ">
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-4 "
@@ -194,49 +194,11 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
               placeholder="+123456789"
               required
             />
-            <div className="col-span-2 mt-5">
-              <label className="block text-sm font-semilight mb-1">
-                Importar CV (PDF)*
-              </label>
-              <input
-                type="file"
-                accept=".pdf"
-                onChange={(e) => handleFileUpload(e.target.files[0])}
-                className="w-full border border-gray-400 bg-gray-100 rounded p-2"
-              />
-            </div>
           </div>
-
-          <div className="col-span-2">
-            <label className="block text-sm font-medium mb-2">Aptitudes</label>
-            <div className="flex flex-wrap gap-2">
-              {candidato.skills.map((skills, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  value={skills}
-                  onChange={(e) => handleSkillChange(index, e.target.value)}
-                  className="flex-1 border border-gray-400 bg-gray-100 rounded p-2"
-                  placeholder="Palabra clave"
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="col-span-2">
-            <button
-              type="button"
-              onClick={newSkill}
-              className="border border-gray-400 bg-white rounded px-4 py-2 text-sm"
-            >
-              + Agregar aptitud
-            </button>
-          </div>
-
           {isRecruiter && (
-            <div className="col-span-2 my-2">
-              <label className="block text-sm font-semilight mb-1">
-                Seleccionar Vacante*
+            <div className="my-2">
+              <label className="text-sm font-semilight mb-1">
+                Vacante a cubrir*
               </label>
               <select
                 name="vacancyId"
@@ -268,6 +230,44 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
               )}
             </div>
           )}
+
+          <div className="col-span-2 mt-5">
+            <label className="block text-sm font-semilight mb-1">
+              Importar CV (PDF)*
+            </label>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={(e) => handleFileUpload(e.target.files[0])}
+              className="w-full border border-gray-400 bg-gray-100 rounded p-2"
+            />
+          </div>
+
+          <div className="col-span-2">
+            <label className="block text-sm font-medium mb-2">Aptitudes</label>
+            <div className="flex flex-wrap gap-2">
+              {candidato.skills.map((skills, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  value={skills}
+                  onChange={(e) => handleSkillChange(index, e.target.value)}
+                  className="flex-1 border border-gray-400 bg-gray-100 rounded p-2"
+                  placeholder="Palabra clave"
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="col-span-2">
+            <button
+              type="button"
+              onClick={newSkill}
+              className="border border-gray-400 bg-white rounded px-4 py-2 text-sm"
+            >
+              + Agregar aptitud
+            </button>
+          </div>
 
           <div className="col-span-2 flex justify-end gap-2 mt-6">
             <button
