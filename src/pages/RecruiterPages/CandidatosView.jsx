@@ -10,41 +10,71 @@ const CandidatosView = () => {
   const [vacancies, setVacancies] = useState([]);
   const [selectedVacancy, setSelectedVacancy] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchVacancies = async () => {
+    if (!idUser?.id) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      console.log("Obteniendo vacantes para el usuario:", idUser.id);
+      const response = await axiosConfig.get("/vacancies");
+      console.log("Todas las vacantes:", response.data);
+
+      const recruiterVacancies = response.data.filter((vacancy) => {
+        console.log(`Comparando: ${vacancy.userId} con ${idUser.id}`);
+
+        return String(vacancy.userId) === String(idUser.id);
+      });
+
+      console.log("Vacantes filtradas del reclutador:", recruiterVacancies);
+      setVacancies(recruiterVacancies);
+    } catch (error) {
+      console.error("Error al cargar vacantes:", error);
+      setError("Error al cargar vacantes. Por favor, inténtelo de nuevo.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchVacancies = async () => {
-      try {
-        const response = await axiosConfig.get("/vacancies");
-        const recruiterVacancies = response.data.filter(
-          (vacancy) => vacancy.createdBy === idUser?.id
-        );
-        setVacancies(recruiterVacancies);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error al cargar vacantes:", error);
-        setLoading(false);
-      }
-    };
-
-    if (idUser?.id) {
-      fetchVacancies();
-    }
+    fetchVacancies();
   }, [idUser]);
 
   const handleShowForm = (vacancyId = null) => {
+    console.log("Mostrando formulario con vacancyId:", vacancyId);
     setSelectedVacancy(vacancyId);
     setShowForm(true);
   };
 
   const handleHideForm = () => {
+    console.log("Ocultando formulario");
     setShowForm(false);
     setSelectedVacancy(null);
+    fetchVacancies();
   };
 
-  if (loading && idUser) {
+  if (loading) {
     return <div className="p-4">Cargando vacantes...</div>;
   }
 
+  if (error) {
+    return (
+      <div className="p-4 text-red-500">
+        {error}
+        <button
+          onClick={fetchVacancies}
+          className="ml-4 px-3 py-1 bg-blue-500 text-white rounded"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
+  }
   return (
     <div className="p-4">
       <h1 className="text-2xl font-medium text-[#00254B] mb-4">
@@ -54,7 +84,7 @@ const CandidatosView = () => {
       {!showForm ? (
         <div className="space-y-6">
           <div
-            className="flex flex-col items-center justify-center cursor-pointer py-16"
+            className="flex flex-col items-center justify-center cursor-pointer py-16 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50"
             onClick={() => handleShowForm()}
           >
             <div className="mb-2">
@@ -68,7 +98,7 @@ const CandidatosView = () => {
           </div>
 
           {/* Lista de vacantes del reclutador */}
-          {vacancies.length > 0 && (
+          {vacancies.length > 0 ? (
             <div className="mt-8">
               <h2 className="text-xl font-medium text-[#00254B] mb-4">
                 Mis Vacantes
@@ -81,10 +111,12 @@ const CandidatosView = () => {
                     onClick={() => handleShowForm(vacancy.id)}
                   >
                     <h3 className="font-medium">
-                      {vacancy.nombre || vacancy.title}
+                      {vacancy.nombre || vacancy.title || "Vacante sin título"}
                     </h3>
-                    <p className="text-sm text-gray-600 mt-2">
-                      {vacancy.descripcion || vacancy.description}
+                    <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                      {vacancy.descripcion ||
+                        vacancy.description ||
+                        "Sin descripción"}
                     </p>
                     <div className="mt-4 flex justify-between items-center">
                       <span className="text-xs text-gray-500">
@@ -103,6 +135,14 @@ const CandidatosView = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          ) : (
+            <div className="mt-8 p-4 border rounded-lg bg-yellow-50 text-yellow-800">
+              <h2 className="text-xl font-medium mb-2">No tienes vacantes</h2>
+              <p>
+                Debes crear vacantes primero antes de poder agregar candidatos a
+                ellas.
+              </p>
             </div>
           )}
         </div>

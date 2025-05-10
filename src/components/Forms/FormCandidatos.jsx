@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
-import { useParams } from "react-router-dom";
 import { uploadCV } from "../../firebase/Upload/uploadPDF";
 import { useAuth } from "../../context/AuthContext";
 
@@ -14,30 +13,59 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     phone: "",
     cvUrl: "",
     skills: ["", ""],
-    status: "Abierta",
+    status: "Recibido",
   });
   const [cargando, setCargando] = useState(false);
+  const [loadingVacancies, setLoadingVacancies] = useState(false);
 
   useEffect(() => {
     const fetchRecruiterVacancies = async () => {
       if (isRecruiter && idUser) {
         try {
+          setLoadingVacancies(true);
+          console.log("Buscando vacantes para el reclutador:", idUser);
           const response = await axiosConfig.get("/vacancies");
-          const recruiterVacancies = response.data.filter(
-            (vacancy) => vacancy.createdBy === idUser.id
-          );
+          console.log("Vacantes obtenidas:", response.data);
+
+          const recruiterVacancies = response.data.filter((vacancy) => {
+            console.log(`Comparando: ${vacancy.userId} con ${idUser.id}`);
+            return String(vacancy.userId) === String(idUser.id);
+          });
+
+          console.log("Vacantes filtradas:", recruiterVacancies);
           setVacanciesList(recruiterVacancies);
 
-          if (!vacancyId && recruiterVacancies.length > 0) {
+          if (vacancyId) {
+            console.log("Usando vacancyId proporcionado:", vacancyId);
+            setSelectedVacancyId(vacancyId);
+          } else if (recruiterVacancies.length > 0 && !selectedVacancyId) {
+            console.log("Usando primera vacante:", recruiterVacancies[0].id);
             setSelectedVacancyId(recruiterVacancies[0].id);
           }
         } catch (error) {
           console.error("Error al obtener las vacantes:", error);
+        } finally {
+          setLoadingVacancies(false);
         }
+      } else if (vacancyId) {
+        // Si no es reclutador pero hay un vacancyId proporcionado
+        console.log("No es reclutador pero hay vacancyId:", vacancyId);
+        setSelectedVacancyId(vacancyId);
+        setLoadingVacancies(false);
+      } else {
+        setLoadingVacancies(false);
       }
     };
+
     fetchRecruiterVacancies();
   }, [isRecruiter, idUser, vacancyId]);
+
+  useEffect(() => {
+    if (vacancyId) {
+      console.log("vacancyId cambió a:", vacancyId);
+      setSelectedVacancyId(vacancyId);
+    }
+  }, [vacancyId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,6 +76,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   };
 
   const handleVacancyChange = (e) => {
+    console.log("Vacante seleccionada:", e.target.value);
     setSelectedVacancyId(e.target.value);
   };
 
@@ -85,6 +114,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       const filtredSkills = candidato.skills.filter((apt) => apt !== "");
 
       const finalVacancyId = isRecruiter ? selectedVacancyId : vacancyId;
+      console.log("ID de vacante para enviar:", finalVacancyId);
 
       if (!finalVacancyId) {
         alert("Por favor seleccione una vacante");
@@ -92,22 +122,28 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
         return;
       }
 
-      const response = await axiosConfig.post("/applications", {
+      const candidatoData = {
         fullName: candidato.fullName,
         email: candidato.email,
         phone: candidato.phone,
-
         cvUrl: candidato.cvUrl,
         skills: filtredSkills,
         status: candidato.status,
         vacancyId: finalVacancyId,
-      });
+      };
+
+      console.log("Enviando datos del candidato:", candidatoData);
+      const response = await axiosConfig.post("/applications", candidatoData);
+      console.log("Respuesta:", response.data);
 
       alert("Candidato creado exitosamente");
       onClose();
     } catch (error) {
-      console.error(error);
-      alert("Error al crear el candidato");
+      console.error("Error al crear el candidato:", error);
+      alert(
+        "Error al crear el candidato: " +
+          (error.response?.data?.message || error.message)
+      );
     } finally {
       setCargando(false);
     }
@@ -212,10 +248,24 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                 <option value="">Seleccionar una vacante</option>
                 {vacanciesList.map((vacancy) => (
                   <option key={vacancy.id} value={vacancy.id}>
-                    {vacancy.title}
+                    {vacancy.title ||
+                      vacancy.nombre ||
+                      vacancy.puesto ||
+                      "Vacante sin título"}
                   </option>
                 ))}
               </select>
+              {vacanciesList.length === 0 && !loadingVacancies && (
+                <p className="text-sm text-red-500 mt-1">
+                  No hay vacantes disponibles. Por favor, cree una vacante
+                  primero.
+                </p>
+              )}
+              {loadingVacancies && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Cargando vacantes...
+                </p>
+              )}
             </div>
           )}
 
