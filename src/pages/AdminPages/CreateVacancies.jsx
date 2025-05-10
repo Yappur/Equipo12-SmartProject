@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { uploadImage } from "../../firebase/Upload/uploadImage";
 import { BriefcaseMedical, CirclePlus } from "lucide-react";
+import { showToast } from "@/components/Notificaciones";
 
 const CreateVacancies = () => {
   const [showForm, setShowForm] = useState(false);
@@ -29,13 +30,12 @@ const CreateVacancies = () => {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.includes("image")) {
-        alert("Por favor, sube solo archivos de imagen.");
+        showToast("Error", "Por favor, sube solo archivos de imagen.");
         return;
       }
 
       setSelectedFile(file);
 
-      // Crear URL temporal para la vista previa
       const previewURL = URL.createObjectURL(file);
       setImagePreview(previewURL);
     }
@@ -54,7 +54,7 @@ const CreateVacancies = () => {
       !vacancy.prioridad ||
       !vacancy.ubicacion
     ) {
-      alert("Por favor, completa todos los campos requeridos");
+      showToast("Error", "Por favor, completa todos los campos requeridos");
       setIsSubmitting(false);
       return;
     }
@@ -68,7 +68,7 @@ const CreateVacancies = () => {
           console.log("Imagen subida exitosamente:", imageUrl);
         } catch (imageError) {
           console.error("Error al subir la imagen:", imageError);
-          alert("Error al subir la imagen. Inténtalo de nuevo.");
+          showToast("Error", "Error al subir la imagen. Inténtalo de nuevo.");
           setIsSubmitting(false);
           return;
         }
@@ -84,7 +84,7 @@ const CreateVacancies = () => {
       const response = await axiosConfig.post("/vacancies", nuevaVacante);
 
       if (response.status === 200 || response.status === 201) {
-        alert("Vacante creada con éxito");
+        showToast("¡Éxito!", "Vacante creada con éxito");
 
         setVacancy({
           nombre: "",
@@ -100,13 +100,19 @@ const CreateVacancies = () => {
         setImagePreview(null);
         setShowForm(false);
       } else {
-        alert(`Error al crear la vacante: ${response.statusText}`);
+        showToast("Error", `Error al crear la vacante: ${response.statusText}`);
       }
     } catch (error) {
       console.error("Error al crear vacante:", error);
-      alert(
-        `Error al crear la vacante: ${error.message || "Error desconocido"}`
-      );
+      let errorMessage = "Error desconocido";
+
+      if (error.response && error.response.data) {
+        errorMessage = error.response.data.message || error.response.data;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      showToast("Error", `Error al crear la vacante: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -115,15 +121,20 @@ const CreateVacancies = () => {
   return (
     <>
       <div className="flex ">
-        {isFirstStep ?
-          <div className="flex flex-col h-screen w-full cursor-pointer" onClick={() => setIsFirstStep(false)}>
+        {isFirstStep ? (
+          <div
+            className="flex flex-col h-screen w-full cursor-pointer"
+            onClick={() => setIsFirstStep(false)}
+          >
             <h1 className="text-2xl font-medium text-[#00254B] mb-4">Vacantes</h1>
             <div className="flex flex-col items-center text-center">
               <BriefcaseMedical size={100} color="#00254B" />
-              <h1 className="text-2xl font-medium text-[#00254B] mb-4">Nueva vacante</h1>
+              <h1 className="text-2xl font-medium text-[#00254B] mb-4">
+                Nueva vacante
+              </h1>
             </div>
           </div>
-          :
+        ) : (
           <div className="flex flex-col ml-10 mt-4 sm:mr-10 ">
             <h1 className="text-2xl font-medium text-[#00254B] mb-4">Vacantes</h1>
 
@@ -206,7 +217,6 @@ const CreateVacancies = () => {
                 </div>
               </div>
 
-              {/* Nuevos campos: modalidad, prioridad y ubicación */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="prioridad" className="block">
@@ -260,7 +270,6 @@ const CreateVacancies = () => {
                 </p>
               </div>
 
-              {/* Vista previa de la imagen si hay imagen cargada */}
               {imagePreview && (
                 <div className="mt-2">
                   <p className="text-sm text-gray-700 mb-1">Vista previa:</p>
@@ -269,7 +278,6 @@ const CreateVacancies = () => {
                     alt="Vista previa"
                     className="max-h-40 border rounded"
                     onLoad={() => {
-                      // Liberar la URL temporal cuando ya no se necesite
                       URL.revokeObjectURL(imagePreview);
                     }}
                   />
@@ -279,7 +287,7 @@ const CreateVacancies = () => {
               <div className="flex justify-end  gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
+                  onClick={() => setIsFirstStep(true)}
                   className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded my-4"
                 >
                   Cancelar
@@ -287,10 +295,11 @@ const CreateVacancies = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`${isSubmitting
-                    ? "bg-[#00254B]"
-                    : "bg-[#00254B] hover:bg-[#1e253d]"
-                    } text-white py-2 px-4 rounded my-4 gap-2`}
+                  className={`${
+                    isSubmitting
+                      ? "bg-[#00254B]"
+                      : "bg-[#00254B] hover:bg-[#1e253d]"
+                  } text-white py-2 px-4 rounded my-4 gap-2`}
                 >
                   {isSubmitting ? (
                     <>
@@ -304,7 +313,7 @@ const CreateVacancies = () => {
               </div>
             </form>
           </div>
-        }
+        )}
       </div>
     </>
   );

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { useParams } from "react-router-dom";
 import { uploadCV } from "../../firebase/Upload/uploadPDF";
+import { showToast } from "@/components/Notificaciones";
 
 const FormCandidatos = ({ onClose, vacancyId }) => {
   const [candidato, setCandidato] = useState({
@@ -28,8 +29,10 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
     try {
       const downloadURL = await uploadCV(file);
       setCandidato((prev) => ({ ...prev, cvUrl: downloadURL }));
+      showToast("¡Archivo subido!", "CV cargado correctamente");
     } catch (error) {
       console.error("Error subiendo CV:", error);
+      showToast("Error", "No se pudo cargar el CV. Inténtelo de nuevo.");
     }
   };
 
@@ -59,22 +62,34 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
         fullName: candidato.fullName,
         email: candidato.email,
         phone: candidato.phone,
-
         cvUrl: candidato.cvUrl,
         skills: filtredSkills,
         status: candidato.status,
         vacancyId: vacancyId,
       });
 
-      alert("Candidato creado exitosamente");
+      showToast("¡Éxito!", "Candidato creado exitosamente");
       onClose();
     } catch (error) {
       console.error(error);
-      alert("Error al crear el candidato");
+      if (error.response && error.response.data) {
+        showToast(
+          "Error",
+          `Error al crear el candidato: ${
+            error.response.data.message || "Verifique los datos e intente nuevamente"
+          }`
+        );
+      } else {
+        showToast(
+          "Error",
+          "Error al crear el candidato. Verifique su conexión e intente nuevamente."
+        );
+      }
     } finally {
       setCargando(false);
     }
   };
+
   return (
     <div className="w-full p-4">
       <div className="bg-white w-full">
