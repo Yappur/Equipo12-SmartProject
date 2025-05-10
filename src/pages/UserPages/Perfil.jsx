@@ -44,7 +44,6 @@ const Perfil = () => {
                 setLoading(true);
                 const auth = getAuth();
                 const user = auth.currentUser;
-                console.log("🚀 ~ fetchUserData ~ user:", user)
 
                 if (!user) {
                     throw new Error("Usuario no autenticado");
@@ -88,9 +87,13 @@ const Perfil = () => {
             const uid = user.uid;
 
             const updateData = {
-                nombre: data.displayName,
-                telefono: data.phoneNumber || "",
+                displayName: data.displayName,
+                phoneNumber: data.phoneNumber || "",
+                email: userData.email,
+                photoURL: userData.photoURL || ""
             };
+
+            console.log("Datos a enviar:", updateData);
 
             await axiosConfig.patch(`/users/${uid}`, updateData);
 
@@ -104,7 +107,8 @@ const Perfil = () => {
         } catch (err) {
             console.error("Error al actualizar el perfil:", err);
 
-            if (err.response && err.response.data) {
+            if (err.response) {
+                console.log("Respuesta del error:", err.response.data);
                 setError(`Error: ${err.response.data.message || JSON.stringify(err.response.data)}`);
             } else {
                 setError("Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
@@ -220,13 +224,22 @@ const Perfil = () => {
                                         id="displayName"
                                         {...registerPerfil("displayName", {
                                             required: "El nombre y apellido es obligatorio",
-                                            minLength: {
-                                                value: 4,
-                                                message: "El nombre debe tener al menos 4 caracteres",
-                                            },
+                                            validate: value => {
+                                                const words = value.trim().split(/\s+/);
+                                                if (words.length < 2) {
+                                                    return "Debe ingresar nombre y apellido";
+                                                }
+
+                                                for (const word of words) {
+                                                    if (word.length < 2) {
+                                                        return "El nombre y apellido debe tener al menos 2 caracteres";
+                                                    }
+                                                }
+                                                return true;
+                                            }
                                         })}
                                         className={`border ${errorsPerfil.displayName ? "border-red-500" : "border-gray-300"
-                                            } rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                                            } rounded-md p-2`}
                                         placeholder="Escribe tu nombre y apellido"
                                     />
                                     {errorsPerfil.displayName && (
@@ -248,15 +261,15 @@ const Perfil = () => {
                                         id="phoneNumber"
                                         {...registerPerfil("phoneNumber", {
                                             pattern: {
-                                                value: /^[0-9]{10}$/,
-                                                message: "Ingrese un número válido de 10 dígitos",
+                                                value: /^\+[0-9]{11,}$/,
+                                                message: "Ingrese un número de teléfono válido",
                                             },
                                         })}
                                         className={`border ${errorsPerfil.phoneNumber
                                             ? "border-red-500"
                                             : "border-gray-300"
-                                            } rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                                        placeholder="Escribe tu número de teléfono"
+                                            } rounded-md p-2`}
+                                        placeholder="Ej: +52123456789"
                                     />
                                     {errorsPerfil.phoneNumber && (
                                         <span className="text-red-500 text-xs mt-1">
@@ -275,21 +288,13 @@ const Perfil = () => {
                                     <input
                                         type="email"
                                         id="email"
-                                        {...registerPerfil("email", {
-                                            required: "El correo electrónico es obligatorio",
-                                            pattern: {
-                                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                                message: "Correo electrónico inválido"
-                                            }
-                                        })}
-                                        className={`border ${errorsPerfil.email ? "border-red-500" : "border-gray-300"} rounded-md p-2`}
-                                        placeholder="Ingresa tu correo electrónico"
+                                        {...registerPerfil("email")}
+                                        className="border border-gray-300 rounded-md p-2 bg-gray-100"
+                                        disabled
                                     />
-                                    {errorsPerfil.email && (
-                                        <span className="text-red-500 text-xs mt-1">
-                                            {errorsPerfil.email.message}
-                                        </span>
-                                    )}
+                                    <p className="text-xs text-gray-500">
+                                        El correo no puede ser modificado
+                                    </p>
                                 </div>
 
                                 <div className="flex flex-col gap-1">
