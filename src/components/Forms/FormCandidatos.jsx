@@ -100,7 +100,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
         cvUrl: candidato.cvUrl,
         skills: filtredSkills,
         status: candidato.status,
-        vacancyId: vacancyId,
+        vacancyId: finalVacancyId,
       });
 
       alert("Candidato creado exitosamente");

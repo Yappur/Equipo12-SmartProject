@@ -45,9 +45,9 @@ const CreateVacancies = () => {
       setIsSubmitting(false);
       return;
     }
-
     try {
       const nuevaVacante = {
+        fecha: new Date().toISOString().split("T")[0],
         ...vacancy,
       };
 
@@ -289,7 +289,7 @@ const CreateVacancies = () => {
                     required
                   >
                     <option value="">Añadir estado</option>
-                    <option value="activo">Abierta</option>
+                    <option value="abierta">Abierta</option>
                     <option value="terminado">Terminado</option>
                     <option value="pausado">Pausado</option>
                     <option value="borrador">Borrador</option>

@@ -15,7 +15,6 @@ const CandidatosView = () => {
     const fetchVacancies = async () => {
       try {
         const response = await axiosConfig.get("/vacancies");
-        // Filtrar solo las vacantes del reclutador actual
         const recruiterVacancies = response.data.filter(
           (vacancy) => vacancy.createdBy === idUser?.id
         );
@@ -54,9 +53,8 @@ const CandidatosView = () => {
 
       {!showForm ? (
         <div className="space-y-6">
-          {/* Opción para agregar candidato sin vacante específica */}
           <div
-            className="flex flex-col items-center justify-center cursor-pointer py-16 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50"
+            className="flex flex-col items-center justify-center cursor-pointer py-16"
             onClick={() => handleShowForm()}
           >
             <div className="mb-2">
