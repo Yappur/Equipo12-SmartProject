@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { useParams } from "react-router-dom";
 import { uploadCV } from "../../firebase/Upload/uploadPDF";
+import { useAuth } from "../../context/AuthContext";
 
-const FormCandidatos = ({ onClose, vacancyId }) => {
+const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
+  const { idUser } = useAuth();
+  const [vacanciesList, setVacanciesList] = useState([]);
+  const [selectedVacancyId, setSelectedVacancyId] = useState(vacancyId || "");
   const [candidato, setCandidato] = useState({
     fullName: "",
     email: "",
@@ -14,12 +18,37 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
   });
   const [cargando, setCargando] = useState(false);
 
+  useEffect(() => {
+    const fetchRecruiterVacancies = async () => {
+      if (isRecruiter && idUser) {
+        try {
+          const response = await axiosConfig.get("/vacancies");
+          const recruiterVacancies = response.data.filter(
+            (vacancy) => vacancy.createdBy === idUser.id
+          );
+          setVacanciesList(recruiterVacancies);
+
+          if (!vacancyId && recruiterVacancies.length > 0) {
+            setSelectedVacancyId(recruiterVacancies[0].id);
+          }
+        } catch (error) {
+          console.error("Error al obtener las vacantes:", error);
+        }
+      }
+    };
+    fetchRecruiterVacancies();
+  }, [isRecruiter, idUser, vacancyId]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCandidato({
       ...candidato,
       [name]: value,
     });
+  };
+
+  const handleVacancyChange = (e) => {
+    setSelectedVacancyId(e.target.value);
   };
 
   const handleFileUpload = async (file) => {
@@ -54,6 +83,14 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
     setCargando(true);
     try {
       const filtredSkills = candidato.skills.filter((apt) => apt !== "");
+
+      const finalVacancyId = isRecruiter ? selectedVacancyId : vacancyId;
+
+      if (!finalVacancyId) {
+        alert("Por favor seleccione una vacante");
+        setCargando(false);
+        return;
+      }
 
       const response = await axiosConfig.post("/applications", {
         fullName: candidato.fullName,
@@ -159,6 +196,28 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
               + Agregar aptitud
             </button>
           </div>
+
+          {isRecruiter && (
+            <div className="col-span-2 my-2">
+              <label className="block text-sm font-semilight mb-1">
+                Seleccionar Vacante*
+              </label>
+              <select
+                name="vacancyId"
+                value={selectedVacancyId}
+                onChange={handleVacancyChange}
+                className="w-full border border-gray-400 bg-gray-100 rounded p-2"
+                required
+              >
+                <option value="">Seleccionar una vacante</option>
+                {vacanciesList.map((vacancy) => (
+                  <option key={vacancy.id} value={vacancy.id}>
+                    {vacancy.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="col-span-2 flex justify-end gap-2 mt-6">
             <button
