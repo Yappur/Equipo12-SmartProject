@@ -22,31 +22,29 @@ export const AuthProvider = ({ children }) => {
           const { data } = await axiosConfig.post("/auth/verify-token", {
             idToken: token,
           });
+
           // Si el token es válido, establecer estados
           setIsAuthenticated(true);
           setRole(data.role);
+
           let photoUrl = null;
 
-          if (data.photoUrl) {
+          // Comprobaciones para la URL de la imagen
+          if (data.photoURL) {
+            photoUrl = data.photoURL;
+          } else if (data.photoUrl) {
             photoUrl = data.photoUrl;
-            console.log("URL de imagen encontrada en data.photoUrl:", photoUrl);
-          } else if (data.photoURL) {
-            photoUrl = data.photoURL; // Caso alternativo (mayúscula)
-            console.log("URL de imagen encontrada en data.photoURL:", photoUrl);
-          } else if (data.user && data.user.photoUrl) {
-            photoUrl = data.user.photoUrl;
-            console.log(
-              "URL de imagen encontrada en data.user.photoUrl:",
-              photoUrl
-            );
           } else if (data.user && data.user.photoURL) {
             photoUrl = data.user.photoURL;
-            console.log(
-              "URL de imagen encontrada en data.user.photoURL:",
-              photoUrl
-            );
+          } else if (data.user && data.user.photoUrl) {
+            photoUrl = data.user.photoUrl;
           } else {
-            console.log("No se encontró URL de imagen en la respuesta");
+            try {
+              const userResponse = await axiosConfig.get(`/users/${data.uid}`);
+              if (userResponse.data && userResponse.data.photoURL) {
+                photoUrl = userResponse.data.photoURL;
+              }
+            } catch (userError) {}
           }
 
           // Verificar que photoUrl sea una cadena válida
@@ -55,15 +53,12 @@ export const AuthProvider = ({ children }) => {
             typeof photoUrl === "string" &&
             photoUrl.trim() !== ""
           ) {
-            console.log("URL de imagen de perfil válida:", photoUrl);
             setProfileImg(photoUrl);
           } else {
-            console.log("No se recibió una URL de imagen válida");
             setProfileImg(null);
           }
 
           setNombre(data.name || "Usuario");
-          console.log("Respuesta del backend:", data);
         } else {
           setIsAuthenticated(false);
           setRole(null);
@@ -71,7 +66,6 @@ export const AuthProvider = ({ children }) => {
           setNombre(null);
         }
       } catch (error) {
-        console.error("Error al verificar token:", error);
         localStorage.removeItem("authToken");
         sessionStorage.removeItem("authToken");
         setIsAuthenticated(false);

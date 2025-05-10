@@ -14,16 +14,6 @@ export default function AdminNavbar() {
   const dropdownRef = useRef();
 
   useEffect(() => {
-    console.log("Información de perfil en Navbar:", {
-      role,
-      nombre,
-      profileImg,
-      imageError,
-      imageLoaded,
-    });
-  }, [role, nombre, profileImg, imageError, imageLoaded]);
-
-  useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
@@ -34,19 +24,16 @@ export default function AdminNavbar() {
   }, []);
 
   const handleImageError = () => {
-    console.error("Error al cargar la imagen de perfil:", profileImg);
     setImageLoaded(false);
     setImageError(true);
   };
 
   // Función para confirmar carga exitosa
   const handleImageLoad = () => {
-    console.log("Imagen cargada exitosamente:", profileImg);
     setImageLoaded(true);
     setImageError(false);
   };
 
-  // Verificar que la URL de la imagen sea válida
   const isValidImageUrl =
     profileImg && typeof profileImg === "string" && profileImg.trim() !== "";
   return (

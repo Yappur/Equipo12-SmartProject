@@ -8,10 +8,9 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
     fullName: "",
     email: "",
     phone: "",
-    birthDate: "",
     cvUrl: "",
     skills: ["", ""],
-    status: "Recibido",
+    status: "Abierta",
   });
   const [cargando, setCargando] = useState(false);
 
@@ -52,11 +51,6 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!candidato.birthDate || candidato.birthDate.trim() === "") {
-      alert("Por favor completá la fecha de nacimiento.");
-      return;
-    }
     setCargando(true);
     try {
       const filtredSkills = candidato.skills.filter((apt) => apt !== "");
@@ -65,7 +59,7 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
         fullName: candidato.fullName,
         email: candidato.email,
         phone: candidato.phone,
-        birthDate: candidato.birthDate,
+
         cvUrl: candidato.cvUrl,
         skills: filtredSkills,
         status: candidato.status,
@@ -86,10 +80,10 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
       <div className="bg-white w-full">
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 "
         >
-          <div>
-            <label className="block text-sm font-medium mb-1">
+          <div className="my-2">
+            <label className="block text-sm font-semilight mb-1">
               Nombre y apellido*
             </label>
             <input
@@ -102,8 +96,8 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Mail*</label>
+          <div className="my-2">
+            <label className="block text-sm font-semilight mb-1">Mail*</label>
             <input
               type="email"
               name="email"
@@ -114,21 +108,10 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Fecha de nacimiento*
+          <div className="my-2">
+            <label className="block text-sm font-semilight mb-1">
+              Teléfono*
             </label>
-            <input
-              type="date"
-              name="birthDate"
-              value={candidato.birthDate}
-              onChange={handleChange}
-              className="w-full border border-gray-400 bg-gray-100 rounded p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Teléfono*</label>
             <input
               type="tel"
               name="phone"
@@ -138,19 +121,19 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
               placeholder="+123456789"
               required
             />
+            <div className="col-span-2 mt-5">
+              <label className="block text-sm font-semilight mb-1">
+                Importar CV (PDF)*
+              </label>
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => handleFileUpload(e.target.files[0])}
+                className="w-full border border-gray-400 bg-gray-100 rounded p-2"
+              />
+            </div>
           </div>
 
-          <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">
-              Importar CV (PDF)*
-            </label>
-            <input
-              type="file"
-              accept=".pdf"
-              onChange={(e) => handleFileUpload(e.target.files[0])}
-              className="w-full border border-gray-400 bg-gray-100 rounded p-2"
-            />
-          </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-2">Aptitudes</label>
             <div className="flex flex-wrap gap-2">
