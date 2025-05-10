@@ -1,14 +1,19 @@
-import { useState, useEffect } from "react";
-import { FaUserCircle } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
+import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import axiosConfig from "@/helpers/axios.config";
-import { getAuth } from "firebase/auth";
+import { getAuth, updateProfile } from "firebase/auth";
+import { uploadProfileImage } from "@/firebase/Upload/uploadProfileImage";
+import { useAuth } from "@/context/AuthContext";
 
 const Perfil = () => {
     const [activeTab, setActiveTab] = useState("perfil");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [userData, setUserData] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const fileInputRef = useRef(null);
+    const { updateProfileImage } = useAuth();
 
     const {
         register: registerPerfil,
@@ -44,7 +49,6 @@ const Perfil = () => {
                 setLoading(true);
                 const auth = getAuth();
                 const user = auth.currentUser;
-                console.log("🚀 ~ fetchUserData ~ user:", user)
 
                 if (!user) {
                     throw new Error("Usuario no autenticado");
@@ -56,11 +60,28 @@ const Perfil = () => {
 
                 setValue("displayName", response.data.displayName || "");
                 setValue("email", response.data.email || "");
-                setValue(
-                    "phoneNumber",
-                    response.data.phoneNumber || ""
-                );
+                setValue("phoneNumber", response.data.phoneNumber || "");
                 setValue("role", response.data.role || "");
+
+                if (response.data.photoURL && !user.photoURL) {
+                    await updateProfile(user, {
+                        photoURL: response.data.photoURL
+                    });
+
+                    if (typeof updateProfileImage === 'function') {
+                        updateProfileImage(response.data.photoURL);
+                    }
+                }
+                else if (user.photoURL && !response.data.photoURL) {
+                    await axiosConfig.patch(`/users/${uid}`, {
+                        photoURL: user.photoURL
+                    });
+
+                    setUserData(prevData => ({
+                        ...prevData,
+                        photoURL: user.photoURL
+                    }));
+                }
             } catch (err) {
                 console.error("Error al obtener datos del usuario:", err);
                 setError(
@@ -72,7 +93,61 @@ const Perfil = () => {
         };
 
         fetchUserData();
-    }, [setValue]);
+    }, [setValue, updateProfileImage]);
+
+    const handleImageClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            if (!file.type.startsWith('image/')) {
+                setError("El archivo debe ser una imagen");
+                return;
+            }
+
+            setUploadingImage(true);
+            setError(null);
+
+            const photoURL = await uploadProfileImage(file);
+
+            const auth = getAuth();
+            const user = auth.currentUser;
+
+            if (!user) {
+                throw new Error("Usuario no autenticado");
+            }
+
+            const uid = user.uid;
+
+            await axiosConfig.patch(`/users/${uid}`, {
+                photoURL
+            });
+
+            await updateProfile(user, {
+                photoURL
+            });
+
+            if (typeof updateProfileImage === 'function') {
+                updateProfileImage(photoURL);
+            }
+
+            setUserData(prevData => ({
+                ...prevData,
+                photoURL
+            }));
+
+            alert("Foto de perfil actualizada correctamente");
+        } catch (err) {
+            console.error("Error al subir la imagen:", err);
+            setError("Error al actualizar la foto de perfil: " + (err.message || err));
+        } finally {
+            setUploadingImage(false);
+        }
+    };
 
     const onSubmitPerfil = async (data) => {
         try {
@@ -88,9 +163,13 @@ const Perfil = () => {
             const uid = user.uid;
 
             const updateData = {
-                nombre: data.displayName,
-                telefono: data.phoneNumber || "",
+                displayName: data.displayName,
+                phoneNumber: data.phoneNumber || "",
+                email: userData.email,
+                photoURL: userData.photoURL || ""
             };
+
+            console.log("Datos a enviar:", updateData);
 
             await axiosConfig.patch(`/users/${uid}`, updateData);
 
@@ -104,7 +183,8 @@ const Perfil = () => {
         } catch (err) {
             console.error("Error al actualizar el perfil:", err);
 
-            if (err.response && err.response.data) {
+            if (err.response) {
+                console.log("Respuesta del error:", err.response.data);
                 setError(`Error: ${err.response.data.message || JSON.stringify(err.response.data)}`);
             } else {
                 setError("Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
@@ -166,9 +246,47 @@ const Perfil = () => {
             )}
 
             <section className="flex flex-col items-center justify-center mb-8 w-full">
-                <div className="mb-4">
-                    <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/*"
+                />
+
+                <div
+                    className="mb-4 relative cursor-pointer group"
+                    onClick={handleImageClick}
+                >
+                    {userData?.photoURL ? (
+                        <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
+                            <img
+                                src={userData.photoURL}
+                                alt="Foto de perfil"
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+                                <FaCamera className="text-white text-2xl" />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="relative">
+                            <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full transition-opacity duration-200">
+                                <FaCamera className="text-white text-2xl" />
+                            </div>
+                        </div>
+                    )}
+
+                    {uploadingImage && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="bg-white bg-opacity-75 rounded-full p-2">
+                                <div className="w-6 h-6 border-2 border-t-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+                            </div>
+                        </div>
+                    )}
                 </div>
+
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
                     {userData?.displayName || "Nombre y apellido"}
                 </h2>
@@ -220,13 +338,22 @@ const Perfil = () => {
                                         id="displayName"
                                         {...registerPerfil("displayName", {
                                             required: "El nombre y apellido es obligatorio",
-                                            minLength: {
-                                                value: 4,
-                                                message: "El nombre debe tener al menos 4 caracteres",
-                                            },
+                                            validate: value => {
+                                                const words = value.trim().split(/\s+/);
+                                                if (words.length < 2) {
+                                                    return "Debe ingresar nombre y apellido";
+                                                }
+
+                                                for (const word of words) {
+                                                    if (word.length < 2) {
+                                                        return "El nombre y apellido debe tener al menos 2 caracteres";
+                                                    }
+                                                }
+                                                return true;
+                                            }
                                         })}
                                         className={`border ${errorsPerfil.displayName ? "border-red-500" : "border-gray-300"
-                                            } rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                                            } rounded-md p-2`}
                                         placeholder="Escribe tu nombre y apellido"
                                     />
                                     {errorsPerfil.displayName && (
@@ -248,15 +375,15 @@ const Perfil = () => {
                                         id="phoneNumber"
                                         {...registerPerfil("phoneNumber", {
                                             pattern: {
-                                                value: /^[0-9]{10}$/,
-                                                message: "Ingrese un número válido de 10 dígitos",
+                                                value: /^\+[0-9]{11,}$/,
+                                                message: "Ingrese un número de teléfono válido",
                                             },
                                         })}
                                         className={`border ${errorsPerfil.phoneNumber
                                             ? "border-red-500"
                                             : "border-gray-300"
-                                            } rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                                        placeholder="Escribe tu número de teléfono"
+                                            } rounded-md p-2`}
+                                        placeholder="Ej: +52123456789"
                                     />
                                     {errorsPerfil.phoneNumber && (
                                         <span className="text-red-500 text-xs mt-1">
@@ -275,21 +402,13 @@ const Perfil = () => {
                                     <input
                                         type="email"
                                         id="email"
-                                        {...registerPerfil("email", {
-                                            required: "El correo electrónico es obligatorio",
-                                            pattern: {
-                                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                                message: "Correo electrónico inválido"
-                                            }
-                                        })}
-                                        className={`border ${errorsPerfil.email ? "border-red-500" : "border-gray-300"} rounded-md p-2`}
-                                        placeholder="Ingresa tu correo electrónico"
+                                        {...registerPerfil("email")}
+                                        className="border border-gray-300 rounded-md p-2 bg-gray-100"
+                                        disabled
                                     />
-                                    {errorsPerfil.email && (
-                                        <span className="text-red-500 text-xs mt-1">
-                                            {errorsPerfil.email.message}
-                                        </span>
-                                    )}
+                                    <p className="text-xs text-gray-500">
+                                        El correo no puede ser modificado
+                                    </p>
                                 </div>
 
                                 <div className="flex flex-col gap-1">
