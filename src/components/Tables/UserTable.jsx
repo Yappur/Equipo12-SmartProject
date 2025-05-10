@@ -5,7 +5,6 @@ import Modal from "../Modals/Modal";
 import SearchBar from "./SearchBar";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
-import { useAuth } from "../../context/AuthContext";
 import customStyles from "./DashboardsStyles";
 
 const Loader = () => (
@@ -16,7 +15,6 @@ const Loader = () => (
 );
 
 const UserTable = () => {
-  const { profileImg } = useAuth();
   const [filtrarUsuarios, setFiltrarUsuarios] = useState("");
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +43,6 @@ const UserTable = () => {
           response.data.map((user) => ({
             ...user,
             estado: user.estado || "Activo",
-            fecha: user.fecha || generarFechaAleatoria(),
           }))
         );
       } else if (response.data && Array.isArray(response.data.users)) {
@@ -53,7 +50,6 @@ const UserTable = () => {
           response.data.users.map((user) => ({
             ...user,
             estado: user.estado || "Activo",
-            fecha: user.fecha || generarFechaAleatoria(),
           }))
         );
       } else {
@@ -66,15 +62,6 @@ const UserTable = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const generarFechaAleatoria = () => {
-    const dia = Math.floor(Math.random() * 28) + 1;
-    const mes = Math.floor(Math.random() * 12) + 1;
-    const año = Math.floor(Math.random() * 2) + 2024;
-    return `${dia.toString().padStart(2, "0")}/${mes
-      .toString()
-      .padStart(2, "0")}/${año}`;
   };
 
   const openDeleteModal = (user) => {
@@ -175,21 +162,6 @@ const UserTable = () => {
         );
       },
       sortable: true,
-    },
-    {
-      name: "Creacion",
-      selector: (row) => row.fecha,
-      sortable: true,
-    },
-    {
-      name: "Perfil",
-      cell: (row) => (
-        <img
-          src={profileImg || ""}
-          alt="Perfil"
-          className="w-10 h-10 rounded-full object-cover"
-        />
-      ),
     },
     {
       name: "Rol",

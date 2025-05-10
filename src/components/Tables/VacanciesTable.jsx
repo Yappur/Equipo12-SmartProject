@@ -230,31 +230,6 @@ const VacanciesTable = () => {
       sortable: false,
     },
     {
-      name: "Imagen",
-      cell: (row) => {
-        if (row.imageUrl) {
-          return (
-            <div className="relative group">
-              <img
-                src={row.imageUrl}
-                alt={`Imagen de ${row.nombre || "vacante"}`}
-                className="w-16 h-16 object-cover rounded cursor-pointer transition-transform group-hover:scale-105"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "";
-                  e.target.className =
-                    "w-16 h-16 object-cover rounded opacity-50";
-                }}
-              />
-              <div className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-20 rounded transition-all"></div>
-            </div>
-          );
-        }
-        return <span className="text-gray-400">Sin imagen</span>;
-      },
-      sortable: false,
-    },
-    {
       name: "Eliminar",
       cell: (row) => (
         <div className="flex gap-2 transform hover:scale-135 transition-all duration-400 cursor-pointer">

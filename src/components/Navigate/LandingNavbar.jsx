@@ -61,7 +61,7 @@ const LandingNavbar = () => {
 
         {/* Menú móvil */}
         {menuOpen && (
-          <div className="fixed top-0 left-0 w-full h-full bg-[#00598A]/95 backdrop-blur-sm flex flex-col items-center justify-center gap-6 text-white text-lg md:hidden animate-fade-in-up z-40">
+          <div className="fixed top-0 left-0 w-full h-full bg-gray-300/50 backdrop-blur-sm flex flex-col items-center justify-center gap-6 text-white text-lg md:hidden animate-fade-in-up z-40">
             {/* Título TalentMatch */}
             <h1
               className="text-white font-bold text-3xl tracking-wide mb-6 cursor-pointer"

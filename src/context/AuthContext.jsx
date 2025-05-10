@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [profileImg, setProfileImg] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [idUser, setIdUser] = useState(null);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -22,62 +23,62 @@ export const AuthProvider = ({ children }) => {
           const { data } = await axiosConfig.post("/auth/verify-token", {
             idToken: token,
           });
+
           // Si el token es válido, establecer estados
           setIsAuthenticated(true);
           setRole(data.role);
+
+          setIdUser({
+            id: data.uid || data.id,
+            uid: data.uid,
+            role: data.role,
+          });
+
           let photoUrl = null;
 
-          if (data.photoUrl) {
+          if (data.photoURL) {
+            photoUrl = data.photoURL;
+          } else if (data.photoUrl) {
             photoUrl = data.photoUrl;
-            console.log("URL de imagen encontrada en data.photoUrl:", photoUrl);
-          } else if (data.photoURL) {
-            photoUrl = data.photoURL; // Caso alternativo (mayúscula)
-            console.log("URL de imagen encontrada en data.photoURL:", photoUrl);
-          } else if (data.user && data.user.photoUrl) {
-            photoUrl = data.user.photoUrl;
-            console.log(
-              "URL de imagen encontrada en data.user.photoUrl:",
-              photoUrl
-            );
           } else if (data.user && data.user.photoURL) {
             photoUrl = data.user.photoURL;
-            console.log(
-              "URL de imagen encontrada en data.user.photoURL:",
-              photoUrl
-            );
+          } else if (data.user && data.user.photoUrl) {
+            photoUrl = data.user.photoUrl;
           } else {
-            console.log("No se encontró URL de imagen en la respuesta");
+            try {
+              const userResponse = await axiosConfig.get(`/users/${data.uid}`);
+              if (userResponse.data && userResponse.data.photoURL) {
+                photoUrl = userResponse.data.photoURL;
+              }
+            } catch (userError) {}
           }
 
-          // Verificar que photoUrl sea una cadena válida
           if (
             photoUrl &&
             typeof photoUrl === "string" &&
             photoUrl.trim() !== ""
           ) {
-            console.log("URL de imagen de perfil válida:", photoUrl);
             setProfileImg(photoUrl);
           } else {
-            console.log("No se recibió una URL de imagen válida");
             setProfileImg(null);
           }
 
           setNombre(data.name || "Usuario");
-          console.log("Respuesta del backend:", data);
         } else {
           setIsAuthenticated(false);
           setRole(null);
           setProfileImg(null);
           setNombre(null);
+          setIdUser(null);
         }
       } catch (error) {
-        console.error("Error al verificar token:", error);
         localStorage.removeItem("authToken");
         sessionStorage.removeItem("authToken");
         setIsAuthenticated(false);
         setRole(null);
         setProfileImg(null);
         setNombre(null);
+        setIdUser(null);
       } finally {
         setLoading(false);
       }
@@ -103,6 +104,8 @@ export const AuthProvider = ({ children }) => {
         nombre,
         setNombre,
         loading,
+        idUser,
+        setIdUser,
       }}
     >
       {children}
