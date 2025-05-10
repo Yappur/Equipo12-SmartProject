@@ -5,6 +5,7 @@ import axiosConfig from "@/helpers/axios.config";
 import { getAuth, updateProfile } from "firebase/auth";
 import { uploadProfileImage } from "@/firebase/Upload/uploadProfileImage";
 import { useAuth } from "@/context/AuthContext";
+import { showToast } from "@/components/Notificaciones";
 
 const Perfil = () => {
     const [activeTab, setActiveTab] = useState("perfil");
@@ -84,9 +85,8 @@ const Perfil = () => {
                 }
             } catch (err) {
                 console.error("Error al obtener datos del usuario:", err);
-                setError(
-                    "Error al cargar los datos del usuario. Asegúrate de haber iniciado sesión correctamente."
-                );
+                showToast("Error", "Error al cargar los datos del usuario. Asegúrate de haber iniciado sesión correctamente.");
+                setError(null);
             } finally {
                 setLoading(false);
             }
@@ -105,7 +105,7 @@ const Perfil = () => {
 
         try {
             if (!file.type.startsWith('image/')) {
-                setError("El archivo debe ser una imagen");
+                showToast("Error", "El archivo debe ser una imagen");
                 return;
             }
 
@@ -140,10 +140,10 @@ const Perfil = () => {
                 photoURL
             }));
 
-            alert("Foto de perfil actualizada correctamente");
+            showToast("¡Éxito!", "Foto de perfil actualizada correctamente");
         } catch (err) {
             console.error("Error al subir la imagen:", err);
-            setError("Error al actualizar la foto de perfil: " + (err.message || err));
+            showToast("Error", "Error al actualizar la foto de perfil");
         } finally {
             setUploadingImage(false);
         }
@@ -173,7 +173,7 @@ const Perfil = () => {
 
             await axiosConfig.patch(`/users/${uid}`, updateData);
 
-            alert("Perfil actualizado correctamente");
+            showToast("¡Éxito!", "Perfil actualizado correctamente");
 
             setUserData((prevData) => ({
                 ...prevData,
@@ -185,10 +185,15 @@ const Perfil = () => {
 
             if (err.response) {
                 console.log("Respuesta del error:", err.response.data);
-                setError(`Error: ${err.response.data.message || JSON.stringify(err.response.data)}`);
+                if (err.response.data.message) {
+                    showToast("Error", err.response.data.message);
+                } else {
+                    showToast("Error", "Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
+                }
             } else {
-                setError("Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
+                showToast("Error", "Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
             }
+            setError(null);
         } finally {
             setLoading(false);
         }
@@ -214,15 +219,16 @@ const Perfil = () => {
             document.getElementById("password").value = "";
             document.getElementById("passwordConfirmacion").value = "";
 
-            alert("Contraseña actualizada correctamente");
+            showToast("¡Éxito!", "Contraseña actualizada correctamente");
         } catch (err) {
             console.error("Error al cambiar la contraseña:", err);
 
             if (err.response && err.response.data && err.response.data.message) {
-                setError(`Error: ${err.response.data.message}`);
+                showToast("Error", err.response.data.message);
             } else {
-                setError("Error al cambiar la contraseña.");
+                showToast("Error", "Error al cambiar la contraseña.");
             }
+            setError(null);
         } finally {
             setLoading(false);
         }
