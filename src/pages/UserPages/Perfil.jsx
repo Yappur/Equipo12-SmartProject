@@ -1,14 +1,19 @@
-import { useState, useEffect } from "react";
-import { FaUserCircle } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
+import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import axiosConfig from "@/helpers/axios.config";
-import { getAuth } from "firebase/auth";
+import { getAuth, updateProfile } from "firebase/auth";
+import { uploadProfileImage } from "@/firebase/Upload/uploadProfileImage";
+import { useAuth } from "@/context/AuthContext";
 
 const Perfil = () => {
     const [activeTab, setActiveTab] = useState("perfil");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [userData, setUserData] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const fileInputRef = useRef(null);
+    const { updateProfileImage } = useAuth();
 
     const {
         register: registerPerfil,
@@ -55,11 +60,28 @@ const Perfil = () => {
 
                 setValue("displayName", response.data.displayName || "");
                 setValue("email", response.data.email || "");
-                setValue(
-                    "phoneNumber",
-                    response.data.phoneNumber || ""
-                );
+                setValue("phoneNumber", response.data.phoneNumber || "");
                 setValue("role", response.data.role || "");
+
+                if (response.data.photoURL && !user.photoURL) {
+                    await updateProfile(user, {
+                        photoURL: response.data.photoURL
+                    });
+
+                    if (typeof updateProfileImage === 'function') {
+                        updateProfileImage(response.data.photoURL);
+                    }
+                }
+                else if (user.photoURL && !response.data.photoURL) {
+                    await axiosConfig.patch(`/users/${uid}`, {
+                        photoURL: user.photoURL
+                    });
+
+                    setUserData(prevData => ({
+                        ...prevData,
+                        photoURL: user.photoURL
+                    }));
+                }
             } catch (err) {
                 console.error("Error al obtener datos del usuario:", err);
                 setError(
@@ -71,7 +93,61 @@ const Perfil = () => {
         };
 
         fetchUserData();
-    }, [setValue]);
+    }, [setValue, updateProfileImage]);
+
+    const handleImageClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            if (!file.type.startsWith('image/')) {
+                setError("El archivo debe ser una imagen");
+                return;
+            }
+
+            setUploadingImage(true);
+            setError(null);
+
+            const photoURL = await uploadProfileImage(file);
+
+            const auth = getAuth();
+            const user = auth.currentUser;
+
+            if (!user) {
+                throw new Error("Usuario no autenticado");
+            }
+
+            const uid = user.uid;
+
+            await axiosConfig.patch(`/users/${uid}`, {
+                photoURL
+            });
+
+            await updateProfile(user, {
+                photoURL
+            });
+
+            if (typeof updateProfileImage === 'function') {
+                updateProfileImage(photoURL);
+            }
+
+            setUserData(prevData => ({
+                ...prevData,
+                photoURL
+            }));
+
+            alert("Foto de perfil actualizada correctamente");
+        } catch (err) {
+            console.error("Error al subir la imagen:", err);
+            setError("Error al actualizar la foto de perfil: " + (err.message || err));
+        } finally {
+            setUploadingImage(false);
+        }
+    };
 
     const onSubmitPerfil = async (data) => {
         try {
@@ -170,9 +246,47 @@ const Perfil = () => {
             )}
 
             <section className="flex flex-col items-center justify-center mb-8 w-full">
-                <div className="mb-4">
-                    <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/*"
+                />
+
+                <div
+                    className="mb-4 relative cursor-pointer group"
+                    onClick={handleImageClick}
+                >
+                    {userData?.photoURL ? (
+                        <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
+                            <img
+                                src={userData.photoURL}
+                                alt="Foto de perfil"
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+                                <FaCamera className="text-white text-2xl" />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="relative">
+                            <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full transition-opacity duration-200">
+                                <FaCamera className="text-white text-2xl" />
+                            </div>
+                        </div>
+                    )}
+
+                    {uploadingImage && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="bg-white bg-opacity-75 rounded-full p-2">
+                                <div className="w-6 h-6 border-2 border-t-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+                            </div>
+                        </div>
+                    )}
                 </div>
+
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
                     {userData?.displayName || "Nombre y apellido"}
                 </h2>
