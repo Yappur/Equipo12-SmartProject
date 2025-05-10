@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [profileImg, setProfileImg] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [idUser, setIdUser] = useState(null);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -27,9 +28,14 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
           setRole(data.role);
 
+          setIdUser({
+            id: data.uid || data.id,
+            uid: data.uid,
+            role: data.role,
+          });
+
           let photoUrl = null;
 
-          // Comprobaciones para la URL de la imagen
           if (data.photoURL) {
             photoUrl = data.photoURL;
           } else if (data.photoUrl) {
@@ -47,7 +53,6 @@ export const AuthProvider = ({ children }) => {
             } catch (userError) {}
           }
 
-          // Verificar que photoUrl sea una cadena válida
           if (
             photoUrl &&
             typeof photoUrl === "string" &&
@@ -64,6 +69,7 @@ export const AuthProvider = ({ children }) => {
           setRole(null);
           setProfileImg(null);
           setNombre(null);
+          setIdUser(null);
         }
       } catch (error) {
         localStorage.removeItem("authToken");
@@ -72,6 +78,7 @@ export const AuthProvider = ({ children }) => {
         setRole(null);
         setProfileImg(null);
         setNombre(null);
+        setIdUser(null);
       } finally {
         setLoading(false);
       }
@@ -97,6 +104,8 @@ export const AuthProvider = ({ children }) => {
         nombre,
         setNombre,
         loading,
+        idUser,
+        setIdUser,
       }}
     >
       {children}

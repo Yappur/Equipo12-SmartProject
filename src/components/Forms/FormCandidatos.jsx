@@ -1,18 +1,72 @@
 import { useEffect, useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
-import { useParams } from "react-router-dom";
 import { uploadCV } from "../../firebase/Upload/uploadPDF";
+import { useAuth } from "../../context/AuthContext";
+import { ChevronDown } from "lucide-react";
 
-const FormCandidatos = ({ onClose, vacancyId }) => {
+const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
+  const { idUser } = useAuth();
+  const [vacanciesList, setVacanciesList] = useState([]);
+  const [selectedVacancyId, setSelectedVacancyId] = useState(vacancyId || "");
   const [candidato, setCandidato] = useState({
     fullName: "",
     email: "",
     phone: "",
     cvUrl: "",
     skills: ["", ""],
-    status: "Abierta",
+    status: "Recibido",
   });
   const [cargando, setCargando] = useState(false);
+  const [loadingVacancies, setLoadingVacancies] = useState(false);
+
+  useEffect(() => {
+    const fetchRecruiterVacancies = async () => {
+      if (isRecruiter && idUser) {
+        try {
+          setLoadingVacancies(true);
+          console.log("Buscando vacantes para el reclutador:", idUser);
+          const response = await axiosConfig.get("/vacancies");
+          console.log("Vacantes obtenidas:", response.data);
+
+          const recruiterVacancies = response.data.filter((vacancy) => {
+            console.log(`Comparando: ${vacancy.userId} con ${idUser.id}`);
+            return String(vacancy.userId) === String(idUser.id);
+          });
+
+          console.log("Vacantes filtradas:", recruiterVacancies);
+          setVacanciesList(recruiterVacancies);
+
+          if (vacancyId) {
+            console.log("Usando vacancyId proporcionado:", vacancyId);
+            setSelectedVacancyId(vacancyId);
+          } else if (recruiterVacancies.length > 0 && !selectedVacancyId) {
+            console.log("Usando primera vacante:", recruiterVacancies[0].id);
+            setSelectedVacancyId(recruiterVacancies[0].id);
+          }
+        } catch (error) {
+          console.error("Error al obtener las vacantes:", error);
+        } finally {
+          setLoadingVacancies(false);
+        }
+      } else if (vacancyId) {
+        // Si no es reclutador pero hay un vacancyId proporcionado
+        console.log("No es reclutador pero hay vacancyId:", vacancyId);
+        setSelectedVacancyId(vacancyId);
+        setLoadingVacancies(false);
+      } else {
+        setLoadingVacancies(false);
+      }
+    };
+
+    fetchRecruiterVacancies();
+  }, [isRecruiter, idUser, vacancyId]);
+
+  useEffect(() => {
+    if (vacancyId) {
+      console.log("vacancyId cambió a:", vacancyId);
+      setSelectedVacancyId(vacancyId);
+    }
+  }, [vacancyId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,6 +74,11 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
       ...candidato,
       [name]: value,
     });
+  };
+
+  const handleVacancyChange = (e) => {
+    console.log("Vacante seleccionada:", e.target.value);
+    setSelectedVacancyId(e.target.value);
   };
 
   const handleFileUpload = async (file) => {
@@ -55,33 +114,45 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
     try {
       const filtredSkills = candidato.skills.filter((apt) => apt !== "");
 
-      const response = await axiosConfig.post("/applications", {
+      const finalVacancyId = isRecruiter ? selectedVacancyId : vacancyId;
+      console.log("ID de vacante para enviar:", finalVacancyId);
+
+      if (!finalVacancyId) {
+        alert("Por favor seleccione una vacante");
+        setCargando(false);
+        return;
+      }
+
+      const candidatoData = {
         fullName: candidato.fullName,
         email: candidato.email,
         phone: candidato.phone,
-
         cvUrl: candidato.cvUrl,
         skills: filtredSkills,
         status: candidato.status,
-        vacancyId: vacancyId,
-      });
+        vacancyId: finalVacancyId,
+      };
+
+      console.log("Enviando datos del candidato:", candidatoData);
+      const response = await axiosConfig.post("/applications", candidatoData);
+      console.log("Respuesta:", response.data);
 
       alert("Candidato creado exitosamente");
       onClose();
     } catch (error) {
-      console.error(error);
-      alert("Error al crear el candidato");
+      console.error("Error al crear el candidato:", error);
+      alert(
+        "Error al crear el candidato: " +
+          (error.response?.data?.message || error.message)
+      );
     } finally {
       setCargando(false);
     }
   };
   return (
-    <div className="w-full p-4">
-      <div className="bg-white w-full">
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 "
-        >
+    <div className="p-4 w-full">
+      <div className="bg-white">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="my-2">
             <label className="block text-sm font-semilight mb-1">
               Nombre y apellido*
@@ -91,11 +162,12 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
               name="fullName"
               value={candidato.fullName}
               onChange={handleChange}
-              className="w-full border border-gray-400 bg-gray-100 rounded p-2"
+              className="w-full p-3 bg-[#f5f2ea] rounded border-none"
               placeholder="Nombre completo"
               required
             />
           </div>
+
           <div className="my-2">
             <label className="block text-sm font-semilight mb-1">Mail*</label>
             <input
@@ -103,11 +175,12 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
               name="email"
               value={candidato.email}
               onChange={handleChange}
-              className="w-full border border-gray-400 bg-gray-100 rounded p-2"
+              className="w-full p-3 bg-[#f5f2ea] rounded border-none"
               placeholder="email@ejemplo.com"
               required
             />
           </div>
+
           <div className="my-2">
             <label className="block text-sm font-semilight mb-1">
               Teléfono*
@@ -117,66 +190,110 @@ const FormCandidatos = ({ onClose, vacancyId }) => {
               name="phone"
               value={candidato.phone}
               onChange={handleChange}
-              className="w-full border border-gray-400 bg-gray-100 rounded p-2"
+              className="w-full p-3 bg-[#f5f2ea] rounded border-none"
               placeholder="+123456789"
               required
             />
-            <div className="col-span-2 mt-5">
-              <label className="block text-sm font-semilight mb-1">
-                Importar CV (PDF)*
+          </div>
+
+          {isRecruiter && (
+            <div className="relative my-2">
+              <label className="text-sm font-semilight mb-1">
+                Vacante a cubrir*
               </label>
+              <div className="relative">
+                <select
+                  name="vacancyId"
+                  value={selectedVacancyId}
+                  onChange={handleVacancyChange}
+                  className="w-full p-3 bg-[#f5f2ea] rounded border-none appearance-none pr-10"
+                  required
+                >
+                  <option value="">Seleccionar una vacante</option>
+                  {vacanciesList.map((vacancy) => (
+                    <option key={vacancy.id} value={vacancy.id}>
+                      {vacancy.title ||
+                        vacancy.nombre ||
+                        vacancy.puesto ||
+                        "Vacante sin título"}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <ChevronDown className="h-7 w-7" />
+                </div>
+              </div>
+
+              {vacanciesList.length === 0 && !loadingVacancies && (
+                <p className="text-sm text-red-500 mt-1">
+                  No hay vacantes disponibles. Por favor, cree una vacante
+                  primero.
+                </p>
+              )}
+
+              {loadingVacancies && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Cargando vacantes...
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="col-span-2 mt-5">
+          <label className="block text-sm font-semilight mb-1">
+            Importar CV (PDF)*
+          </label>
+          <input
+            type="file"
+            accept=".pdf"
+            className="w-full p-3 bg-[#f5f2ea] rounded border-none"
+          />
+        </div>
+
+        <div className="mt-4">
+          <label className="block text-sm font-medium mb-2">Aptitudes</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {candidato.skills.map((skill, index) => (
               <input
-                type="file"
-                accept=".pdf"
-                onChange={(e) => handleFileUpload(e.target.files[0])}
-                className="w-full border border-gray-400 bg-gray-100 rounded p-2"
+                key={index}
+                type="text"
+                value={skill}
+                onChange={(e) => handleSkillChange(index, e.target.value)}
+                className="p-3 bg-[#f5f2ea] rounded border-none w-full"
+                placeholder="Palabra clave"
               />
-            </div>
+            ))}
           </div>
+        </div>
 
-          <div className="col-span-2">
-            <label className="block text-sm font-medium mb-2">Aptitudes</label>
-            <div className="flex flex-wrap gap-2">
-              {candidato.skills.map((skills, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  value={skills}
-                  onChange={(e) => handleSkillChange(index, e.target.value)}
-                  className="flex-1 border border-gray-400 bg-gray-100 rounded p-2"
-                  placeholder="Palabra clave"
-                />
-              ))}
-            </div>
-          </div>
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={newSkill}
+            className="border border-gray-400 bg-white rounded px-4 py-2 text-sm"
+          >
+            + Agregar aptitud
+          </button>
+        </div>
 
-          <div className="col-span-2">
-            <button
-              type="button"
-              onClick={newSkill}
-              className="border border-gray-400 bg-white rounded px-4 py-2 text-sm"
-            >
-              + Agregar aptitud
-            </button>
-          </div>
-
-          <div className="col-span-2 flex justify-end gap-2 mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-400 rounded bg-white text-black"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={cargando}
-              className="px-4 py-2 rounded bg-blue-900 text-white"
-            >
-              {cargando ? "Cargando..." : "Guardar"}
-            </button>
-          </div>
-        </form>
+        <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 border border-gray-400 rounded bg-white text-black order-2 sm:order-1 mt-2 sm:mt-0"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={cargando}
+            className="px-4 py-2 bg-[#00254B] text-white rounded hover:bg-[#001a38] sm:order-2"
+          >
+            {cargando ? "Cargando..." : "Guardar"}
+          </button>
+        </div>
       </div>
     </div>
   );

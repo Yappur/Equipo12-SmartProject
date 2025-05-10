@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import Modal from "../Modals/Modal";
 import { uploadProfileImage } from "../../firebase/Upload/uploadProfileImage";
-import editarImagenIcon from "@/assets/img/editarImagenIcon.svg";
+import editarImagenIcon from "../../assets/img/editarImagenIcon.svg";
 
 const FormRegister = () => {
   const [usuario, setUsuario] = useState({
@@ -287,7 +287,7 @@ const FormRegister = () => {
             )}
             {previewImage ? (
               <img
-                src={previewImage || "@/assets/img/editarImagenIcon.svg"}
+                src={previewImage || "../../assets/img/editarImagenIcon.svg"}
                 alt="Vista previa"
                 className="w-38 h-38 object-cover"
               />
