@@ -1,13 +1,20 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, Navigate } from "react-router-dom"; // 👈 Añadido Navigate
 import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
 import customStyles from "./DashboardsStyles";
+
 const ApplicationsTable = () => {
   const { id } = useParams();
+
+  // 👇 Si no hay ID en la URL, redirige (puedes cambiar la ruta)
+  if (!id) {
+    return <Navigate to="/reclutador/dashboard" replace />;
+  }
+
   const [postulaciones, setPostulaciones] = useState([]);
   const [filtrarPostulaciones, setFiltrarPostulaciones] = useState("");
   const [loading, setLoading] = useState(true);
@@ -15,9 +22,7 @@ const ApplicationsTable = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      obtenerPostulaciones(id);
-    }
+    obtenerPostulaciones(id);
   }, [id]);
 
   const obtenerPostulaciones = async (vacancyId) => {
@@ -27,9 +32,9 @@ const ApplicationsTable = () => {
         params: { vacancyId },
       });
       setPostulaciones(response.data);
-      setLoading(false);
     } catch (error) {
       console.error("Error al obtener postulaciones:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -52,6 +57,7 @@ const ApplicationsTable = () => {
     setShowModal(false);
     setSelectedCV(null);
   };
+
   const columns = [
     {
       name: "Nombre",
@@ -87,18 +93,19 @@ const ApplicationsTable = () => {
         let colorClass = "bg-gray-200 text-gray-800";
         if (row.status === "Finalista")
           colorClass = "bg-green-200 text-green-800";
-        if (row.status === "Recibido" || row.status === "En revisión")
+        if (["Recibido", "En revisión"].includes(row.status))
           colorClass = "bg-yellow-200 text-yellow-800";
         if (row.status === "Entrevista")
           colorClass = "bg-blue-200 text-blue-800";
-        if (row.status === "Descartado") colorClass = "bg-red-200 text-red-800";
+        if (row.status === "Descartado")
+          colorClass = "bg-red-200 text-red-800";
 
         return (
           <div className="flex flex-col">
             <select
               value={row.status}
               onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
-              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}  `}
+              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
             >
               {estados.map((estado) => (
                 <option key={estado} value={estado}>
@@ -150,6 +157,7 @@ const ApplicationsTable = () => {
     const correo = (postulacion.email || "").toLowerCase();
     const telefono = (postulacion.phone || "").toLowerCase();
     let habilidades = "";
+
     if (Array.isArray(postulacion.skills)) {
       habilidades = postulacion.skills.join(" ").toLowerCase();
     } else if (typeof postulacion.skills === "string") {
@@ -207,3 +215,4 @@ const ApplicationsTable = () => {
 };
 
 export default ApplicationsTable;
+
