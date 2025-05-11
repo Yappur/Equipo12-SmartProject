@@ -14,7 +14,7 @@ const Perfil = () => {
     const [userData, setUserData] = useState(null);
     const [uploadingImage, setUploadingImage] = useState(false);
     const fileInputRef = useRef(null);
-    const { updateProfileImage } = useAuth();
+    const { updateProfileImage, isAuthenticated, idUser, loading: authLoading } = useAuth();
 
     const {
         register: registerPerfil,
@@ -47,15 +47,37 @@ const Perfil = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                setLoading(true);
-                const auth = getAuth();
-                const user = auth.currentUser;
+                if (authLoading) return;
 
-                if (!user) {
+                if (!isAuthenticated) {
                     throw new Error("Usuario no autenticado");
                 }
 
-                const uid = user.uid;
+                setLoading(true);
+
+                const auth = getAuth();
+                const user = auth.currentUser;
+                let uid;
+
+                if (user) {
+                    uid = user.uid;
+                } else if (idUser && idUser.uid) {
+                    uid = idUser.uid;
+                } else {
+                    try {
+                        const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
+                        if (token) {
+                            const { data } = await axiosConfig.post("/auth/verify-token", { idToken: token });
+                            uid = data.uid;
+                        } else {
+                            throw new Error("No se pudo determinar el ID del usuario");
+                        }
+                    } catch (tokenError) {
+                        console.error("Error al verificar el token:", tokenError);
+                        throw new Error("Error al verificar el token");
+                    }
+                }
+
                 const response = await axiosConfig.get(`/users/${uid}`);
                 setUserData(response.data);
 
@@ -64,7 +86,7 @@ const Perfil = () => {
                 setValue("phoneNumber", response.data.phoneNumber || "");
                 setValue("role", response.data.role || "");
 
-                if (response.data.photoURL && !user.photoURL) {
+                if (user && response.data.photoURL && !user.photoURL) {
                     await updateProfile(user, {
                         photoURL: response.data.photoURL
                     });
@@ -72,16 +94,6 @@ const Perfil = () => {
                     if (typeof updateProfileImage === 'function') {
                         updateProfileImage(response.data.photoURL);
                     }
-                }
-                else if (user.photoURL && !response.data.photoURL) {
-                    await axiosConfig.patch(`/users/${uid}`, {
-                        photoURL: user.photoURL
-                    });
-
-                    setUserData(prevData => ({
-                        ...prevData,
-                        photoURL: user.photoURL
-                    }));
                 }
             } catch (err) {
                 console.error("Error al obtener datos del usuario:", err);
@@ -92,8 +104,10 @@ const Perfil = () => {
             }
         };
 
-        fetchUserData();
-    }, [setValue, updateProfileImage]);
+        if (!authLoading) {
+            fetchUserData();
+        }
+    }, [setValue, updateProfileImage, isAuthenticated, authLoading, idUser]);
 
     const handleImageClick = () => {
         fileInputRef.current.click();
@@ -116,18 +130,20 @@ const Perfil = () => {
 
             const auth = getAuth();
             const user = auth.currentUser;
+            let uid;
 
-            if (!user) {
-                throw new Error("Usuario no autenticado");
+            if (user) {
+                uid = user.uid;
+                await updateProfile(user, {
+                    photoURL
+                });
+            } else if (idUser && idUser.uid) {
+                uid = idUser.uid;
+            } else {
+                throw new Error("No se pudo determinar el ID del usuario");
             }
 
-            const uid = user.uid;
-
             await axiosConfig.patch(`/users/${uid}`, {
-                photoURL
-            });
-
-            await updateProfile(user, {
                 photoURL
             });
 
@@ -155,12 +171,15 @@ const Perfil = () => {
 
             const auth = getAuth();
             const user = auth.currentUser;
+            let uid;
 
-            if (!user) {
-                throw new Error("Usuario no autenticado");
+            if (user) {
+                uid = user.uid;
+            } else if (idUser && idUser.uid) {
+                uid = idUser.uid;
+            } else {
+                throw new Error("No se pudo determinar el ID del usuario");
             }
-
-            const uid = user.uid;
 
             const updateData = {
                 displayName: data.displayName,
@@ -168,8 +187,6 @@ const Perfil = () => {
                 email: userData.email,
                 photoURL: userData.photoURL || ""
             };
-
-            console.log("Datos a enviar:", updateData);
 
             await axiosConfig.patch(`/users/${uid}`, updateData);
 
@@ -183,17 +200,11 @@ const Perfil = () => {
         } catch (err) {
             console.error("Error al actualizar el perfil:", err);
 
-            if (err.response) {
-                console.log("Respuesta del error:", err.response.data);
-                if (err.response.data.message) {
-                    toast.error(err.response.data.message);
-                } else {
-                    toast.error("Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
-                }
+            if (err.response && err.response.data && err.response.data.message) {
+                toast.error(err.response.data.message);
             } else {
-                toast.error("Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
+                toast.error("Error al actualizar el perfil");
             }
-            setError(null);
         } finally {
             setLoading(false);
         }
@@ -205,12 +216,15 @@ const Perfil = () => {
 
             const auth = getAuth();
             const user = auth.currentUser;
+            let uid;
 
-            if (!user) {
-                throw new Error("Usuario no autenticado");
+            if (user) {
+                uid = user.uid;
+            } else if (idUser && idUser.uid) {
+                uid = idUser.uid;
+            } else {
+                throw new Error("No se pudo determinar el ID del usuario");
             }
-
-            const uid = user.uid;
 
             await axiosConfig.patch(`/users/${uid}/password`, {
                 password: data.password,
@@ -226,13 +240,34 @@ const Perfil = () => {
             if (err.response && err.response.data && err.response.data.message) {
                 toast.error(err.response.data.message);
             } else {
-                toast.error("Error al cambiar la contraseña.");
+                toast.error("Error al cambiar la contraseña");
             }
-            setError(null);
         } finally {
             setLoading(false);
         }
     };
+
+    if (authLoading) {
+        return (
+            <div className="pt-16 flex items-center justify-center h-screen">
+                <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+                <span className="ml-2">Verificando autenticación...</span>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <div className="pt-16 flex flex-col items-center justify-center h-screen">
+                <div className="text-red-500 text-xl mb-4">
+                    No has iniciado sesión o tu sesión ha expirado
+                </div>
+                <a href="/login" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                    Iniciar sesión
+                </a>
+            </div>
+        );
+    }
 
     if (loading && !userData) {
         return (
