@@ -20,6 +20,7 @@ import CandidatosDashboard from "../pages/RecruiterPages/CandidatosDashboard";
 import CompleteNavbarLayout from "../components/Navigate/CompleteNavbarLayout";
 import LandingView from "../pages/PublicPages/LandingView";
 import AboutPage from "../pages/AboutPage";
+import DashboardVacancyRecuiter from "../pages/RecruiterPages/DashboardVacancyRecuiter";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -56,13 +57,14 @@ const RoutesViews = () => {
             }
           />
            <Route
-            path="/reclutador/vacantes"
+            path="/reclutador/Descriptionvacancy/:id"
             element={
               <ProtectedRoute allowedRoles={["user", "admin"]}>
                 <RecuiterVacancyView />
               </ProtectedRoute>
             }
           />
+          <Route path="/reclutador/vacantes" element={<DashboardVacancyRecuiter/>} />
         <Route path="/reclutador/ver/candidatos/:id" element={<CandidatosDashboard />} />
           <Route
             path="/crear/vacante"
@@ -100,7 +102,7 @@ const RoutesViews = () => {
             }
           />
           <Route
-            path="/admin/panelVacantes"
+            path="admin/panelVacantes"
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <VacanciesDashboard />

@@ -26,7 +26,7 @@ const Sidebar = () => {
     if (role === "admin") {
       return [
         ...baseItems,
-        { title: "Vacantes", icon: Briefcase, path: "/admin/panelVacantes" },
+        { title: "Vacantes", icon: Briefcase, path: "admin/panelVacantes" },
         { title: "Candidatos", icon: Users, path: "/reclutador/candidatos" },
         { title: "Reclutadores", icon: Users, path: "/admin/panelUsuarios" },
       ];
