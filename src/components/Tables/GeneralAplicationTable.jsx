@@ -1,22 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useParams, Navigate } from "react-router-dom"; // 👈 Añadido Navigate
 import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
 import customStyles from "./DashboardsStyles";
-import flechasIcon from "../../assets/img/TableCandidatosIcon.png"; // O el nombre de la imagen que vayas a usar
 
-
-const   ApplicationsTable = () => {
-  const { id } = useParams();
-
-  // 👇 Si no hay ID en la URL, redirige (puedes cambiar la ruta)
-  if (!id) {
-    return <Navigate to="/reclutador/dashboard" replace />;
-  }
-
+const GeneralApplicationsTable = () => {
   const [postulaciones, setPostulaciones] = useState([]);
   const [filtrarPostulaciones, setFiltrarPostulaciones] = useState("");
   const [loading, setLoading] = useState(true);
@@ -24,15 +14,13 @@ const   ApplicationsTable = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    obtenerPostulaciones(id);
-  }, [id]);
+    obtenerPostulaciones();
+  }, []);
 
-  const obtenerPostulaciones = async (vacancyId) => {
+  const obtenerPostulaciones = async () => {
     try {
       setLoading(true);
-      const response = await axiosConfig.get("/applications", {
-        params: { vacancyId },
-      });
+      const response = await axiosConfig.get("/applications"); // 👈 sin parámetro
       setPostulaciones(response.data);
     } catch (error) {
       console.error("Error al obtener postulaciones:", error);
@@ -41,10 +29,10 @@ const   ApplicationsTable = () => {
     }
   };
 
-  const actualizarEstado = async (id, status, vacancyId) => {
+  const actualizarEstado = async (id, status) => {
     try {
       await axiosConfig.patch(`/applications/${id}/status`, { status });
-      obtenerPostulaciones(vacancyId);
+      obtenerPostulaciones(); // 👈 se refresca la lista general
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
     }
@@ -62,24 +50,27 @@ const   ApplicationsTable = () => {
 
   const columns = [
     {
-      name: (
-    <div className="flex items-center gap-2">
-      <span>Nombre</span>
-      <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
-    </div>
-
-      ),
+      name: "Nombre",
       selector: (row) => row.fullName,
       sortable: true,
     },
-
     {
-      name:(
-      <div className="flex items-center gap-2">
-      <span>Estado</span>
-      <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
-    </div>
-      ),
+      name: "Correo",
+      selector: (row) => row.email,
+      sortable: true,
+    },
+    {
+      name: "Telefono",
+      selector: (row) => row.phone,
+      sortable: true,
+    },
+    {
+      name: "Habilidades",
+      selector: (row) => row.skills,
+      sortable: true,
+    },
+    {
+      name: "Estado",
       cell: (row) => {
         const estados = [
           "Recibido",
@@ -103,7 +94,7 @@ const   ApplicationsTable = () => {
           <div className="flex flex-col">
             <select
               value={row.status}
-              onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
+              onChange={(e) => actualizarEstado(row.id, e.target.value)}
               className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
             >
               {estados.map((estado) => (
@@ -117,22 +108,6 @@ const   ApplicationsTable = () => {
       },
       sortable: false,
     },
-    /*{
-      name: "Correo",
-      selector: (row) => row.email,
-      sortable: true,
-    },*/
-    {
-      name: "Contacto",
-      selector: (row) => row.phone,
-      sortable: true,
-    },
-    /*{
-      name: "Habilidades",
-      selector: (row) => row.skills,
-      sortable: true,
-    },*/
-    
     {
       name: "CV",
       cell: (row) => (
@@ -191,9 +166,7 @@ const   ApplicationsTable = () => {
     <>
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold ">
-            Lista de Postulaciones de la Vacante
-          </h1>
+          <h1 className="text-2xl font-bold">Lista General de Postulaciones</h1>
         </div>
         <SearchBar
           value={filtrarPostulaciones}
@@ -229,5 +202,4 @@ const   ApplicationsTable = () => {
   );
 };
 
-export default ApplicationsTable;
-
+export default GeneralApplicationsTable;

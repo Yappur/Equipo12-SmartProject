@@ -38,7 +38,7 @@ const Sidebar = () => {
           icon: Briefcase,
           path: "/reclutador/vacantes",
         },
-        { title: "Candidatos", icon: Users, path: "/reclutador/candidatos" },
+        { title: "Candidatos", icon: Users, path: "/reclutador/CandidatosTable" },
       ];
     } else {
       return baseItems;
