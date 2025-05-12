@@ -117,8 +117,8 @@ useEffect(() => {
     };
 
     return (
-        <>
-            <div className="space-y-4 mb-6 border-b border-gray-300 pb-10">
+        <section className="hidden lg:block">
+            <div className="space-y-4 mb-6 border-b border-gray-300 pb-10 ">
                 {/* Filtro principal: Buscar y Botón */}
                 <div className="flex gap-2">
                     <input
@@ -283,7 +283,7 @@ useEffect(() => {
 
 
 
-        </>
+        </section>
     );
 };
 

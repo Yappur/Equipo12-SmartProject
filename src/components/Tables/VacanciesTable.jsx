@@ -20,14 +20,18 @@ const VacanciesTable = () => {
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
   const [updateError, setUpdateError] = useState(null);
-
   const [selectedVacancy, setSelectedVacancy] = useState(null);
   const [deleteModal, setDeleteModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [changePrioridadModal, setChangePrioridadModal] = useState(false);
   const [changeStatusModal, setChangeStatusModal] = useState(false);
-
+  const [busqueda, setBusqueda] = useState("");
+  const [modalidad, setModalidad] = useState("");
+  const [ubicacion, setUbicacion] = useState("");
+  const [estado, setEstado] = useState("");
+  const [prioridad, setPrioridad] = useState("");
+  const [ubicaciones, setUbicaciones] = useState([]);
   const [tempFieldValue, setTempFieldValue] = useState("");
   const [tempFieldName, setTempFieldName] = useState("");
 
@@ -36,7 +40,20 @@ const VacanciesTable = () => {
       setLoading(true);
       setError(null);
 
-      const response = await axiosConfig.get("/vacancies");
+      const params = {
+        search: busqueda,
+        modalidad,
+        ubicacion,
+        status: estado,
+        prioridad,
+      };
+
+      // Eliminar los parámetros vacíos
+      Object.keys(params).forEach(
+        (key) => params[key] === "" && delete params[key]
+      );
+
+      const response = await axiosConfig.get("/vacancies", { params });
       setVacantes(response.data);
     } catch (error) {
       setError(`Error al cargar las vacantes: ${error.message}`);
@@ -46,9 +63,37 @@ const VacanciesTable = () => {
     }
   };
 
+  const limpiarFiltros = () => {
+    setBusqueda("");
+    setModalidad("");
+    setUbicacion("");
+    setEstado("");
+    setPrioridad("");
+    obtenerVacantes(); // Recarga con los filtros vacíos
+  };
+
   useEffect(() => {
     obtenerVacantes();
   }, []);
+
+  useEffect(() => {
+  const obtenerUbicaciones = async () => {
+    try {
+      const response = await axiosConfig.get("/vacancies", {
+        params: { limit: 1000, page: 1 },
+      });
+
+      const ubicacionesUnicas = [
+        ...new Set(response.data.map((vacante) => vacante.ubicacion)),
+      ];
+      setUbicaciones(ubicacionesUnicas);
+    } catch (error) {
+      console.error("Error al cargar ubicaciones:", error.message);
+    }
+  };
+
+  obtenerUbicaciones();
+}, []);
 
   const refreshVacantes = () => {
     obtenerVacantes();
@@ -264,9 +309,19 @@ const VacanciesTable = () => {
           </Link>
         </div>
         <SearchBar
-          value={filtrarVacantes}
-          onChange={setFiltrarVacantes}
-          disabled={loading}
+          value={busqueda}
+          onChange={setBusqueda}
+          onSearch={obtenerVacantes}
+          limpiarFiltros={limpiarFiltros}
+          modalidad={modalidad}
+          setModalidad={setModalidad}
+          ubicacion={ubicacion}
+          setUbicacion={setUbicacion}
+          estado={estado}
+          setEstado={setEstado}
+          prioridad={prioridad}
+          setPrioridad={setPrioridad}
+          ubicaciones={ubicaciones}
         />
         <div>
           <p className="text-gray-500 text-sm mb-3">
@@ -313,9 +368,8 @@ const VacanciesTable = () => {
         onClose={() => setDeleteModal(false)}
         tipo="delete"
         titulo="Eliminar Vacante"
-        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${
-          selectedVacancy?.nombre || ""
-        }? Esta acción no se puede deshacer.`}
+        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${selectedVacancy?.nombre || ""
+          }? Esta acción no se puede deshacer.`}
         btnPrimario="Sí, eliminar"
         btnSecundario="Cancelar"
         accionPrimaria={() => handleDelete(selectedVacancy.id)}
@@ -326,9 +380,8 @@ const VacanciesTable = () => {
         onClose={() => setChangePrioridadModal(false)}
         tipo="confirm"
         titulo="Cambiar Prioridad de Vacante"
-        mensaje={`¿Estás seguro de cambiar la prioridad de ${
-          selectedVacancy?.nombre || ""
-        } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar la prioridad de ${selectedVacancy?.nombre || ""
+          } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
@@ -339,9 +392,8 @@ const VacanciesTable = () => {
         onClose={() => setChangeStatusModal(false)}
         tipo="confirm"
         titulo="Cambiar Estado de Vacante"
-        mensaje={`¿Estás seguro de cambiar el estado de ${
-          selectedVacancy?.nombre || ""
-        } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar el estado de ${selectedVacancy?.nombre || ""
+          } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
