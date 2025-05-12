@@ -4,6 +4,10 @@ import { FaUserGear, FaMagnifyingGlass } from "react-icons/fa6";
 import { FaUserPlus } from "react-icons/fa6";
 import { BsFillGrid1X2Fill } from "react-icons/bs";
 
+import modificarUserIcon from "../../assets/img/DesingExports/modificarUsuario.svg";
+import crearUserIcon from "../../assets/img/DesingExports/crearUser.svg";
+import UserActiveTable from "../../components/Tables/UserActiveTable";
+
 const AdminView = () => {
   return (
     <>
@@ -17,55 +21,28 @@ const AdminView = () => {
           </p>
         </section>
 
-        <section className="flex flex-col sm:flex-row gap-6 sm:gap-12 md:gap-16 lg:gap-28 text-gray-500">
-          <Link
-            to="/admin/crear/usuario"
-            className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl transition-all hover:bg-slate-50 duration-300 transform hover:scale-[1.02]"
-          >
-            <div>
-              <FaUserPlus className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl" />{" "}
-            </div>
-            <p className="sm:text-lg md:text-xl font-medium mt-2 text-center text-black">
-              Nueva Usuario
-            </p>
-          </Link>
-
-          <Link
-            to="/admin/panelUsuarios"
-            className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl hover:bg-slate-50 transition-all duration-300 transform hover:scale-[1.02]"
-          >
-            <div>
-              <FaUserGear className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl" />
-            </div>
-            <p className="sm:text-lg md:text-xl font-medium mt-2 text-center text-black">
-              Gestionar Usuarios
-            </p>
-          </Link>
-        </section>
-        <section className="flex flex-col sm:flex-row gap-6 sm:gap-12 md:gap-16 lg:gap-28 text-gray-500">
-          <Link
-            to="/crear/vacante"
-            className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl transition-all hover:bg-slate-50 duration-300 transform hover:scale-[1.02]"
-          >
-            <div>
-              <FaMagnifyingGlass className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl" />
-            </div>
-            <p className="sm:text-lg md:text-xl font-medium mt-2 text-center text-black">
-              Nueva Vacante
-            </p>
-          </Link>
-
-          <Link
-            to="/admin/panelVacantes"
-            className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl hover:bg-slate-50 transition-all duration-300 transform hover:scale-[1.02]"
-          >
-            <div>
-              <BsFillGrid1X2Fill className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl" />
-            </div>
-            <p className="sm:text-lg md:text-xl font-medium mt-2 text-center text-black">
-              Ver mis Vacantes
-            </p>
-          </Link>
+        <section className="flex flex-col w-full text-gray-500">
+          <div className="flex flex-row justify-center mb-10">
+            <Link
+              to="/admin/crear/usuario"
+              className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl transition-all hover:bg-slate-50 duration-300 transform hover:scale-[1.02]"
+            >
+              <img src={crearUserIcon} alt="CreateUser" className="ml-5" />
+              <p className="sm:text-lg md:text-xl font-medium mt-2 text-center text-black">
+                Crear Usuario
+              </p>
+            </Link>
+            <Link
+              to="/admin/panelUsuarios"
+              className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl transition-all hover:bg-slate-50 duration-300 transform hover:scale-[1.02]"
+            >
+              <img src={modificarUserIcon} alt="Bag" className="ml-8" />
+              <p className="sm:text-lg md:text-xl font-medium mt-2 text-center text-black">
+                Modificar Usuario
+              </p>
+            </Link>
+          </div>
+          <UserActiveTable />
         </section>
       </div>
     </>

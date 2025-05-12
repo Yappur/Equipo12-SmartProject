@@ -6,13 +6,7 @@ import SearchBar from "./SearchBar";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
 import customStyles from "./DashboardsStyles";
-
-const Loader = () => (
-  <div className="flex justify-center items-center py-20">
-    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    <p className="ml-4 text-gray-600 font-medium">Cargando usuarios...</p>
-  </div>
-);
+import Loader from "../Common/Loader";
 
 const UserTable = () => {
   const [filtrarUsuarios, setFiltrarUsuarios] = useState("");
@@ -261,7 +255,7 @@ const UserTable = () => {
       )}
 
       {loading ? (
-        <Loader />
+        <Loader text={"Cargando usuarios..."} />
       ) : (
         <DataTable
           columns={columns}
