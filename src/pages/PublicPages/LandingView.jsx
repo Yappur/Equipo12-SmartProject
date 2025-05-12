@@ -10,6 +10,7 @@ import imgHerramientas1 from "@/assets/img/herramientas-1.jpg";
 import imgHerramientas2 from "@/assets/img/herramientas-2.jpg";
 import imgHerramientas3 from "@/assets/img/herramientas-3.jpg";
 import VacancieTable from "../../components/Tables/VacancieTable";
+import VacancieCards from "../../components/Cards/VacancieCards";
 
 export default function LandingView() {
     return (
@@ -70,6 +71,7 @@ export default function LandingView() {
                             </p>
                             <div>
                                 <VacancieTable isPublic/>
+                                <VacancieCards />
                             </div>
                         </div>
                     </div>
