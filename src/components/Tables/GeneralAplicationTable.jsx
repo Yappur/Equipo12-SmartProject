@@ -1,22 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useParams, Navigate } from "react-router-dom"; // 👈 Añadido Navigate
 import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
 import customStyles from "./DashboardsStyles";
-import flechasIcon from "../../assets/img/TableCandidatosIcon.png"; 
-import cvIcon from "../../assets/img/cvIcon.png";// O el nombre de la imagen que vayas a usar
 
-
-const   ApplicationsTable = () => {
-  const { id } = useParams();
-
-  if (!id) {
-    return <Navigate to="/reclutador/dashboard" replace />;
-  }
-
+const GeneralApplicationsTable = () => {
   const [postulaciones, setPostulaciones] = useState([]);
   const [filtrarPostulaciones, setFiltrarPostulaciones] = useState("");
   const [loading, setLoading] = useState(true);
@@ -24,15 +14,13 @@ const   ApplicationsTable = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    obtenerPostulaciones(id);
-  }, [id]);
+    obtenerPostulaciones();
+  }, []);
 
-  const obtenerPostulaciones = async (vacancyId) => {
+  const obtenerPostulaciones = async () => {
     try {
       setLoading(true);
-      const response = await axiosConfig.get("/applications", {
-        params: { vacancyId },
-      });
+      const response = await axiosConfig.get("/applications"); // 👈 sin parámetro
       setPostulaciones(response.data);
     } catch (error) {
       console.error("Error al obtener postulaciones:", error);
@@ -41,10 +29,10 @@ const   ApplicationsTable = () => {
     }
   };
 
-  const actualizarEstado = async (id, status, vacancyId) => {
+  const actualizarEstado = async (id, status) => {
     try {
       await axiosConfig.patch(`/applications/${id}/status`, { status });
-      obtenerPostulaciones(vacancyId);
+      obtenerPostulaciones(); // 👈 se refresca la lista general
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
     }
@@ -62,17 +50,10 @@ const   ApplicationsTable = () => {
 
   const columns = [
     {
-      name: (
-    <div className="flex justify-center items-center gap-2 p-3">
-      <span></span><span  className="flex justify-center items-center gap-2">Nombre</span>
-      <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
-    </div>
-
-      ),
+      name: "Nombre",
       selector: (row) => row.fullName,
       sortable: true,
     },
-
     {
       name: "Correo",
       selector: (row) => row.email,
@@ -84,14 +65,12 @@ const   ApplicationsTable = () => {
       sortable: true,
     },
     {
-
-      name:(
-      <div className="flex items-center gap-2">
-      <span>Estado</span>
-      <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
-    </div>
-      ),
-
+      name: "Habilidades",
+      selector: (row) => row.skills,
+      sortable: true,
+    },
+    {
+      name: "Estado",
       cell: (row) => {
         const estados = [
           "Recibido",
@@ -101,21 +80,21 @@ const   ApplicationsTable = () => {
           "Descartado",
         ];
 
-        let colorClass = "bg-green-200 text-gray-800 w-41 h-7";
+        let colorClass = "bg-gray-200 text-gray-800";
         if (row.status === "Finalista")
-          colorClass = "bg-green-200 text-green-800 w-41 h-7";
+          colorClass = "bg-green-200 text-green-800";
         if (["Recibido", "En revisión"].includes(row.status))
-          colorClass = "bg-yellow-200 text-yellow-800 w-41 h-7";
+          colorClass = "bg-yellow-200 text-yellow-800";
         if (row.status === "Entrevista")
-          colorClass = "bg-blue-200 text-blue-800 w-41 h-7";
+          colorClass = "bg-blue-200 text-blue-800";
         if (row.status === "Descartado")
-          colorClass = "bg-red-200 text-red-800 w-41 h-7";
+          colorClass = "bg-red-200 text-red-800";
 
         return (
           <div className="flex flex-col">
             <select
               value={row.status}
-              onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
+              onChange={(e) => actualizarEstado(row.id, e.target.value)}
               className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
             >
               {estados.map((estado) => (
@@ -128,44 +107,37 @@ const   ApplicationsTable = () => {
         );
       },
       sortable: false,
-      center: true,
     },
-    /*{
-      name: "Correo",
-      selector: (row) => row.email,
-      sortable: true,
-    },*/
     {
-      name: "Contacto",
-      selector: (row) => row.phone,
-      sortable: true,
-    },
-    /*{
-      name: "Habilidades",
-      selector: (row) => row.skills,
-      sortable: true,
-    },*/
-    
-     {
-      name: (
-        <div className="">
-          <span>CV</span>
-   
-        </div>
-      ),
-      
+      name: "CV",
       cell: (row) => (
-        <div className="w-full flex p-3">
-          <button
-            onClick={() => handleViewCV(row.cvUrl)}
-            className="flex items-center gap-1 text-blue-600 hover:text-blue-800 underline"
+        <button
+          onClick={() => handleViewCV(row.cvUrl)}
+          className="text-blue-600 underline hover:text-blue-800 flex items-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            <img src={cvIcon} alt="icono cv" className="w-4 h-4" />
-           
-          </button>
-        </div>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            />
+          </svg>
+          Ver CV
+        </button>
       ),
-    
     },
   ];
 
@@ -174,11 +146,19 @@ const   ApplicationsTable = () => {
     const nombre = (postulacion.fullName || "").toLowerCase();
     const correo = (postulacion.email || "").toLowerCase();
     const telefono = (postulacion.phone || "").toLowerCase();
+    let habilidades = "";
+
+    if (Array.isArray(postulacion.skills)) {
+      habilidades = postulacion.skills.join(" ").toLowerCase();
+    } else if (typeof postulacion.skills === "string") {
+      habilidades = postulacion.skills.toLowerCase();
+    }
 
     return (
       nombre.includes(searchTerm) ||
       correo.includes(searchTerm) ||
-      telefono.includes(searchTerm)
+      telefono.includes(searchTerm) ||
+      habilidades.includes(searchTerm)
     );
   });
 
@@ -186,7 +166,15 @@ const   ApplicationsTable = () => {
     <>
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          
+          <h1 className="text-2xl font-bold">Lista General de Postulaciones</h1>
+        </div>
+        <SearchBar
+          value={filtrarPostulaciones}
+          onChange={setFiltrarPostulaciones}
+          disabled={loading}
+        />
+        <div>
+          <p>Cantidad de postulados: {postulaciones.length}</p>
         </div>
         <DataTable
           columns={columns}
@@ -214,4 +202,4 @@ const   ApplicationsTable = () => {
   );
 };
 
-export default ApplicationsTable;
+export default GeneralApplicationsTable;

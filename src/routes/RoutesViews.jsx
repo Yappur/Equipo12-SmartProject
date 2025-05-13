@@ -17,6 +17,7 @@ import CandidatosView from "../pages/RecruiterPages/CandidatosView";
 import RecuiterVacancyView from "../pages/RecruiterPages/RecuiterVacancyView";
 import RecoverAccount from "../pages/Auth/RecoverAccount";
 import CandidatosDashboard from "../pages/RecruiterPages/CandidatosDashboard";
+import GeneralCandidatosDashboard from "../pages/RecruiterPages/GeneralDashboardCandidatos";
 import CompleteNavbarLayout from "../components/Navigate/CompleteNavbarLayout";
 import LandingView from "../pages/PublicPages/LandingView";
 import AboutPage from "../pages/AboutPage";
@@ -66,6 +67,7 @@ const RoutesViews = () => {
           />
           <Route path="/reclutador/vacantes" element={<DashboardVacancyRecuiter/>} />
         <Route path="/reclutador/ver/candidatos/:id" element={<CandidatosDashboard />} />
+         <Route path="/reclutador/CandidatosTable" element={<GeneralCandidatosDashboard />} />
           <Route
             path="/crear/vacante"
             element={

@@ -85,14 +85,15 @@ const RecuiterVacancyView = () => {
         <h2 className="text-2xl mt-10 text-black">Sobre el puesto</h2>
       </div>
 
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 w-full">
         <div className="md:col-span-2 space-y-6">
           <section className="bg-gray-100 rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-2">Descripción</h2>
+            <h2 className="text-lg font-medium mb-2">Descripción</h2>
             <p className="text-sm text-[#535353]">
               {vacante.descripcion || "Sin resumen descripcion."}
             </p>
-            <h2 className="text-lg font-semibold mb-2 mt-4">Requisitos</h2>
+            <h2 className="text-lg font-medium mb-2 mt-4">Requisitos</h2>
             <ul className="list-disc pl-5 text-sm text-[#535353] space-y-1">
               {(vacante.requisitos || []).map((req, i) => (
                 <li key={i}>{req}</li>
