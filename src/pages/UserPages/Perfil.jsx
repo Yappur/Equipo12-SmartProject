@@ -567,14 +567,14 @@ const Perfil = () => {
                                     <div className="flex flex-col sm:flex-row gap-4 justify-end mt-8">
                                         <button
                                             type="button"
-                                            className="bg-gray-200 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-300 transition-colors"
+                                            className="border border-[#152d53] text-gray-800 py-2 px-6 rounded-md hover:bg-gray-200 transition-colors"
                                             onClick={() => window.history.back()}
                                         >
                                             Cancelar
                                         </button>
                                         <button
                                             type="submit"
-                                            className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition-colors"
+                                            className="bg-[#152d53] text-white py-2 px-6 rounded-md hover:bg-blue-600 transition-colors"
                                             disabled={loading}
                                         >
                                             {loading ? "Actualizando..." : "Cambiar contraseña"}
