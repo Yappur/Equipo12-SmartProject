@@ -57,7 +57,7 @@ const RoutesViews = () => {
               </ProtectedRoute>
             }
           />
-           <Route
+          <Route
             path="/reclutador/Descriptionvacancy/:id"
             element={
               <ProtectedRoute allowedRoles={["user", "admin"]}>
@@ -65,9 +65,18 @@ const RoutesViews = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/reclutador/vacantes" element={<DashboardVacancyRecuiter/>} />
-        <Route path="/reclutador/ver/candidatos/:id" element={<CandidatosDashboard />} />
-         <Route path="/reclutador/CandidatosTable" element={<GeneralCandidatosDashboard />} />
+          <Route
+            path="/reclutador/vacantes"
+            element={<DashboardVacancyRecuiter />}
+          />
+          <Route
+            path="/reclutador/CandidatosTable"
+            element={<GeneralCandidatosDashboard />}
+          />
+          <Route
+            path="/reclutador/ver/candidatos/:id"
+            element={<CandidatosDashboard />}
+          />
           <Route
             path="/crear/vacante"
             element={
