@@ -40,7 +40,13 @@ const RoutesViews = () => {
         <Route path="/recuperar/cuenta" element={<RecoverAccount />} />
 
         {/* Rutas de Reclutadores */}
-        <Route element={<CompleteNavbarLayout logout={logout} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["admin", "user"]}>
+              <CompleteNavbarLayout logout={logout} />
+            </ProtectedRoute>
+          }
+        >
           <Route
             path="/reclutador"
             element={
