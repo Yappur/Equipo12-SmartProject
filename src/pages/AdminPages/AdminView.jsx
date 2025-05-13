@@ -1,8 +1,4 @@
 import { Link } from "react-router-dom";
-import Sidebar from "../../components/Navigate/Sidebar";
-import { FaUserGear, FaMagnifyingGlass } from "react-icons/fa6";
-import { FaUserPlus } from "react-icons/fa6";
-import { BsFillGrid1X2Fill } from "react-icons/bs";
 
 import modificarUserIcon from "../../assets/img/DesingExports/modificarUsuario.svg";
 import crearUserIcon from "../../assets/img/DesingExports/crearUser.svg";
@@ -22,7 +18,7 @@ const AdminView = () => {
         </section>
 
         <section className="flex flex-col w-full text-gray-500">
-          <div className="flex flex-row justify-center mb-10">
+          <div className="flex flex-row justify-center mb-10 gap-20">
             <Link
               to="/admin/crear/usuario"
               className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl transition-all hover:bg-slate-50 duration-300 transform hover:scale-[1.02]"
