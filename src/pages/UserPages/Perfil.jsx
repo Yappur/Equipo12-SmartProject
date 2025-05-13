@@ -300,7 +300,7 @@ const Perfil = () => {
                     onClick={handleImageClick}
                 >
                     {userData?.photoURL ? (
-                        <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
+                        <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-md">
                             <img
                                 src={userData.photoURL}
                                 alt="Foto de perfil"
@@ -328,21 +328,21 @@ const Perfil = () => {
                     )}
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+                <h2 className="text-xl font-medium">
                     {userData?.displayName || "Nombre y apellido"}
                 </h2>
-                <p className="text-lg text-gray-600">
+                <p className="text-lg">
                     {userData?.role === "admin" ? "Super Admin" : "Reclutador"}
                 </p>
             </section>
 
-            <section className="w-full max-w-4xl bg-white rounded-lg shadow-md overflow-hidden">
+            <section className="w-full max-w-4xl overflow-hidden">
                 <article className="flex border-b border-gray-200">
                     <button
                         onClick={() => setActiveTab("perfil")}
                         className={`flex-1 py-4 px-6 text-center font-medium text-lg transition-colors duration-200 focus:outline-none
                             ${activeTab === "perfil"
-                                ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
+                                ? "border-b-4 border-[#f88623]"
                                 : "text-gray-600 hover:bg-gray-50"
                             }`}
                     >
@@ -352,7 +352,7 @@ const Perfil = () => {
                         onClick={() => setActiveTab("seguridad")}
                         className={`flex-1 py-4 px-6 text-center font-medium text-lg transition-colors duration-200 focus:outline-none
                             ${activeTab === "seguridad"
-                                ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
+                                ? "border-b-4 border-[#f88623]"
                                 : "text-gray-600 hover:bg-gray-50"
                             }`}
                     >
@@ -370,7 +370,7 @@ const Perfil = () => {
                                 <div className="flex flex-col gap-1">
                                     <label
                                         htmlFor="displayName"
-                                        className="text-sm font-medium text-gray-700"
+                                        className="font-medium text-gray-700"
                                     >
                                         Nombre y apellido
                                     </label>
@@ -393,8 +393,8 @@ const Perfil = () => {
                                                 return true;
                                             }
                                         })}
-                                        className={`border ${errorsPerfil.displayName ? "border-red-500" : "border-gray-300"
-                                            } rounded-md p-2`}
+                                        className={`bg-[#f5f2ec] border ${errorsPerfil.displayName ? "border-red-500" : "border-[#f5f2ec]"
+                                            } rounded-md p-3`}
                                         placeholder="Escribe tu nombre y apellido"
                                     />
                                     {errorsPerfil.displayName && (
@@ -407,7 +407,7 @@ const Perfil = () => {
                                 <div className="flex flex-col gap-1">
                                     <label
                                         htmlFor="phoneNumber"
-                                        className="text-sm font-medium text-gray-700"
+                                        className="font-medium text-gray-700"
                                     >
                                         Número de teléfono
                                     </label>
@@ -420,10 +420,10 @@ const Perfil = () => {
                                                 message: "Ingrese un número de teléfono válido",
                                             },
                                         })}
-                                        className={`border ${errorsPerfil.phoneNumber
+                                        className={`bg-[#f5f2ec] border ${errorsPerfil.phoneNumber
                                             ? "border-red-500"
-                                            : "border-gray-300"
-                                            } rounded-md p-2`}
+                                            : "border-[#f5f2ec]"
+                                            } rounded-md p-3`}
                                         placeholder="Ej: +52123456789"
                                     />
                                     {errorsPerfil.phoneNumber && (
@@ -436,7 +436,7 @@ const Perfil = () => {
                                 <div className="flex flex-col gap-1">
                                     <label
                                         htmlFor="email"
-                                        className="text-sm font-medium text-gray-700"
+                                        className="font-medium text-gray-700"
                                     >
                                         Correo electrónico
                                     </label>
@@ -444,7 +444,7 @@ const Perfil = () => {
                                         type="email"
                                         id="email"
                                         {...registerPerfil("email")}
-                                        className="border border-gray-300 rounded-md p-2 bg-gray-100"
+                                        className="bg-[#f5f2ec] border border-[#f5f2ec] rounded-md p-3"
                                         disabled
                                     />
                                     <p className="text-xs text-gray-500">
@@ -455,7 +455,7 @@ const Perfil = () => {
                                 <div className="flex flex-col gap-1">
                                     <label
                                         htmlFor="role"
-                                        className="text-sm font-medium text-gray-700"
+                                        className="font-medium text-gray-700"
                                     >
                                         Rol
                                     </label>
@@ -463,7 +463,7 @@ const Perfil = () => {
                                         type="text"
                                         id="role"
                                         {...registerPerfil("role")}
-                                        className="border border-gray-300 rounded-md p-2 bg-gray-100"
+                                        className="bg-[#f5f2ec] border border-[#f5f2ec] rounded-md p-3"
                                         disabled
                                     />
                                     <p className="text-xs text-gray-500">
@@ -475,14 +475,14 @@ const Perfil = () => {
                             <div className="flex flex-col sm:flex-row gap-4 justify-end mt-8">
                                 <button
                                     type="button"
-                                    className="bg-gray-200 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-300 transition-colors"
+                                    className="border border-[#152d53] py-2 px-6 rounded-md hover:bg-gray-200 transition-colors"
                                     onClick={() => window.history.back()}
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition-colors"
+                                    className="bg-[#152d53] text-white py-2 px-6 rounded-md hover:bg-blue-600 transition-colors"
                                     disabled={loading}
                                 >
                                     {loading ? "Guardando..." : "Guardar"}
@@ -502,7 +502,7 @@ const Perfil = () => {
                                 <div className="flex flex-col gap-1">
                                     <label
                                         htmlFor="password"
-                                        className="text-sm font-medium text-gray-700"
+                                        className="font-medium text-gray-700"
                                     >
                                         Nueva contraseña
                                     </label>
@@ -517,10 +517,10 @@ const Perfil = () => {
                                                     "La contraseña debe tener al menos 5 caracteres",
                                             },
                                         })}
-                                        className={`border ${errorsSeguridad.password
+                                        className={`bg-[#f5f2ec] border ${errorsSeguridad.password
                                             ? "border-red-500"
-                                            : "border-gray-300"
-                                            } rounded-md p-2`}
+                                            : "border-[#f5f2ec]"
+                                            } rounded-md p-3`}
                                         placeholder="Crea una nueva contraseña"
                                     />
                                     {errorsSeguridad.password && (
@@ -533,7 +533,7 @@ const Perfil = () => {
                                 <div className="flex flex-col gap-1">
                                     <label
                                         htmlFor="passwordConfirmacion"
-                                        className="text-sm font-medium text-gray-700"
+                                        className="font-medium text-gray-700"
                                     >
                                         Confirmar contraseña
                                     </label>
@@ -546,10 +546,10 @@ const Perfil = () => {
                                                 value === watchPassword ||
                                                 "Las contraseñas no coinciden",
                                         })}
-                                        className={`border ${errorsSeguridad.passwordConfirmacion
+                                        className={`bg-[#f5f2ec] border ${errorsSeguridad.passwordConfirmacion
                                             ? "border-red-500"
-                                            : "border-gray-300"
-                                            } rounded-md p-2`}
+                                            : "border-[#f5f2ec]"
+                                            } rounded-md p-3`}
                                         placeholder="Confirma tu nueva contraseña"
                                     />
                                     {errorsSeguridad.passwordConfirmacion && (
