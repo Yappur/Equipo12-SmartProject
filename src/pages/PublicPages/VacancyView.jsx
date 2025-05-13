@@ -67,7 +67,7 @@ const VacancyView = () => {
 
           <div className="flex-1 pt-12 md:pt-24 p-4 md:p-10 max-w-6xl mx-auto">
             <div className="mb-8 md:mb-12">
-              <h1 className="text-3xl md:text-4xl font-semibold mb-4 md:mb-7">
+              <h1 className="text-3xl md:text-4xl font-semibold mb-4 md:mb-7 break-words">
                 {vacante.nombre || vacante.puesto || "Vacante invalida"}
               </h1>
               <p className="text-lg md:text-xl font-semibold">
@@ -80,52 +80,48 @@ const VacancyView = () => {
               <div className="md:col-span-2">
                 <section className="rounded-lg p-4">
                   <h2 className="text-lg font-semibold mb-2">Descripcion</h2>
-                  <p className="text-sm text-gray-700 mb-4">
+                  <div className="text-sm text-gray-700 mb-4 break-words whitespace-normal overflow-hidden">
                     {vacante.descripcion ||
                       "Lorem ipsum dolor sit amet consectetur..."}
-                  </p>
+                  </div>
                   <h2 className="text-lg font-semibold mb-2">
                     Responsabilidades
                   </h2>
-                  <p className="text-sm text-gray-700">
+                  <div className="text-sm text-gray-700 break-words whitespace-normal overflow-hidden">
                     {vacante.responsabilidades || "Remoto"}
-                  </p>
+                  </div>
                 </section>
               </div>
 
               {/* Columna Derecha */}
               <div className="space-y-4 text-sm p-4 rounded-md bg-white/50">
                 <h2 className="text-xl md:text-2xl font-semibold">Detalles</h2>
-                <div className="flex items-center space-x-2">
-                  <FaRegClipboard className="w-5 h-5" />
-                  <span className="font-medium">
-                    Experiencia: {vacante.experiencia || "Sin experiencia"}
-                  </span>
+                <div className="flex items-start space-x-2">
+                  <FaRegClipboard className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <span className="font-medium break-words">Experiencia:</span>
+                  <span>{vacante.experiencia || "Sin experiencia"}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <FiBriefcase className="w-5 h-5" />
-                  <span>
-                    <strong>Modalidad:</strong> {vacante.modalidad || "Remoto"}
-                  </span>
+                <div className="flex items-start space-x-2">
+                  <FiBriefcase className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <span className="font-medium break-words">Modalidad: </span>
+                  <span>{vacante.modalidad || "Remoto"}</span>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <FiUsers className="w-5 h-5" />
-                  <span>
-                    Ubicación: {""}
-                    {vacante.ubicacion || "Argentina"}
-                  </span>
+                <div className="flex items-start space-x-2">
+                  <FiUsers className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <span className="font-medium break-words">Ubicación:</span>
+                  <span>{vacante.ubicacion || "N/A"}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <FiCalendar className="w-5 h-5" />
-                  <span>Jornada: {vacante.jornada || "Full Time"}</span>
+                <div className="flex items-start space-x-2">
+                  <FiCalendar className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <span className="font-medium break-words">Jornada:</span>
+                  <span>{vacante.jornada || "Completa"}</span>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <FiCheckCircle className="w-5 h-5" />
-                  <span>
-                    <strong>Estado:</strong> {vacante.estado || "Abierta"}
-                  </span>
+                <div className="flex items-start space-x-2">
+                  <FiCheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <span className="font-medium break-words">Estado:</span>
+                  <span>{vacante.estado}</span>
                 </div>
               </div>
             </div>
@@ -147,7 +143,7 @@ const VacancyView = () => {
             <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="relative bg-white rounded-3xl shadow-xl border-6 border-orange-500">
                 <div className="flex justify-between items-center p-4">
-                  <h2 className="text-2xl font-medium">
+                  <h2 className="text-2xl font-medium break-words max-w-[80%]">
                     Postulación a {vacante.nombre}
                   </h2>
                   <button
