@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import customStyles from "./DashboardsStyles";
-
+import flechasIcon from "../../assets/img/TableCandidatosIcon.png"; 
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
     <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -139,13 +139,19 @@ const RecruiterVacancyList = () => {
 
   const columns = [
     {
-      name: "Titulo",
+      name:(
+        <div className="flex justify-center items-center gap-2 p-3">
+              <span></span><span  className="flex justify-center items-center gap-2">Puesto</span>
+              <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
+            </div>
+
+      ),
       cell: (row) => (
         <div className="group relative">
           <Link
             to={`/reclutador/Descriptionvacancy/${row.id}`}
 
-            className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
+            className="text-[#0E1F3B] hover:text-blue-800 hover:underline cursor-pointer font-medium"
             title={`Ver detalles de la vacante ${row.nombre || "Sin título"}`}
           >
             {row.nombre || "Sin título"}
@@ -154,18 +160,65 @@ const RecruiterVacancyList = () => {
       ),
       sortable: true,
     },
+     
     {
-      name: "Ubicación",
-      selector: (row) => row.ubicacion || "No especificado",
+  name: "Ubicación",
+  cell: (row) => (
+    <div className="text-[#0E1F3B] font-medium">
+      {row.ubicacion || "No especificado"}
+    </div>
+  ),
+  sortable: true,
+},
+{
+  name: "Modalidad",
+  cell: (row) => {
+    let colorClass = "bg-gray-200 text-gray-800";
+
+    if (row.modalidad === "remoto") {
+      colorClass = "bg-[#E9D6FE] text-purple-800";
+    } else if (row.modalidad === "presencial") {
+      colorClass = "bg-[#FFE3CA] text-black";
+    }
+
+    return (
+      <div
+        className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${colorClass}`}
+      >
+        {row.modalidad || "No especificado"}
+      </div>
+    );
+  },
+  sortable: true,
+},
+{
+      name:(
+        <div className="flex justify-center items-center gap-2 p-3">
+              <span></span><span  className="flex justify-center items-center gap-2">Fecha</span>
+           
+            </div>
+
+      ),
+      cell: (row) => (
+        <div className="group relative">
+          <Link
+            to={`/reclutador/Descriptionvacancy/${row.id}`}
+
+            className="text-[#0E1F3B] hover:text-blue-800 hover:underline cursor-pointer "
+            title={`Ver detalles de la vacante ${row.fecha || "Sin título"}`}
+          >
+            {row.fecha || "Sin título"}
+          </Link>
+        </div>
+      ),
       sortable: true,
     },
+
     {
-      name: "Modalidad",
-      selector: (row) => row.modalidad || "No especificado",
-      sortable: true,
-    },
-    {
-      name: "Estado",
+      name:(<div className="flex justify-center items-center gap-2 p-3">
+            <span></span><span  className="flex justify-center items-center gap-2">Estado</span>
+            <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
+          </div>),
       cell: (row) => {
         const estados = [
           "activo",
@@ -257,7 +310,7 @@ const RecruiterVacancyList = () => {
     <>
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Lista de Vacantes</h1>
+          <h1 className="text-2xl text-[#152D53] font-medium ">Vacantes</h1>
           <Link
             to={"/crear/vacante"}
             className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
