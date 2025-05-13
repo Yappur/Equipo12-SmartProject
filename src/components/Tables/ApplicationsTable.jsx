@@ -10,7 +10,6 @@ import customStyles from "./DashboardsStyles";
 const ApplicationsTable = () => {
   const { id } = useParams();
 
-  // 👇 Si no hay ID en la URL, redirige (puedes cambiar la ruta)
   if (!id) {
     return <Navigate to="/reclutador/dashboard" replace />;
   }
@@ -75,11 +74,6 @@ const ApplicationsTable = () => {
       sortable: true,
     },
     {
-      name: "Habilidades",
-      selector: (row) => row.skills,
-      sortable: true,
-    },
-    {
       name: "Estado",
       cell: (row) => {
         const estados = [
@@ -97,8 +91,7 @@ const ApplicationsTable = () => {
           colorClass = "bg-yellow-200 text-yellow-800";
         if (row.status === "Entrevista")
           colorClass = "bg-blue-200 text-blue-800";
-        if (row.status === "Descartado")
-          colorClass = "bg-red-200 text-red-800";
+        if (row.status === "Descartado") colorClass = "bg-red-200 text-red-800";
 
         return (
           <div className="flex flex-col">
@@ -156,19 +149,11 @@ const ApplicationsTable = () => {
     const nombre = (postulacion.fullName || "").toLowerCase();
     const correo = (postulacion.email || "").toLowerCase();
     const telefono = (postulacion.phone || "").toLowerCase();
-    let habilidades = "";
-
-    if (Array.isArray(postulacion.skills)) {
-      habilidades = postulacion.skills.join(" ").toLowerCase();
-    } else if (typeof postulacion.skills === "string") {
-      habilidades = postulacion.skills.toLowerCase();
-    }
 
     return (
       nombre.includes(searchTerm) ||
       correo.includes(searchTerm) ||
-      telefono.includes(searchTerm) ||
-      habilidades.includes(searchTerm)
+      telefono.includes(searchTerm)
     );
   });
 
@@ -215,4 +200,3 @@ const ApplicationsTable = () => {
 };
 
 export default ApplicationsTable;
-

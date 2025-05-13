@@ -42,14 +42,14 @@ const UserActiveTable = () => {
 
       if (response.data && Array.isArray(response.data)) {
         setUserActive(
-          response.data.slice(0, 4).map((user) => ({
+          response.data.slice(0, 3).map((user) => ({
             ...user,
             estado: user.estado || "Activo",
           }))
         );
       } else if (response.data && Array.isArray(response.data.users)) {
         setUserActive(
-          response.data.users.slice(0, 4).map((user) => ({
+          response.data.users.slice(0, 3).map((user) => ({
             ...user,
             estado: user.estado || "Activo",
           }))

@@ -47,7 +47,7 @@ export default function AdminNavbar() {
   if (loading) {
     return (
       <header className="w-full bg-white shadow-sm border-b border-gray-200 px-4 py-6 flex justify-between items-center sticky top-0 z-20">
-        <h2 className="text-sm sm:text-base text-sky-800 font-semibold">
+        <h2 className="text-sm sm:text-base text-[#00254B] font-semibold">
           Cargando...
         </h2>
         <div className="flex-shrink-0">
@@ -59,12 +59,12 @@ export default function AdminNavbar() {
 
   return (
     <header className="w-full bg-white shadow-sm border-b border-gray-200 px-4 py-6 flex justify-between items-center sticky top-0 z-20">
-      <h2 className="text-sm sm:text-base text-sky-800 font-semibold">
+      <h2 className="text-sm sm:text-base text-[#00254B] font-medium">
         Panel {role === "admin" ? "Super Administrador" : "de Recursos Humanos"}
       </h2>
 
       <div className="flex items-center gap-3 sm:gap-4" ref={dropdownRef}>
-        <span className="text-sm text-gray-700 hidden sm:inline">
+        <span className="text-sm text-[#00254B] hidden sm:inline">
           ¡Bienvenido/a, {""}
           <span className="font-bold">{nombre || "Usuario"}</span>!
         </span>
@@ -85,12 +85,12 @@ export default function AdminNavbar() {
               />
               {!imageLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50 rounded-full">
-                  <div className="w-5 h-5 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-2 border-[#00254B] border-t-transparent rounded-full animate-spin"></div>
                 </div>
               )}
             </>
           ) : (
-            <FaUserCircle className="text-sky-800 text-4xl" />
+            <FaUserCircle className="text-[#00254B] text-4xl" />
           )}
         </button>
 

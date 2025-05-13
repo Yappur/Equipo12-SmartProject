@@ -250,9 +250,7 @@ const UserTable = () => {
       <SearchBarReclutadores
         value={busqueda}
         onChange={setBusqueda}
-        onSearch={() => {
-          // Lógica de búsqueda adicional (si la hay)
-        }}
+        onSearch={() => {}}
         rol={rol}
         setRol={setRol}
         estado={estado}
