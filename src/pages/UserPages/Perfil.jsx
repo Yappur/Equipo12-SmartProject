@@ -332,7 +332,7 @@ const Perfil = () => {
                     {userData?.displayName || "Nombre y apellido"}
                 </h2>
                 <p className="text-lg">
-                    {userData?.role === "admin" ? "Super Admin" : "Reclutador"}
+                    {userData?.role}
                 </p>
             </section>
 
