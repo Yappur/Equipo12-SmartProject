@@ -50,17 +50,17 @@ const RecuiterVacancyView = () => {
 
   return (
     <div className="pt-24 px-8 min-h-screen">
-         <h1 className="text-3xl font-bold text-black mb-10">{vacante.nombre}</h1>
-         <h1 className="text-2xl  text-black mb-10">Sobre el puesto</h1>
+         <h1 className="text-3xl font-semibold text-black mb-10">{vacante.nombre}</h1>
+         
 
  <div className="relative mb-6 pb-2">
-  <div className="flex space-x-6 border-b border-gray-300">
+  <div className="flex space-x-6 border-b border-gray-300 pb-1 f">
     {navItems.map((item) => (
       <NavLink
         key={item.title}
         to={item.path}
         className={({ isActive }) =>
-          `pb-2 relative font-semibold transition-colors duration-200 ${
+          `pb-2 relative font-medium transition-colors duration-200 ${
             isActive ? "text-black" : "text-black hover:text-[#535353]"
           }`
         }
@@ -74,9 +74,13 @@ const RecuiterVacancyView = () => {
           </span>
         )}
       </NavLink>
+      
     ))}
+    
   </div>
+  
 </div>
+<h1 className="text-2xl  text-black mb-10">Sobre el puesto</h1>
 
 
 
@@ -85,11 +89,11 @@ const RecuiterVacancyView = () => {
         {/* Columna Izquierda */}
         <div className="md:col-span-2 space-y-6">
           <section className="bg-gray-100 rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-2">Descripción</h2>
+            <h2 className="text-lg font-medium mb-2">Descripción</h2>
             <p className="text-sm text-[#535353]">
               {vacante.resumen || "Sin resumen disponible."}
             </p>
-            <h2 className="text-lg font-semibold mb-2 mt-4">Requisitos</h2>
+            <h2 className="text-lg font-medium mb-2 mt-4">Requisitos</h2>
             <ul className="list-disc pl-5 text-sm text-[#535353] space-y-1">
               {(vacante.requisitos || []).map((req, i) => (
                 <li key={i}>{req}</li>

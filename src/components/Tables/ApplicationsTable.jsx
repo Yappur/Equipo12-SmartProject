@@ -6,7 +6,8 @@ import axiosConfig from "../../helpers/axios.config";
 import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
 import customStyles from "./DashboardsStyles";
-import flechasIcon from "../../assets/img/TableCandidatosIcon.png"; // O el nombre de la imagen que vayas a usar
+import flechasIcon from "../../assets/img/TableCandidatosIcon.png"; 
+import cvIcon from "../../assets/img/cvIcon.png";// O el nombre de la imagen que vayas a usar
 
 
 const   ApplicationsTable = () => {
@@ -63,8 +64,8 @@ const   ApplicationsTable = () => {
   const columns = [
     {
       name: (
-    <div className="flex items-center gap-2">
-      <span>Nombre</span>
+    <div className="flex justify-center items-center gap-2 p-3">
+      <span></span><span  className="flex justify-center items-center gap-2">Nombre</span>
       <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
     </div>
 
@@ -89,15 +90,16 @@ const   ApplicationsTable = () => {
           "Descartado",
         ];
 
-        let colorClass = "bg-gray-200 text-gray-800";
+        let colorClass = "bg-green-200 text-gray-800 w-41 h-7";
         if (row.status === "Finalista")
-          colorClass = "bg-green-200 text-green-800";
+          colorClass = "bg-green-200 text-green-800 w-41 h-7";
         if (["Recibido", "En revisión"].includes(row.status))
-          colorClass = "bg-yellow-200 text-yellow-800";
+          colorClass = "bg-yellow-200 text-yellow-800 w-41 h-7"; // ✅
+
         if (row.status === "Entrevista")
-          colorClass = "bg-blue-200 text-blue-800";
+          colorClass = "bg-blue-200 text-blue-800 w-41 h-7";
         if (row.status === "Descartado")
-          colorClass = "bg-red-200 text-red-800";
+          colorClass = "bg-red-200 text-red-800 w-41 h-7";
 
         return (
           <div className="flex flex-col">
@@ -116,6 +118,7 @@ const   ApplicationsTable = () => {
         );
       },
       sortable: false,
+      center: true,
     },
     /*{
       name: "Correo",
@@ -133,36 +136,26 @@ const   ApplicationsTable = () => {
       sortable: true,
     },*/
     
-    {
-      name: "CV",
-      cell: (row) => (
-        <button
-          onClick={() => handleViewCV(row.cvUrl)}
-          className="text-blue-600 underline hover:text-blue-800 flex items-center"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 mr-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-            />
-          </svg>
-          Ver CV
-        </button>
+     {
+      name: (
+        <div className="">
+          <span>CV</span>
+   
+        </div>
       ),
+      
+      cell: (row) => (
+        <div className="w-full flex p-3">
+          <button
+            onClick={() => handleViewCV(row.cvUrl)}
+            className="flex items-center gap-1 text-blue-600 hover:text-blue-800 underline"
+          >
+            <img src={cvIcon} alt="icono cv" className="w-4 h-4" />
+           
+          </button>
+        </div>
+      ),
+    
     },
   ];
 
@@ -191,17 +184,7 @@ const   ApplicationsTable = () => {
     <>
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold ">
-            Lista de Postulaciones de la Vacante
-          </h1>
-        </div>
-        <SearchBar
-          value={filtrarPostulaciones}
-          onChange={setFiltrarPostulaciones}
-          disabled={loading}
-        />
-        <div>
-          <p>Cantidad de postulados: {postulaciones.length}</p>
+          
         </div>
         <DataTable
           columns={columns}
