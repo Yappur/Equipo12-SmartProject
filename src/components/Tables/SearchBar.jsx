@@ -17,7 +17,7 @@ const SearchBar = ({
   setEstado,
   prioridad,
   setPrioridad,
-  ubicaciones,
+  ubicaciones = [], // Aquí definimos un valor por defecto (array vacío)
 }) => {
   return (
     <div className="border-8 border-[#152d53] mb-3 rounded-md">
@@ -65,11 +65,12 @@ const SearchBar = ({
           onChange={(e) => setUbicacion(e.target.value)}
         >
           <option value="">Ubicación</option>
-          {ubicaciones.map((ubic, index) => (
-            <option key={index} value={ubic}>
-              {ubic}
-            </option>
-          ))}
+          {Array.isArray(ubicaciones) &&
+            ubicaciones.map((ubic, index) => (
+              <option key={index} value={ubic}>
+                {ubic}
+              </option>
+            ))}
         </select>
 
         {/* Select de Estado */}

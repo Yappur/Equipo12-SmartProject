@@ -38,7 +38,7 @@ const Sidebar = () => {
           icon: Briefcase,
           path: "/reclutador/vacantes",
         },
-        { title: "Candidatos", icon: Users, path: "/reclutador/candidatos" },
+        { title: "Candidatos", icon: Users, path: "/reclutador/CandidatosTable" },
       ];
     } else {
       return baseItems;
@@ -56,7 +56,7 @@ const Sidebar = () => {
   return (
     <>
       <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-[#00254B] text-white p-2 rounded-md shadow"
+        className="md:hidden fixed top-4 left-4  z-40 bg-[#00254B] text-white p-2 rounded-md shadow"
         onClick={() => setMenuOpen(!menuOpen)}
       >
         <Menu className="w-6 h-6" />
@@ -71,14 +71,14 @@ const Sidebar = () => {
             exit="exit"
             variants={sidebarVariants}
             transition={{ duration: 0.3 }}
-            className="fixed z-40 top-0 left-0 w-64 h-screen bg-[#00254B] text-white shadow-lg p-6 md:hidden"
+            className="fixed z-30 top-0 left-0 w-64 h-screen bg-[#00254B] text-white shadow-lg p-6 md:hidden"
           >
-            <div className="mb-8">
-              <h2 className="text-xl font-bold">Talent Match</h2>
+            <div className="mt-11 mb-4 font-semibold text-2xl tracking-wide">
+              <span className="text-white">Talent </span>
+              <span className="text-orange-400 italic">Match</span>
             </div>
 
             <nav className="space-y-2 text-lg font-medium flex flex-col h-[calc(100%-8rem)]">
-              {/* Elementos principales del menú */}
               <div className="flex-1">
                 {menuItems.map((item) => (
                   <NavLink
@@ -93,7 +93,6 @@ const Sidebar = () => {
                 ))}
               </div>
 
-              {/* Perfil al final del menú */}
               {isAuthenticated && (
                 <NavLink
                   to="/perfil"
@@ -109,7 +108,6 @@ const Sidebar = () => {
         )}
       </AnimatePresence>
 
-      {/* Sidebar fijo en pantallas grandes */}
       <aside className="hidden md:fixed md:flex flex-col w-64 bg-[#00254B] text-white shadow-lg p-6 h-screen top-0 left-0 z-30">
         <div className="my-11">
           <h1 className="font-semibold text-2xl tracking-wide">
@@ -120,7 +118,6 @@ const Sidebar = () => {
         </div>
 
         <nav className="space-y-3 text-lg font-medium flex flex-col h-[calc(100%-8rem)]">
-          {/* Elementos principales del menú */}
           <div className="flex-1 space-y-5">
             {menuItems.map((item) => (
               <NavLink

@@ -5,6 +5,7 @@ import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
 import customStyles from "./DashboardsStyles";
+import Loader from "../Common/Loader";
 import SearchBarReclutadores from "../SearchBarReclutadores";
 
 const UserTable = () => {
@@ -215,11 +216,11 @@ const UserTable = () => {
     },
   ];
 
-
   const filtrarData = usuarios.filter((user) => {
     const textoFiltrado =
-      (user.displayName?.toLowerCase() || "").includes(busqueda.toLowerCase()) ||
-      (user.email?.toLowerCase() || "").includes(busqueda.toLowerCase());
+      (user.displayName?.toLowerCase() || "").includes(
+        busqueda.toLowerCase()
+      ) || (user.email?.toLowerCase() || "").includes(busqueda.toLowerCase());
 
     const rolFiltrado = rol ? user.role === rol : true;
     const estadoFiltrado = estado ? user.estado === estado : true;
@@ -249,9 +250,7 @@ const UserTable = () => {
       <SearchBarReclutadores
         value={busqueda}
         onChange={setBusqueda}
-        onSearch={() => {
-          // Lógica de búsqueda adicional (si la hay)
-        }}
+        onSearch={() => {}}
         rol={rol}
         setRol={setRol}
         estado={estado}
