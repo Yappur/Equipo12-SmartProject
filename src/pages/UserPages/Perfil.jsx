@@ -1,101 +1,126 @@
 import { useState, useEffect, useRef } from "react";
 import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import axiosConfig from "@/helpers/axios.config";
 import { getAuth, updateProfile } from "firebase/auth";
 import { uploadProfileImage } from "@/firebase/Upload/uploadProfileImage";
 import { useAuth } from "@/context/AuthContext";
-// import { showToast } from "@/components/Notificaciones";
 
 const Perfil = () => {
-  const [activeTab, setActiveTab] = useState("perfil");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [userData, setUserData] = useState(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const fileInputRef = useRef(null);
-  const { updateProfileImage } = useAuth();
+    const [activeTab, setActiveTab] = useState("perfil");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [userData, setUserData] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const fileInputRef = useRef(null);
+    const { updateProfileImage, isAuthenticated, idUser, loading: authLoading } = useAuth();
 
-  const {
-    register: registerPerfil,
-    handleSubmit: handleSubmitPerfil,
-    setValue,
-    formState: { errors: errorsPerfil },
-  } = useForm({
-    defaultValues: {
-      displayName: "",
-      phoneNumber: "",
-      email: "",
-      role: "",
-    },
-  });
+    const {
+        register: registerPerfil,
+        handleSubmit: handleSubmitPerfil,
+        setValue,
+        formState: { errors: errorsPerfil },
+    } = useForm({
+        defaultValues: {
+            displayName: "",
+            phoneNumber: "",
+            email: "",
+            role: "",
+        },
+    });
 
-  const {
-    register: registerSeguridad,
-    handleSubmit: handleSubmitSeguridad,
-    watch: watchSeguridad,
-    formState: { errors: errorsSeguridad },
-  } = useForm({
-    defaultValues: {
-      password: "",
-      passwordConfirmacion: "",
-    },
-  });
+    const {
+        register: registerSeguridad,
+        handleSubmit: handleSubmitSeguridad,
+        watch: watchSeguridad,
+        formState: { errors: errorsSeguridad },
+    } = useForm({
+        defaultValues: {
+            password: "",
+            passwordConfirmacion: "",
+        },
+    });
 
-  const watchPassword = watchSeguridad("password");
+    const watchPassword = watchSeguridad("password");
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setLoading(true);
-        const auth = getAuth();
-        const user = auth.currentUser;
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                if (authLoading) return;
 
-        if (!user) {
-          throw new Error("Usuario no autenticado");
+                if (!isAuthenticated) {
+                    throw new Error("Usuario no autenticado");
+                }
+
+                setLoading(true);
+
+                const auth = getAuth();
+                const user = auth.currentUser;
+                let uid;
+
+                if (user) {
+                    uid = user.uid;
+                } else if (idUser && idUser.uid) {
+                    uid = idUser.uid;
+                } else {
+                    try {
+                        const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
+                        if (token) {
+                            const { data } = await axiosConfig.post("/auth/verify-token", { idToken: token });
+                            uid = data.uid;
+                        } else {
+                            throw new Error("No se pudo determinar el ID del usuario");
+                        }
+                    } catch (tokenError) {
+                        console.error("Error al verificar el token:", tokenError);
+                        throw new Error("Error al verificar el token");
+                    }
+                }
+
+                const response = await axiosConfig.get(`/users/${uid}`);
+                setUserData(response.data);
+
+                setValue("displayName", response.data.displayName || "");
+                setValue("email", response.data.email || "");
+                setValue("phoneNumber", response.data.phoneNumber || "");
+                setValue("role", response.data.role || "");
+
+                if (user && response.data.photoURL && !user.photoURL) {
+                    await updateProfile(user, {
+                        photoURL: response.data.photoURL
+                    });
+
+                    if (typeof updateProfileImage === 'function') {
+                        updateProfileImage(response.data.photoURL);
+                    }
+                }
+            } catch (err) {
+                console.error("Error al obtener datos del usuario:", err);
+                toast.error("Error al cargar los datos del usuario. Asegúrate de haber iniciado sesión correctamente.");
+                setError(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (!authLoading) {
+            fetchUserData();
         }
+    }, [setValue, updateProfileImage, isAuthenticated, authLoading, idUser]);
 
-        const uid = user.uid;
-        const response = await axiosConfig.get(`/users/${uid}`);
-        setUserData(response.data);
-
-        setValue("displayName", response.data.displayName || "");
-        setValue("email", response.data.email || "");
-        setValue("phoneNumber", response.data.phoneNumber || "");
-        setValue("role", response.data.role || "");
-
-        if (response.data.photoURL && !user.photoURL) {
-          await updateProfile(user, {
-            photoURL: response.data.photoURL,
-          });
-
-          if (typeof updateProfileImage === "function") {
-            updateProfileImage(response.data.photoURL);
-          }
-        } else if (user.photoURL && !response.data.photoURL) {
-          await axiosConfig.patch(`/users/${uid}`, {
-            photoURL: user.photoURL,
-          });
-
-          setUserData((prevData) => ({
-            ...prevData,
-            photoURL: user.photoURL,
-          }));
-        }
-      } catch (err) {
-        console.error("Error al obtener datos del usuario:", err);
-        setError(null);
-      } finally {
-        setLoading(false);
-      }
+    const handleImageClick = () => {
+        fileInputRef.current.click();
     };
 
     fetchUserData();
   }, [setValue, updateProfileImage]);
 
-  const handleImageClick = () => {
-    fileInputRef.current.click();
-  };
+        try {
+            if (!file.type.startsWith('image/')) {
+                toast.error("El archivo debe ser una imagen");
+                return;
+            }
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -107,36 +132,86 @@ const Perfil = () => {
         return;
       }
 
-      setUploadingImage(true);
-      setError(null);
+            const auth = getAuth();
+            const user = auth.currentUser;
+            let uid;
 
-      const photoURL = await uploadProfileImage(file);
+            if (user) {
+                uid = user.uid;
+                await updateProfile(user, {
+                    photoURL
+                });
+            } else if (idUser && idUser.uid) {
+                uid = idUser.uid;
+            } else {
+                throw new Error("No se pudo determinar el ID del usuario");
+            }
 
-      const auth = getAuth();
-      const user = auth.currentUser;
+            await axiosConfig.patch(`/users/${uid}`, {
+                photoURL
+            });
 
-      if (!user) {
-        throw new Error("Usuario no autenticado");
-      }
-
-      const uid = user.uid;
-
-      await axiosConfig.patch(`/users/${uid}`, {
-        photoURL,
-      });
+            if (typeof updateProfileImage === 'function') {
+                updateProfileImage(photoURL);
+            }
 
       await updateProfile(user, {
         photoURL,
       });
 
-      if (typeof updateProfileImage === "function") {
-        updateProfileImage(photoURL);
-      }
+            toast.success("Foto de perfil actualizada correctamente");
+        } catch (err) {
+            console.error("Error al subir la imagen:", err);
+            toast.error("Error al actualizar la foto de perfil");
+        } finally {
+            setUploadingImage(false);
+        }
+    };
 
-      setUserData((prevData) => ({
-        ...prevData,
-        photoURL,
-      }));
+    const onSubmitPerfil = async (data) => {
+        try {
+            setLoading(true);
+
+            const auth = getAuth();
+            const user = auth.currentUser;
+            let uid;
+
+            if (user) {
+                uid = user.uid;
+            } else if (idUser && idUser.uid) {
+                uid = idUser.uid;
+            } else {
+                throw new Error("No se pudo determinar el ID del usuario");
+            }
+
+            const updateData = {
+                displayName: data.displayName,
+                phoneNumber: data.phoneNumber || "",
+                email: userData.email,
+                photoURL: userData.photoURL || ""
+            };
+
+            await axiosConfig.patch(`/users/${uid}`, updateData);
+
+            toast.success("Perfil actualizado correctamente");
+
+            setUserData((prevData) => ({
+                ...prevData,
+                displayName: data.displayName,
+                phoneNumber: data.phoneNumber || prevData.phoneNumber,
+            }));
+        } catch (err) {
+            console.error("Error al actualizar el perfil:", err);
+
+            if (err.response && err.response.data && err.response.data.message) {
+                toast.error(err.response.data.message);
+            } else {
+                toast.error("Error al actualizar el perfil");
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
       // showToast("¡Éxito!", "Foto de perfil actualizada correctamente");
     } catch (err) {
@@ -154,39 +229,35 @@ const Perfil = () => {
       const auth = getAuth();
       const user = auth.currentUser;
 
-      if (!user) {
-        throw new Error("Usuario no autenticado");
-      }
+            const auth = getAuth();
+            const user = auth.currentUser;
+            let uid;
 
-      const uid = user.uid;
+            if (user) {
+                uid = user.uid;
+            } else if (idUser && idUser.uid) {
+                uid = idUser.uid;
+            } else {
+                throw new Error("No se pudo determinar el ID del usuario");
+            }
 
-      const updateData = {
-        displayName: data.displayName,
-        phoneNumber: data.phoneNumber || "",
-        email: userData.email,
-        photoURL: userData.photoURL || "",
-      };
-
-      console.log("Datos a enviar:", updateData);
+            await axiosConfig.patch(`/users/${uid}/password`, {
+                password: data.password,
+            });
 
       await axiosConfig.patch(`/users/${uid}`, updateData);
 
-      // showToast("¡Éxito!", "Perfil actualizado correctamente");
+            toast.success("Contraseña actualizada correctamente");
+        } catch (err) {
+            console.error("Error al cambiar la contraseña:", err);
 
-      setUserData((prevData) => ({
-        ...prevData,
-        displayName: data.displayName,
-        phoneNumber: data.phoneNumber || prevData.phoneNumber,
-      }));
-    } catch (err) {
-      console.error("Error al actualizar el perfil:", err);
-
-      if (err.response) {
-        console.log("Respuesta del error:", err.response.data);
-        if (err.response.data.message) {
-          // showToast("Error", err.response.data.message);
-        } else {
-          // showToast("Error", "Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
+            if (err.response && err.response.data && err.response.data.message) {
+                toast.error(err.response.data.message);
+            } else {
+                toast.error("Error al cambiar la contraseña");
+            }
+        } finally {
+            setLoading(false);
         }
       } else {
         // showToast("Error", "Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
@@ -197,38 +268,35 @@ const Perfil = () => {
     }
   };
 
-  const onSubmitSeguridad = async (data) => {
-    try {
-      setLoading(true);
+    if (authLoading) {
+        return (
+            <div className="pt-16 flex items-center justify-center h-screen">
+                <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+                <span className="ml-2">Verificando autenticación...</span>
+            </div>
+        );
+    }
 
-      const auth = getAuth();
-      const user = auth.currentUser;
+    if (!isAuthenticated) {
+        return (
+            <div className="pt-16 flex flex-col items-center justify-center h-screen">
+                <div className="text-red-500 text-xl mb-4">
+                    No has iniciado sesión o tu sesión ha expirado
+                </div>
+                <a href="/login" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                    Iniciar sesión
+                </a>
+            </div>
+        );
+    }
 
-      if (!user) {
-        throw new Error("Usuario no autenticado");
-      }
-
-      const uid = user.uid;
-
-      await axiosConfig.patch(`/users/${uid}/password`, {
-        password: data.password,
-      });
-
-      document.getElementById("password").value = "";
-      document.getElementById("passwordConfirmacion").value = "";
-
-      // showToast("¡Éxito!", "Contraseña actualizada correctamente");
-    } catch (err) {
-      console.error("Error al cambiar la contraseña:", err);
-
-      if (err.response && err.response.data && err.response.data.message) {
-        // showToast("Error", err.response.data.message);
-      } else {
-        // showToast("Error", "Error al cambiar la contraseña.");
-      }
-      setError(null);
-    } finally {
-      setLoading(false);
+    if (loading && !userData) {
+        return (
+            <div className="pt-16 flex items-center justify-center h-screen">
+                <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+                <span className="ml-2">Cargando...</span>
+            </div>
+        );
     }
   };
 

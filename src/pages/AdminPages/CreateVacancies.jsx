@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { ChevronDown } from "lucide-react";
 import bagIcon from "../../assets/img/DesingExports/bag.svg";
+import toast from "react-hot-toast";
 
 const CreateVacancies = () => {
   const [showForm, setShowForm] = useState(false);
@@ -41,7 +42,7 @@ const CreateVacancies = () => {
       !vacancy.experiencia ||
       !vacancy.responsabilidades
     ) {
-      alert("Por favor, completa todos los campos requeridos");
+      toast.error("Por favor, completa todos los campos requeridos");
       setIsSubmitting(false);
       return;
     }
@@ -56,7 +57,7 @@ const CreateVacancies = () => {
       const response = await axiosConfig.post("/vacancies", nuevaVacante);
 
       if (response.status === 200 || response.status === 201) {
-        alert("Vacante creada con éxito");
+        toast.success("Vacante creada con éxito");
 
         setVacancy({
           puesto: "",
@@ -72,11 +73,11 @@ const CreateVacancies = () => {
 
         setShowForm(false);
       } else {
-        alert(`Error al crear la vacante: ${response.statusText}`);
+        toast.error(`Error al crear la vacante: ${response.statusText}`);
       }
     } catch (error) {
       console.error("Error al crear vacante:", error);
-      alert(
+      toast.error(
         `Error al crear la vacante: ${error.message || "Error desconocido"}`
       );
     } finally {
@@ -300,7 +301,7 @@ const CreateVacancies = () => {
                   name="responsabilidades"
                   value={vacancy.responsabilidades}
                   onChange={handleInputChange}
-                  placeholder="Añadir requisito"
+                  placeholder="Añadir Responsabilidades"
                   className="w-full p-3 bg-[#f5f2ea] rounded border-none min-h-[120px]"
                 />
                 <div className="absolute bottom-2 right-2 text-xs text-gray-500">
