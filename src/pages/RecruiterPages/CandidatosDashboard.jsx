@@ -58,13 +58,11 @@ const CandidatosDashboard = () => {
       </h1>
       <div className="relative mb-6 pb-2">
         <div className="flex space-x-6 border-b border-gray-300">
-
           {navItems.map((item) => (
             <NavLink
               key={item.title}
               to={item.path}
               className={({ isActive }) =>
-                `pb-2 relative font-semibold transition-colors duration-200 ${
                 `pb-2 relative font-medium transition-colors duration-200 ${
                   isActive ? "text-black" : "text-black hover:text-[#535353]"
                 }`
@@ -81,12 +79,12 @@ const CandidatosDashboard = () => {
             </NavLink>
           ))}
         </div>
-
       </div>
 
       <div>
         <ApplicationsTable />
       </div>
+    </div>
   );
 };
 
