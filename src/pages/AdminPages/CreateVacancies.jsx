@@ -77,7 +77,9 @@ const CreateVacancies = () => {
       }
     } catch (error) {
       console.error("Error al crear vacante:", error);
-      toast.error(`Error al crear la vacante: ${error.message || "Error desconocido"}`)
+      toast.error(
+        `Error al crear la vacante: ${error.message || "Error desconocido"}`
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -299,7 +301,7 @@ const CreateVacancies = () => {
                   name="responsabilidades"
                   value={vacancy.responsabilidades}
                   onChange={handleInputChange}
-                  placeholder="Añadir requisito"
+                  placeholder="Añadir Responsabilidades"
                   className="w-full p-3 bg-[#f5f2ea] rounded border-none min-h-[120px]"
                 />
                 <div className="absolute bottom-2 right-2 text-xs text-gray-500">

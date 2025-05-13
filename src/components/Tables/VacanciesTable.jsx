@@ -77,23 +77,23 @@ const VacanciesTable = () => {
   }, []);
 
   useEffect(() => {
-  const obtenerUbicaciones = async () => {
-    try {
-      const response = await axiosConfig.get("/vacancies", {
-        params: { limit: 1000, page: 1 },
-      });
+    const obtenerUbicaciones = async () => {
+      try {
+        const response = await axiosConfig.get("/vacancies", {
+          params: { limit: 1000, page: 1 },
+        });
 
-      const ubicacionesUnicas = [
-        ...new Set(response.data.map((vacante) => vacante.ubicacion)),
-      ];
-      setUbicaciones(ubicacionesUnicas);
-    } catch (error) {
-      console.error("Error al cargar ubicaciones:", error.message);
-    }
-  };
+        const ubicacionesUnicas = [
+          ...new Set(response.data.map((vacante) => vacante.ubicacion)),
+        ];
+        setUbicaciones(ubicacionesUnicas);
+      } catch (error) {
+        console.error("Error al cargar ubicaciones:", error.message);
+      }
+    };
 
-  obtenerUbicaciones();
-}, []);
+    obtenerUbicaciones();
+  }, []);
 
   const refreshVacantes = () => {
     obtenerVacantes();
@@ -187,11 +187,13 @@ const VacanciesTable = () => {
       cell: (row) => (
         <div className="group relative">
           <a
-            href={`/reclutador/ver/candidatos/${row.id}`}
+            href={`/reclutador/Descriptionvacancy/${row.id}`}
             className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
-            title={`Ver dashboard de ${row.nombre || "Sin título"}`}
+            title={`Ver dashboard de ${
+              row.nombre || row.puesto || "Sin título"
+            }`}
           >
-            {row.nombre || "Sin título"}
+            {row.nombre || row.puesto || "Sin título"}
           </a>
         </div>
       ),
@@ -368,8 +370,9 @@ const VacanciesTable = () => {
         onClose={() => setDeleteModal(false)}
         tipo="delete"
         titulo="Eliminar Vacante"
-        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${selectedVacancy?.nombre || ""
-          }? Esta acción no se puede deshacer.`}
+        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${
+          selectedVacancy?.nombre || ""
+        }? Esta acción no se puede deshacer.`}
         btnPrimario="Sí, eliminar"
         btnSecundario="Cancelar"
         accionPrimaria={() => handleDelete(selectedVacancy.id)}
@@ -380,8 +383,9 @@ const VacanciesTable = () => {
         onClose={() => setChangePrioridadModal(false)}
         tipo="confirm"
         titulo="Cambiar Prioridad de Vacante"
-        mensaje={`¿Estás seguro de cambiar la prioridad de ${selectedVacancy?.nombre || ""
-          } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar la prioridad de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
@@ -392,8 +396,9 @@ const VacanciesTable = () => {
         onClose={() => setChangeStatusModal(false)}
         tipo="confirm"
         titulo="Cambiar Estado de Vacante"
-        mensaje={`¿Estás seguro de cambiar el estado de ${selectedVacancy?.nombre || ""
-          } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar el estado de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}

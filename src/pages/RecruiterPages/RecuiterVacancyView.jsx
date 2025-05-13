@@ -3,12 +3,10 @@ import { NavLink, useParams } from "react-router-dom";
 
 import axiosConfig from "../../helpers/axios.config";
 
-
-// Suponiendo que tienes un estado global o un contexto para manejar si el usuario está logueado
-const isAuthenticated = true; // Aquí deberías revisar el estado real de autenticación
+const isAuthenticated = true;
 
 const RecuiterVacancyView = () => {
-  const { id } = useParams(); // Obtener el ID de la vacante desde la URL
+  const { id } = useParams();
   const [vacante, setVacante] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,7 +27,10 @@ const RecuiterVacancyView = () => {
           setVacante(response.data);
         }
       } catch (error) {
-        console.error("Error al obtener vacantes:", error.response?.data || error.message);
+        console.error(
+          "Error al obtener vacantes:",
+          error.response?.data || error.message
+        );
         setError("No se pudo cargar la vacante");
       } finally {
         setLoading(false);
@@ -37,61 +38,59 @@ const RecuiterVacancyView = () => {
     };
 
     obtenerVacante();
-  }, [id]); // El hook se ejecutará cada vez que el ID cambie
+  }, [id]);
 
   if (loading) return <p className="pt-24 text-center">Cargando...</p>;
   if (error) return <p className="pt-24 text-center text-red-500">{error}</p>;
-  if (!vacante) return <p className="pt-24 text-center">Vacante no encontrada.</p>;
+  if (!vacante)
+    return <p className="pt-24 text-center">Vacante no encontrada.</p>;
 
   const navItems = [
     { title: "Descripción", path: "#" },
-    { title: "Candidatos en proceso", path: `/reclutador/ver/candidatos/${id}` },
+    {
+      title: "Candidatos en proceso",
+      path: `/reclutador/ver/candidatos/${id}`,
+    },
   ];
 
   return (
-    <div className="pt-24 px-8 min-h-screen">
-         <h1 className="text-3xl font-semibold text-black mb-10">{vacante.nombre}</h1>
-         
+    <div className="container mx-auto py-10 px-4 sm:px-8">
+      <h1 className="text-3xl font-medium text-[#152D53] mb-10">
+        {vacante.nombre} {vacante.puesto}
+      </h1>
 
- <div className="relative mb-6 pb-2">
-  <div className="flex space-x-6 border-b border-gray-300 pb-1 f">
-    {navItems.map((item) => (
-      <NavLink
-        key={item.title}
-        to={item.path}
-        className={({ isActive }) =>
-          `pb-2 relative font-medium transition-colors duration-200 ${
-            isActive ? "text-black" : "text-black hover:text-[#535353]"
-          }`
-        }
-      >
-        {({ isActive }) => (
-          <span className="relative">
-            {item.title}
-            {isActive && (
-              <span className="absolute -bottom-[1px] left-0 right-0 h-[3px] bg-[#366FB6] rounded-full"></span>
-            )}
-          </span>
-        )}
-      </NavLink>
-      
-    ))}
-    
-  </div>
-  
-</div>
-<h1 className="text-2xl  text-black mb-10">Sobre el puesto</h1>
+      <div className="relative mb-6 pb-2">
+        <div className="flex space-x-6 border-b border-gray-300">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.title}
+              to={item.path}
+              className={({ isActive }) =>
+                `pb-2 relative font-semibold transition-colors duration-200 ${
+                  isActive ? "text-black" : "text-black hover:text-[#535353]"
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <span className="relative">
+                  {item.title}
+                  {isActive && (
+                    <span className="absolute -bottom-[1px] left-0 right-0 h-[3px] bg-[#366FB6] rounded-full"></span>
+                  )}
+                </span>
+              )}
+            </NavLink>
+          ))}
+        </div>
+        <h2 className="text-2xl mt-10 text-black">Sobre el puesto</h2>
+      </div>
 
-
-
-      {/* Contenido principal */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 w-full">
-        {/* Columna Izquierda */}
-        <div className="md:col-span-2 space-y-6">
-          <section className="bg-gray-100 rounded-lg p-6">
+        <div className="md:col-span-2 space-y-6 bg-gray-100">
+          <section className=" rounded-lg p-6">
             <h2 className="text-lg font-medium mb-2">Descripción</h2>
             <p className="text-sm text-[#535353]">
-              {vacante.resumen || "Sin resumen disponible."}
+              {vacante.descripcion || "Sin resumen descripcion."}
             </p>
             <h2 className="text-lg font-medium mb-2 mt-4">Requisitos</h2>
             <ul className="list-disc pl-5 text-sm text-[#535353] space-y-1">
@@ -101,59 +100,57 @@ const RecuiterVacancyView = () => {
             </ul>
             <h2 className="text-lg font-semibold mb-2 mt-4"></h2>
             <p className="text-sm text-gray-700">
-              {vacante.responsabilidades || "Sin responsabilidades disponibles."}
+              {vacante.responsabilidades ||
+                "Sin responsabilidades disponibles."}
             </p>
           </section>
         </div>
 
         {/* Columna Derecha */}
-        <div className="space-y-4 text-sm text-[#2C2C2B] bg-gray-50 p-6 rounded-md shadow-sm">
+        <div className="space-y-4 text-sm text-black bg-gray-50 p-6 rounded-md shadow-sm">
           <div>
-             <h1 className="text-lg  mb-2 mt-4 mb-4">Detalles</h1>
+            <h1 className="text-lg mt-4 mb-4">Detalles</h1>
             <div className="flex items-center space-x-2 mb-4">
-                <img src="../../src/assets/img/candidatos.png" alt="Candidatos Icon" className="w-3 h-3 self-start mt-1" />
-                <span>
-                Candidatos seleccionados: {vacante.seleccionados ?? "N/A"}
-              </span>
-             
-            </div>
-             <div className="flex items-center space-x-2 mb-4">
-                <img src="../../src/assets/img/experiencia.png" alt="Experiencia Icon" className="w-3 h-3 self-start mt-1" />
-                <span>
-                Experiencia: {vacante.experiencia ?? "N/A"}
-              </span>
-             
+              <img
+                src="../../src/assets/img/experiencia.png"
+                alt="Experiencia Icon"
+                className=" h-5 self-start mt-1"
+              />
+              <span>Experiencia: {vacante.experiencia ?? "N/A"}</span>
             </div>
             <div className="flex items-center space-x-2 mb-4">
-                <img src="../../src/assets/img/modalidad.png" alt="Modalidad Icon" className="w-3 h-3 self-start mt-1" />
-                <span>
-                Modalidad:{vacante.modalidad ?? "N/A"}
-              </span>
-             
+              <img
+                src="../../src/assets/img/modalidad.png"
+                alt="Modalidad Icon"
+                className="h-5 self-start mt-1"
+              />
+              <span>Modalidad: {vacante.modalidad ?? "N/A"}</span>
             </div>
             <div className="flex items-center space-x-2 mb-4">
-                <img src="../../src/assets/img/ubicacion.png" alt="Ubicación Icon" className="w-3 h-3 self-start mt-1" />
-                <span>
-                Ubicación: {vacante.ubicacion ?? "N/A"}
-              </span>
-             
-            </div>
-             <div className="flex items-center space-x-2 mb-4">
-                <img src="../../src/assets/img/jornada.png" alt="Jornada Icon" className="w-3 h-3 self-start mt-1" />
-                <span>
-                Jornada: {vacante.jornada ?? "N/A"}
-              </span>
-             
+              <img
+                src="../../src/assets/img/ubicacion.png"
+                alt="Ubicación Icon"
+                className="h-5 self-start mt-1"
+              />
+              <span>Ubicación: {vacante.ubicacion ?? "N/A"}</span>
             </div>
             <div className="flex items-center space-x-2 mb-4">
-            <img src="../../src/assets/img/estado.png" alt="Estado Icon" className="w-3 h-3 self-start mt-1" />
-              <span>
-               Estado: {vacante.estado || "No especificado"}
-              </span>
+              <img
+                src="../../src/assets/img/jornada.png"
+                alt="Jornada Icon"
+                className="h-5 self-start mt-1"
+              />
+              <span>Jornada: {vacante.jornada ?? "N/A"}</span>
             </div>
             <div className="flex items-center space-x-2 mb-4">
-             
+              <img
+                src="../../src/assets/img/estado.png"
+                alt="Estado Icon"
+                className="h-5 self-start mt-1"
+              />
+              <span>Estado: {vacante.estado || "No especificado"}</span>
             </div>
+            <div className="flex items-center space-x-2 mb-4"></div>
           </div>
         </div>
       </div>

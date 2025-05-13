@@ -1,20 +1,18 @@
 import { Link } from "react-router-dom";
-import Sidebar from "../../components/Navigate/Sidebar";
-import { FaUserGear, FaMagnifyingGlass } from "react-icons/fa6";
-import { FaUserPlus } from "react-icons/fa6";
-import { BsFillGrid1X2Fill } from "react-icons/bs";
 
 import modificarUserIcon from "../../assets/img/DesingExports/modificarUsuario.svg";
 import crearUserIcon from "../../assets/img/DesingExports/crearUser.svg";
 import UserActiveTable from "../../components/Tables/UserActiveTable";
+import { useAuth } from "../../context/AuthContext";
 
 const AdminView = () => {
+  const { nombre } = useAuth();
   return (
     <>
       <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
         <section className="flex flex-col items-center justify-center gap-3 sm:gap-4 max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center font-bold">
-            ¡Bienvendio a Talent Match!
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center font-semibold">
+            ¡Bienvenido/a {nombre}!
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-center text-gray-500">
             Super Administrador
@@ -22,7 +20,7 @@ const AdminView = () => {
         </section>
 
         <section className="flex flex-col w-full text-gray-500">
-          <div className="flex flex-row justify-center mb-10">
+          <div className="flex flex-row justify-center mb-10 gap-20">
             <Link
               to="/admin/crear/usuario"
               className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl transition-all hover:bg-slate-50 duration-300 transform hover:scale-[1.02]"

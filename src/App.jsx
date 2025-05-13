@@ -1,6 +1,7 @@
 import RoutesViews from "./routes/RoutesViews";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
             {" "}
             <RoutesViews />
           </main>
+          <Toaster position="top-center" />
         </AuthProvider>
       </Router>
     </div>

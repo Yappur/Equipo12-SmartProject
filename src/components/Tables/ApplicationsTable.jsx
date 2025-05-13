@@ -13,7 +13,6 @@ import cvIcon from "../../assets/img/cvIcon.png";// O el nombre de la imagen que
 const   ApplicationsTable = () => {
   const { id } = useParams();
 
-  // 👇 Si no hay ID en la URL, redirige (puedes cambiar la ruta)
   if (!id) {
     return <Navigate to="/reclutador/dashboard" replace />;
   }
@@ -75,12 +74,24 @@ const   ApplicationsTable = () => {
     },
 
     {
+      name: "Correo",
+      selector: (row) => row.email,
+      sortable: true,
+    },
+    {
+      name: "Telefono",
+      selector: (row) => row.phone,
+      sortable: true,
+    },
+    {
+
       name:(
       <div className="flex items-center gap-2">
       <span>Estado</span>
       <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
     </div>
       ),
+
       cell: (row) => {
         const estados = [
           "Recibido",
@@ -94,8 +105,7 @@ const   ApplicationsTable = () => {
         if (row.status === "Finalista")
           colorClass = "bg-green-200 text-green-800 w-41 h-7";
         if (["Recibido", "En revisión"].includes(row.status))
-          colorClass = "bg-yellow-200 text-yellow-800 w-41 h-7"; // ✅
-
+          colorClass = "bg-yellow-200 text-yellow-800 w-41 h-7";
         if (row.status === "Entrevista")
           colorClass = "bg-blue-200 text-blue-800 w-41 h-7";
         if (row.status === "Descartado")
@@ -164,19 +174,11 @@ const   ApplicationsTable = () => {
     const nombre = (postulacion.fullName || "").toLowerCase();
     const correo = (postulacion.email || "").toLowerCase();
     const telefono = (postulacion.phone || "").toLowerCase();
-    let habilidades = "";
-
-    if (Array.isArray(postulacion.skills)) {
-      habilidades = postulacion.skills.join(" ").toLowerCase();
-    } else if (typeof postulacion.skills === "string") {
-      habilidades = postulacion.skills.toLowerCase();
-    }
 
     return (
       nombre.includes(searchTerm) ||
       correo.includes(searchTerm) ||
-      telefono.includes(searchTerm) ||
-      habilidades.includes(searchTerm)
+      telefono.includes(searchTerm)
     );
   });
 
@@ -213,4 +215,3 @@ const   ApplicationsTable = () => {
 };
 
 export default ApplicationsTable;
-
