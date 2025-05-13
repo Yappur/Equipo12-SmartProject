@@ -17,6 +17,7 @@
     "gsap": "^3.13.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.501.0",
+    "pdf.js": "^0.1.0",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-data-table-component": "^7.7.0",
