@@ -8,6 +8,7 @@ import SearchBar from "./SearchBar";
 import customStyles from "./DashboardsStyles";
 import flechasIcon from "../../assets/img/TableCandidatosIcon.png";
 import cvIcon from "../../assets/img/cvIcon.png";
+import { FaWhatsapp } from "react-icons/fa";
 
 const ApplicationsTable = () => {
   const { id } = useParams();
@@ -93,11 +94,21 @@ const ApplicationsTable = () => {
       selector: (row) => row.email,
       sortable: true,
     },
-    {
-      name: "Contacto",
-      selector: (row) => row.phone,
-      sortable: true,
-    },
+{
+  name: "Contacto",
+  cell: (row) => (
+    <div
+      className="flex items-center gap-2 text-green-600 hover:text-green-700 cursor-pointer"
+      onClick={() => window.open(`https://wa.me/${row.phone}`, "_blank")}
+    >
+      <FaWhatsapp className="text-green-500" />
+      <span className="text-gray-800 hover:text-green-700 font-medium">
+        {row.phone.startsWith("+") ? row.phone : `+${row.phone}`}
+      </span>
+    </div>
+  ),
+  sortable: true,
+},
     {
       name: (
         <div className="flex items-center gap-2">
