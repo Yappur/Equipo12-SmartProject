@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { FaUserGear, FaMagnifyingGlass, FaUserPlus } from "react-icons/fa6";
 import crearUserIcon from "../../assets/img/DesingExports/crearUser.svg";
 import bagIcon from "../../assets/img/DesingExports/bag.svg";
 

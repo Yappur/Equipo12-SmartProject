@@ -3,6 +3,7 @@ import axiosConfig from "../../helpers/axios.config";
 import { uploadCV } from "../../firebase/Upload/uploadPDF";
 import { useAuth } from "../../context/AuthContext";
 import { ChevronDown } from "lucide-react";
+import toast from "react-hot-toast";
 
 const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const { idUser } = useAuth();
@@ -118,7 +119,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       console.log("ID de vacante para enviar:", finalVacancyId);
 
       if (!finalVacancyId) {
-        alert("Por favor seleccione una vacante");
+        toast.error("Por favor seleccione una vacante");
         setCargando(false);
         return;
       }
@@ -137,14 +138,11 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       const response = await axiosConfig.post("/applications", candidatoData);
       console.log("Respuesta:", response.data);
 
-      alert("Candidato creado exitosamente");
+      toast.success("Candidato creado exitosamente");
       onClose();
     } catch (error) {
       console.error("Error al crear el candidato:", error);
-      alert(
-        "Error al crear el candidato: " +
-          (error.response?.data?.message || error.message)
-      );
+      toast.error(`Error al crear el candidato: ${(error.response?.data?.message || error.message)}`);
     } finally {
       setCargando(false);
     }

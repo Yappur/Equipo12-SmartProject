@@ -2,17 +2,10 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
-import SearchBar from "./SearchBar";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
 import customStyles from "./DashboardsStyles";
-
-const Loader = () => (
-  <div className="flex justify-center items-center py-20">
-    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    <p className="ml-4 text-gray-600 font-medium">Cargando usuarios...</p>
-  </div>
-);
+import SearchBarReclutadores from "../SearchBarReclutadores";
 
 const UserTable = () => {
   const [filtrarUsuarios, setFiltrarUsuarios] = useState("");
@@ -21,7 +14,7 @@ const UserTable = () => {
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  // MODALES
+  // MODALES (sin cambios)
   const [deleteModal, setDeleteModal] = useState(false);
   const [changeRoleModal, setChangeRoleModal] = useState(false);
   const [changeStatusModal, setChangeStatusModal] = useState(false);
@@ -31,6 +24,11 @@ const UserTable = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [newStatus, setNewStatus] = useState("");
   const [newRole, setNewRole] = useState("");
+
+  // FILTROS
+  const [busqueda, setBusqueda] = useState("");
+  const [rol, setRol] = useState("");
+  const [estado, setEstado] = useState("");
 
   const obtenerUsuarios = async () => {
     try {
@@ -217,13 +215,17 @@ const UserTable = () => {
     },
   ];
 
-  const filtrarData = usuarios.filter(
-    (user) =>
-      (user.displayName?.toLowerCase() || "").includes(
-        filtrarUsuarios.toLowerCase()
-      ) ||
-      (user.email?.toLowerCase() || "").includes(filtrarUsuarios.toLowerCase())
-  );
+
+  const filtrarData = usuarios.filter((user) => {
+    const textoFiltrado =
+      (user.displayName?.toLowerCase() || "").includes(busqueda.toLowerCase()) ||
+      (user.email?.toLowerCase() || "").includes(busqueda.toLowerCase());
+
+    const rolFiltrado = rol ? user.role === rol : true;
+    const estadoFiltrado = estado ? user.estado === estado : true;
+
+    return textoFiltrado && rolFiltrado && estadoFiltrado;
+  });
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -233,20 +235,28 @@ const UserTable = () => {
           to={"/admin/crear/usuario"}
           className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
         >
-          <FaPlus className="mr-2" /> Crear usuario
+          <FaPlus className="mr-2" />
+          Crear usuario
         </Link>
       </div>
 
-      <SearchBar
-        value={filtrarUsuarios}
-        onChange={(e) => setFiltrarUsuarios(e)}
-        disabled={loading}
-      />
       <div>
         <p className="text-gray-500 text-sm mb-3">
           {filtrarData.length} Usuarios Encontrados
         </p>
       </div>
+
+      <SearchBarReclutadores
+        value={busqueda}
+        onChange={setBusqueda}
+        onSearch={() => {
+          // Lógica de búsqueda adicional (si la hay)
+        }}
+        rol={rol}
+        setRol={setRol}
+        estado={estado}
+        setEstado={setEstado}
+      />
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -261,7 +271,7 @@ const UserTable = () => {
       )}
 
       {loading ? (
-        <Loader />
+        <Loader text={"Cargando usuarios..."} />
       ) : (
         <DataTable
           columns={columns}

@@ -14,11 +14,14 @@ import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../context/AuthContext";
 import RecruiterView from "../pages/RecruiterPages/RecruiterView";
 import CandidatosView from "../pages/RecruiterPages/CandidatosView";
+import RecuiterVacancyView from "../pages/RecruiterPages/RecuiterVacancyView";
 import RecoverAccount from "../pages/Auth/RecoverAccount";
 import CandidatosDashboard from "../pages/RecruiterPages/CandidatosDashboard";
+import GeneralCandidatosDashboard from "../pages/RecruiterPages/GeneralDashboardCandidatos";
 import CompleteNavbarLayout from "../components/Navigate/CompleteNavbarLayout";
 import LandingView from "../pages/PublicPages/LandingView";
 import AboutPage from "../pages/AboutPage";
+import DashboardVacancyRecuiter from "../pages/RecruiterPages/DashboardVacancyRecuiter";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -54,14 +57,17 @@ const RoutesViews = () => {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/reclutador/ver/candidatos/:id"
+           <Route
+            path="/reclutador/Descriptionvacancy/:id"
             element={
-              <ProtectedRoute allowedRoles={["admin", "user"]}>
-                <CandidatosDashboard />
+              <ProtectedRoute allowedRoles={["user", "admin"]}>
+                <RecuiterVacancyView />
               </ProtectedRoute>
             }
           />
+          <Route path="/reclutador/vacantes" element={<DashboardVacancyRecuiter/>} />
+        <Route path="/reclutador/ver/candidatos/:id" element={<CandidatosDashboard />} />
+         <Route path="/reclutador/CandidatosTable" element={<GeneralCandidatosDashboard />} />
           <Route
             path="/crear/vacante"
             element={
@@ -98,7 +104,7 @@ const RoutesViews = () => {
             }
           />
           <Route
-            path="/admin/panelVacantes"
+            path="admin/panelVacantes"
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <VacanciesDashboard />

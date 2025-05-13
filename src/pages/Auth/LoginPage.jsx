@@ -38,6 +38,7 @@ const LoginPage = () => {
     const resultado = await login({ email, password, rememberMe });
     if (resultado) {
       showSuccessMessage("Inicio de sesión exitoso");
+      console.log("Resultado de inicio de sesión:", resultado);
     }
   };
 
