@@ -37,8 +37,18 @@ const LoginPage = () => {
 
     const resultado = await login({ email, password, rememberMe });
     if (resultado) {
+      const { role } = resultado;
       showSuccessMessage("Inicio de sesión exitoso");
-      console.log("Resultado de inicio de sesión:", resultado);
+
+      setTimeout(() => {
+        if (role === "admin") {
+          navigate("/admin");
+        } else if (role === "user") {
+          navigate("/reclutador");
+        } else {
+          navigate("/");
+        }
+      }, 500);
     }
   };
 
@@ -48,15 +58,6 @@ const LoginPage = () => {
 
   const handleCloseSuccessModal = () => {
     setSuccessModal(false);
-    if (isAuthenticated) {
-      if (role === "admin") {
-        navigate("/admin");
-      } else if (role === "user") {
-        navigate("/reclutador");
-      } else {
-        navigate("/");
-      }
-    }
   };
 
   const handleCloseErrorModal = () => {

@@ -14,11 +14,11 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     email: "",
     phone: "",
     cvUrl: "",
-    skills: ["", ""],
     status: "Recibido",
   });
   const [cargando, setCargando] = useState(false);
   const [loadingVacancies, setLoadingVacancies] = useState(false);
+  const [loadingCV, setLoadingCV] = useState(false);
 
   useEffect(() => {
     const fetchRecruiterVacancies = async () => {
@@ -82,39 +82,38 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     setSelectedVacancyId(e.target.value);
   };
 
-  const handleFileUpload = async (file) => {
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
     if (!file) return;
 
     try {
+      setLoadingCV(true);
+      toast.loading("Subiendo CV...");
+      console.log("Subiendo archivo:", file.name);
       const downloadURL = await uploadCV(file);
+      console.log("URL de descarga obtenida:", downloadURL);
       setCandidato((prev) => ({ ...prev, cvUrl: downloadURL }));
+      toast.dismiss();
+      toast.success("CV subido correctamente");
     } catch (error) {
       console.error("Error subiendo CV:", error);
+      toast.dismiss();
+      toast.error("Error al subir el CV. Inténtalo de nuevo.");
+    } finally {
+      setLoadingCV(false);
     }
-  };
-
-  const handleSkillChange = (index, value) => {
-    const updatedSkills = [...candidato.skills];
-    updatedSkills[index] = value;
-    setCandidato({
-      ...candidato,
-      skills: updatedSkills,
-    });
-  };
-
-  const newSkill = () => {
-    setCandidato({
-      ...candidato,
-      skills: [...candidato.skills, ""],
-    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!candidato.cvUrl) {
+      toast.error("Por favor sube un CV antes de enviar la solicitud");
+      return;
+    }
+
     setCargando(true);
     try {
-      const filtredSkills = candidato.skills.filter((apt) => apt !== "");
-
       const finalVacancyId = isRecruiter ? selectedVacancyId : vacancyId;
       console.log("ID de vacante para enviar:", finalVacancyId);
 
@@ -129,7 +128,6 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
         email: candidato.email,
         phone: candidato.phone,
         cvUrl: candidato.cvUrl,
-        skills: filtredSkills,
         status: candidato.status,
         vacancyId: finalVacancyId,
       };
@@ -138,22 +136,27 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       const response = await axiosConfig.post("/applications", candidatoData);
       console.log("Respuesta:", response.data);
 
-      toast.success("Candidato creado exitosamente");
+      toast.success("Postulacion enviada exitosamente");
       onClose();
     } catch (error) {
       console.error("Error al crear el candidato:", error);
-      toast.error(`Error al crear el candidato: ${(error.response?.data?.message || error.message)}`);
+      toast.error(
+        `Error al crear el candidato: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     } finally {
       setCargando(false);
     }
   };
+
   return (
     <div className="p-4 w-full">
       <div className="bg-white">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="my-2">
             <label className="block text-sm font-semilight mb-1">
-              Nombre y apellido*
+              Nombre y apellido<span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -167,7 +170,9 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
           </div>
 
           <div className="my-2">
-            <label className="block text-sm font-semilight mb-1">Mail*</label>
+            <label className="block text-sm font-semilight mb-1">
+              Mail<span className="text-red-500">*</span>
+            </label>
             <input
               type="email"
               name="email"
@@ -181,7 +186,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
 
           <div className="my-2">
             <label className="block text-sm font-semilight mb-1">
-              Teléfono*
+              Teléfono<span className="text-red-500">*</span>
             </label>
             <input
               type="tel"
@@ -197,7 +202,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
           {isRecruiter && (
             <div className="relative my-2">
               <label className="text-sm font-semilight mb-1">
-                Vacante a cubrir*
+                Vacante a cubrir<span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <select
@@ -240,39 +245,25 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
 
         <div className="col-span-2 mt-5">
           <label className="block text-sm font-semilight mb-1">
-            Importar CV (PDF)*
+            Importar CV (PDF)<span className="text-red-500">*</span>
           </label>
           <input
             type="file"
             accept=".pdf"
+            onChange={handleFileChange}
             className="w-full p-3 bg-[#f5f2ea] rounded border-none"
+            disabled={loadingCV}
           />
-        </div>
-
-        <div className="mt-4">
-          <label className="block text-sm font-medium mb-2">Aptitudes</label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {candidato.skills.map((skill, index) => (
-              <input
-                key={index}
-                type="text"
-                value={skill}
-                onChange={(e) => handleSkillChange(index, e.target.value)}
-                className="p-3 bg-[#f5f2ea] rounded border-none w-full"
-                placeholder="Palabra clave"
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <button
-            type="button"
-            onClick={newSkill}
-            className="border border-gray-400 bg-white rounded px-4 py-2 text-sm"
-          >
-            + Agregar aptitud
-          </button>
+          {candidato.cvUrl && (
+            <p className="text-sm text-green-600 mt-1">
+              CV subido correctamente ✓
+            </p>
+          )}
+          {loadingCV && (
+            <p className="text-sm text-gray-500 mt-1">
+              Subiendo CV, por favor espere...
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
@@ -286,7 +277,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={cargando}
+            disabled={cargando || loadingCV}
             className="px-4 py-2 bg-[#00254B] text-white rounded hover:bg-[#001a38] sm:order-2"
           >
             {cargando ? "Cargando..." : "Guardar"}

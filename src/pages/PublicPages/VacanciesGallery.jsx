@@ -7,23 +7,22 @@ import Footer from "../../components/Footer";
 import VacancieCards from "../../components/Cards/VacancieCards";
 
 const VacancyGallery = () => {
-
-
-
-
   return (
     <>
       <LandingNavbar />
-      <div className="relative">
-        {/* Imagen de fondo */}
-        <img className="w-full" src={imgVacantes} alt="" />
+      <div className="relative pt-16 md:pt-0">
+        {/* Imagen visible solo en tablets y desktop */}
+        <img
+          className="w-full hidden md:block"
+          src={imgVacantes || "/placeholder.svg"}
+          alt=""
+        />
 
-        {/* Contenedor flotante con margen negativo */}
-        <section
-          className="relative bg-[#F9F9F9] max-w-screen-xl mx-auto px-6 py-10 rounded-xl shadow-lg -mt-16"
-        >
-          <h1 className="text-center text-[#F88623] font-poppins text-4xl mt-5 leading-relaxed font-semibold">
-            Tu próximo trabajo está más cerca <br className="hidden md:block" /> de lo que piensas
+        {/* Contenedor con ajustes responsive */}
+        <section className="relative bg-[#F9F9F9] max-w-screen-xl mx-auto px-6 py-10 rounded-xl shadow-lg md:-mt-32 mt-0">
+          <h1 className="text-center text-[#F88623] font-poppins text-3xl md:text-4xl mt-5 leading-relaxed font-semibold">
+            Tu próximo trabajo está más cerca <br className="hidden md:block" />{" "}
+            de lo que piensas
           </h1>
 
           {/* Tabla de vacantes */}
@@ -36,12 +35,10 @@ const VacancyGallery = () => {
             </p>
             <VacancieTable className="hidden lg:block" />
             <VacancieCards className="" />
-           
           </div>
         </section>
       </div>
       <Footer />
-
     </>
   );
 };
