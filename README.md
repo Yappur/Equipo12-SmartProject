@@ -1,36 +1,107 @@
-TalenMach es una aplicación web desarrollada con React que busca optimizar la gestión de busqueda de talentos y facilitar la selección de los mismos para los reclutadores.
+🔍Bienvenido a Talent Match
 
-🚀 Tecnologías utilizadas
+<div align="center">
+![Logo Talent Match](./public/logo.png)
+Optimizando la búsqueda y selección de talento para reclutadores
+</div>
 
-    React – Librería principal para la construcción de interfaces de usuario.
+📋 Tabla de Contenidos
+Descripción
+Características Principales
+Tecnologías Utilizadas
+Demostración
+Instalación y Uso
+Estructura del Proyecto
+Contribución
+Contacto
 
-    Tailwind CSS – Para estilos rápidos, responsivos y altamente personalizables.
+🚀 Descripción
+Talent Match es una aplicación web innovadora desarrollada con React que revoluciona la gestión de búsqueda y selección de talentos para reclutadores. Nuestra plataforma ofrece una interfaz intuitiva y herramientas poderosas para identificar, evaluar y conectar con los mejores candidatos de manera eficiente.
+✨ Características Principales
 
-    React Router DOM – Navegación entre páginas.
+Características detalladas:
 
-    React Icons y Lucide React – Para el uso de íconos en la interfaz.
+<details>
+  <summary>📊 <b>Dashboard Intuitivo</b></summary>
 
-    Axios – Para consumo de APIs.
+Visualización clara de métricas claves como candidatos activos, entrevistas programadas y ofertas enviadas. Gráficos interactivos para análisis de datos en tiempo real.
 
-    Firebase – Autenticación y base de datos.
+</details>
+<details>
+  <summary>🔄 <b>Gestión de Procesos</b></summary>
 
-    React Data Table Component – Componente para visualización de datos en tablas.
+Seguimiento del estado de cada candidato a través de un sistema personalizable con etapas de reclutamiento definidas.
 
-    Vite – Empaquetador rápido para desarrollo moderno en React.
+</details>
+<details>
+  <summary>🎯 <b>Facilidad de Uso</b></summary>
 
-    ESLint – Linter para mantener código limpio y uniforme.
+Diseño intuitivo que permite a usuarios de todos los niveles técnicos aprovechar al máximo la plataforma sin necesidad de capacitación extensa.
 
-    🛠 Instalación
+</details>
+🛠️ Tecnologías Utilizadas
+<div align="center">
+| Tecnología | Descripción |
+|------------|-------------|
+| React | Librería principal para la construcción de interfaces de usuario |
+| Tailwind CSS | Framework de CSS para estilos rápidos y responsivos |
+| Firebase | Plataforma para autenticación y base de datos |
+React Router DOM | Navegación entre páginas de la aplicación |
+React Icons & Lucide React | Bibliotecas de íconos para mejorar la UI |
+Axios | HTTP para consumo de APIs |
+Firebase | Plataforma para autenticación y base de datos |
+React Data Table | Componente para visualización de datos en tablas |
+Vite | Empaquetador y servidor de desarrollo ultrarrápido | 
+ESLint | Herramienta para mantener código limpio y uniforme |
+</div>
 
-    Clona el repositorio:
+🖥️ Demostración
 
-    git clone [https://github.com/tu-usuario/equipo12-smartproject.git](https://github.com/Yappur/Equipo12-SmartProject.git)
+<div align="center">
+ ![Imagen](src/assets/img/mariaLopezAbout.png)
+Ver Demo en Vivo: https://sp-equipo12.netlify.app/
+</div>
 
-    Instala las dependencias:
+</details>
+📂 Estructura del Proyecto
+talent match/
+├── public/
+│   ├── assets/
+│   └── favicon.ico
+├── src/
+│   ├── components/
+│   ├── context/
+│   ├── hooks/
+│   ├── pages/
+│   ├── services/
+│   ├── styles/
+│   ├── utils/
+│   ├── App.jsx
+│   └── main.jsx
+├── .eslintrc.json
+├── .gitignore
+├── index.html
+├── package.json
+├── README.md
+├── tailwind.config.js
+└── vite.config.js
 
-    npm install
+<details>
+ <summary>👥 <b>Facilidad de Uso</b></summary>
+Haz un Fork del proyecto
+Crea una rama para tu funcionalidad (git checkout -b feature/amazing-feature)
+Realiza tus cambios y haz commit (git commit -m 'Add some amazing feature')
+Sube tus cambios (git push origin feature/amazing-feature)
+Abre un Pull Request
+</details>
 
-    Inicia el servidor de desarrollo:
+📬 Contacto
+Equipo Talent Match - talent.match.group@gmail.com
+Linkedin: https://www.linkedin.com/company/thetalentmatch/
 
-    npm run dev
+Link del Proyecto: https://github.com/Yappur/Equipo12-SmartProject
 
+<div align="center">
+Desarrollado con ❤️ por Equipo 12
+<a href="#-talent-match">⬆️ Volver arriba ⬆️</a>
+</div>
