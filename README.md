@@ -1,36 +1,112 @@
-TalenMach es una aplicación web desarrollada con React que busca optimizar la gestión de busqueda de talentos y facilitar la selección de los mismos para los reclutadores.
+## 🔍 Talent Match
 
-🚀 Tecnologías utilizadas
+<div align="center">
 
-    React – Librería principal para la construcción de interfaces de usuario.
+<img src="./public/logo.png" alt="Logo Talent Match" width="300"/>
 
-    Tailwind CSS – Para estilos rápidos, responsivos y altamente personalizables.
+Optimizando la búsqueda y selección de talento para reclutadores
 
-    React Router DOM – Navegación entre páginas.
+</div>
 
-    React Icons y Lucide React – Para el uso de íconos en la interfaz.
+## 📋 Tabla de Contenidos
 
-    Axios – Para consumo de APIs.
+- [Descripción](#-descripción)
+- [Características Principales](#-características-principales)
+- [Tecnologías Utilizadas](#️-tecnologías-utilizadas)
+- [Demostración](#️-demostración)
+- [Instalación y Uso](#-instalación-y-uso)
+- [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Contribución](#-contribución)
+- [Contacto](#-contacto)
 
-    Firebase – Autenticación y base de datos.
+## 🚀 Descripción
 
-    React Data Table Component – Componente para visualización de datos en tablas.
+Talent Match es una aplicación web innovadora desarrollada con React que revoluciona la gestión de búsqueda y selección de talentos para reclutadores. Nuestra plataforma ofrece una interfaz intuitiva y herramientas poderosas para identificar, evaluar y conectar con los mejores candidatos de manera eficiente.
 
-    Vite – Empaquetador rápido para desarrollo moderno en React.
+## ✨ Características detalladas:
 
-    ESLint – Linter para mantener código limpio y uniforme.
+<details>
+  <summary>📊 <b>Dashboard Intuitivo</b></summary>
 
-    🛠 Instalación
+Visualización clara de métricas claves como candidatos activos, entrevistas programadas y ofertas enviadas. Gráficos interactivos para análisis de datos en tiempo real.
 
-    Clona el repositorio:
+</details>
+<details>
+  <summary>🔄 <b>Gestión de Procesos</b></summary>
 
-    git clone [https://github.com/tu-usuario/equipo12-smartproject.git](https://github.com/Yappur/Equipo12-SmartProject.git)
+Seguimiento del estado de cada candidato a través de un sistema personalizable con etapas de reclutamiento definidas.
 
-    Instala las dependencias:
+</details>
+<details>
+  <summary>🎯 <b>Facilidad de Uso</b></summary>
 
-    npm install
+Diseño intuitivo que permite a usuarios de todos los niveles técnicos aprovechar al máximo la plataforma sin necesidad de capacitación extensa.
 
-    Inicia el servidor de desarrollo:
+</details>
 
-    npm run dev
+## 🛠️ Tecnologías Utilizadas
 
+<div align="center">
+
+| Tecnología                 | Descripción                                                      |
+| -------------------------- | ---------------------------------------------------------------- |
+| React                      | Librería principal para la construcción de interfaces de usuario |
+| Tailwind CSS               | Framework de CSS para estilos rápidos y responsivos              |
+| Firebase                   | Plataforma para autenticación y base de datos                    |
+| React Router DOM           | Navegación entre páginas de la aplicación                        |
+| React Icons & Lucide React | Bibliotecas de íconos para mejorar la UI                         |
+| Axios                      | HTTP para consumo de APIs                                        |
+| Firebase                   | Plataforma para autenticación y base de datos                    |
+| React Data Table           | Componente para visualización de datos en tablas                 |
+| Vite                       | Empaquetador y servidor de desarrollo ultrarrápido               |
+| ESLint                     | Herramienta para mantener código limpio y uniforme               |
+
+</div>
+
+## 🖥️ Demostración
+
+<div align="center">
+
+<img src="src/assets/img/mariaLopezAbout.png" alt="Captura de la demo" width="500"/>
+
+Ver Demo en Vivo: https://sp-equipo12.netlify.app/
+
+</div>
+
+## 📂 Estructura del Proyecto
+
+```plaintext
+talenmach/
+├── public/
+│   ├── assets/
+│   └── favicon.ico
+├── src/
+│   ├── components/
+│   ├── context/
+│   ├── hooks/
+│   ├── pages/
+│   ├── services/
+│   ├── styles/
+│   ├── utils/
+│   ├── App.jsx
+│   └── main.jsx
+├── .eslintrc.json
+├── .gitignore
+├── index.html
+├── package.json
+├── README.md
+├── tailwind.config.js
+└── vite.config.js
+```
+
+## 📬 Contacto
+
+Equipo Talent Match - talent.match.group@gmail.com
+Linkedin: https://www.linkedin.com/company/thetalentmatch/
+
+Link del Proyecto: https://github.com/Yappur/Equipo12-SmartProject
+
+<div align="center">
+Desarrollado con ❤️ por Equipo 12
+<a href="#-talent-match">⬆️ Volver arriba ⬆️</a>
+</div>

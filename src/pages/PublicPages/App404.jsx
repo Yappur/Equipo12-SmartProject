@@ -1,5 +1,5 @@
 import React from "react";
-import LandingNavbar from "../components/Navigate/LandingNavbar";
+import LandingNavbar from "../../components/Navigate/LandingNavbar";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 

@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { useLoginFirebase } from "../hooks/useLoginFirebase";
 import LoginPage from "../pages/Auth/LoginPage";
-import App404 from "../pages/App404";
+import App404 from "../pages/PublicPages/App404";
 import UserRegister from "../pages/Auth/UserRegister";
 import AdminView from "../pages/AdminPages/AdminView";
 import VacanciesDashboard from "../pages/AdminPages/VacanciesDashboard";
@@ -20,7 +20,7 @@ import CandidatosDashboard from "../pages/RecruiterPages/CandidatosDashboard";
 import GeneralCandidatosDashboard from "../pages/RecruiterPages/GeneralDashboardCandidatos";
 import CompleteNavbarLayout from "../components/Navigate/CompleteNavbarLayout";
 import LandingView from "../pages/PublicPages/LandingView";
-import AboutPage from "../pages/AboutPage";
+import AboutPage from "../pages/PublicPages/AboutPage";
 import DashboardVacancyRecuiter from "../pages/RecruiterPages/DashboardVacancyRecuiter";
 
 const RoutesViews = () => {
