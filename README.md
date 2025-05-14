@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Logo Talent Match](./public/logo.png)
+<img src="./public/logo.png" alt="Logo Talent Match" width="300"/>
 
 Optimizando la búsqueda y selección de talento para reclutadores
 
@@ -67,7 +67,7 @@ Diseño intuitivo que permite a usuarios de todos los niveles técnicos aprovech
 
 <div align="center">
 
-![Imagen](src/assets/img/mariaLopezAbout.png)
+<img src="src/assets/img/mariaLopezAbout.png" alt="Captura de la demo" width="500"/>
 
 Ver Demo en Vivo: https://sp-equipo12.netlify.app/
 

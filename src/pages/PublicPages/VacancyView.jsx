@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
-import Footer from "../../components/Footer";
+import Footer from "../../components/Navigate/Footer";
 import imgVacantes from "@/assets/img/img-vacantes.png";
 import { useParams } from "react-router-dom";
 import {

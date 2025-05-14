@@ -7,7 +7,7 @@ import axiosConfig from "../../helpers/axios.config";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import customStyles from "./DashboardsStyles";
 import ModalEditarVacante from "../Modals/ModalEditarVacante";
-import BotonEditar from "../../assets/img/editar.png"
+import BotonEditar from "../../assets/img/editar.png";
 
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
@@ -39,7 +39,6 @@ const VacanciesTable = () => {
   const [tempFieldName, setTempFieldName] = useState("");
   const [editModal, setEditModal] = useState(false);
   const [vacancyToEdit, setVacancyToEdit] = useState(null);
-
 
   const obtenerVacantes = async () => {
     try {
@@ -134,8 +133,6 @@ const VacanciesTable = () => {
     setSuccessModal(true);
   };
 
-
-
   const handleDelete = async (id) => {
     try {
       const response = await axiosConfig.delete(`/vacancies/${id}`);
@@ -202,8 +199,9 @@ const VacanciesTable = () => {
           <a
             href={`/reclutador/Descriptionvacancy/${row.id}`}
             className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
-            title={`Ver dashboard de ${row.nombre || row.puesto || "Sin título"
-              }`}
+            title={`Ver dashboard de ${
+              row.nombre || row.puesto || "Sin título"
+            }`}
           >
             {row.nombre || row.puesto || "Sin título"}
           </a>
@@ -301,12 +299,23 @@ const VacanciesTable = () => {
     },
   ];
 
-  const filtrarData = vacantes.filter((vacante) => {
+  const filtrarData = vacantes.filter((vacancy) => {
     const searchTerm = filtrarVacantes.toLowerCase();
-    const nombre = (vacante.nombre || "").toLowerCase();
-    const descripcion = (vacante.descripcion || "").toLowerCase();
+    const puesto = (vacancy.puesto || "").toLowerCase();
+    const ubicacion = (vacancy.ubicacion || "").toLowerCase();
+    const modalidad = (vacancy.modalidad || "").toLowerCase();
+    const estado = (vacancy.estado || "").toLowerCase();
+    const prioridad = (vacancy.prioridad || "").toLowerCase();
+    const jornada = (vacancy.jornada || "").toLowerCase();
 
-    return nombre.includes(searchTerm) || descripcion.includes(searchTerm);
+    return (
+      puesto.includes(searchTerm) ||
+      ubicacion.includes(searchTerm) ||
+      modalidad.includes(searchTerm) ||
+      estado.includes(searchTerm) ||
+      prioridad.includes(searchTerm) ||
+      jornada.includes(searchTerm)
+    );
   });
 
   return (
@@ -322,19 +331,9 @@ const VacanciesTable = () => {
           </Link>
         </div>
         <SearchBar
-          value={busqueda}
-          onChange={setBusqueda}
-          onSearch={obtenerVacantes}
-          limpiarFiltros={limpiarFiltros}
-          modalidad={modalidad}
-          setModalidad={setModalidad}
-          ubicacion={ubicacion}
-          setUbicacion={setUbicacion}
-          estado={estado}
-          setEstado={setEstado}
-          prioridad={prioridad}
-          setPrioridad={setPrioridad}
-          ubicaciones={ubicaciones}
+          value={filtrarVacantes}
+          onChange={setFiltrarVacantes}
+          disabled={loading}
         />
         <div>
           <p className="text-gray-500 text-sm mb-3">
@@ -382,15 +381,15 @@ const VacanciesTable = () => {
         vacancy={vacancyToEdit}
         refreshVacancies={obtenerVacantes}
       />
-      
 
       <Modal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}
         tipo="delete"
         titulo="Eliminar Vacante"
-        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${selectedVacancy?.nombre || ""
-          }? Esta acción no se puede deshacer.`}
+        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${
+          selectedVacancy?.nombre || ""
+        }? Esta acción no se puede deshacer.`}
         btnPrimario="Sí, eliminar"
         btnSecundario="Cancelar"
         accionPrimaria={() => handleDelete(selectedVacancy.id)}
@@ -401,8 +400,9 @@ const VacanciesTable = () => {
         onClose={() => setChangePrioridadModal(false)}
         tipo="confirm"
         titulo="Cambiar Prioridad de Vacante"
-        mensaje={`¿Estás seguro de cambiar la prioridad de ${selectedVacancy?.nombre || ""
-          } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar la prioridad de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
@@ -413,8 +413,9 @@ const VacanciesTable = () => {
         onClose={() => setChangeStatusModal(false)}
         tipo="confirm"
         titulo="Cambiar Estado de Vacante"
-        mensaje={`¿Estás seguro de cambiar el estado de ${selectedVacancy?.nombre || ""
-          } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar el estado de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
