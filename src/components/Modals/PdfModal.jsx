@@ -1,17 +1,33 @@
 import { useState, useEffect } from "react";
 import { FiExternalLink, FiDownload, FiX } from "react-icons/fi";
+import { Document, Page, pdfjs } from "react-pdf";
 
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 const PdfModal = ({ cvUrl, onClose }) => {
   const [loading, setLoading] = useState(true);
+  const [pdfBlob, setPdfBlob] = useState(null);
   const [fullscreen, setFullscreen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
   }, [cvUrl]);
 
-  const handleIframeLoad = () => {
-    setLoading(false);
-  };
+  useEffect(() => {
+    const fetchPdf = async () => {
+      try {
+        const response = await fetch(cvUrl);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        setPdfBlob(blobUrl);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error al descargar el PDF:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchPdf();
+  }, [cvUrl]);
 
   const toggleFullscreen = () => {
     setFullscreen(!fullscreen);
@@ -62,19 +78,16 @@ const PdfModal = ({ cvUrl, onClose }) => {
       </div>
 
       {/* Iframe para mostrar el PDF */}
-      <div className="flex-1 relative">
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-          </div>
+      <div className="w-full h-full">
+        {loading && <p>Cargando PDF...</p>}
+        {!loading && pdfBlob && (
+          <Document
+            file={pdfBlob}
+            onLoadError={(err) => console.error("Error al cargar PDF:", err)}
+          >
+            <Page pageNumber={1} width={600} />
+          </Document>
         )}
-        <iframe
-          src={`${cvUrl}#toolbar=1&view=FitH`}
-          className="w-full h-full border-0"
-          title="Visor de CV"
-          onLoad={handleIframeLoad}
-          sandbox="allow-scripts allow-same-origin allow-forms"
-        />
       </div>
     </div>
   );
