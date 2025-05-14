@@ -50,21 +50,24 @@ const FormRegister = () => {
   };
 
   const validarPassword = (password) => {
-    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const regex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
     return regex.test(password);
   };
 
+  // Comentar función de validación de teléfono
   const validarTelefono = (phoneNumber) => {
-    const regex = /^\+[1-9]\d{6,14}$/;
-    return regex.test(phoneNumber);
+    // const regex = /^\+[1-9]\d{6,14}$/;
+    // return regex.test(phoneNumber);
+    return true; // Siempre devuelve true para evitar validación
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Limpieza específica para phoneNumber (solo permitir números y +)
+    // Limpieza específica para phoneNumber (ahora permitimos cualquier formato)
     if (name === "phoneNumber") {
-      const cleanedValue = value.replace(/[^\d+]/g, "");
+      // const cleanedValue = value.replace(/[^\d+]/g, "");
+      const cleanedValue = value; // Mantener el valor como se ingresa
       setUsuario({
         ...usuario,
         [name]: cleanedValue,
@@ -186,11 +189,13 @@ const FormRegister = () => {
     if (!phoneNumber) {
       newErrors.errorPhoneNumber = "Por favor, ingresa tu número de teléfono";
       isValid = false;
-    } else if (!validarTelefono(phoneNumber)) {
+    } 
+    // Comentar la validación específica del formato
+    /* else if (!validarTelefono(phoneNumber)) {
       newErrors.errorPhoneNumber =
         "El número debe comenzar con + seguido del código de país y tener al menos 8 dígitos en total";
       isValid = false;
-    }
+    } */
 
     setErrors(newErrors);
     return isValid;
@@ -237,13 +242,15 @@ const FormRegister = () => {
 
       let mensajeError = "Error al registrar usuario";
 
-      if (
+      // Comentar validación específica de teléfono en el error
+      /* if (
         err.response?.data?.mensaje?.includes("teléfono") ||
         err.response?.status === 400
       ) {
         mensajeError =
           "El formato del número de teléfono es incorrecto. Debe incluir el código de país precedido por + y el número sin espacios ni guiones.";
-      } else if (err.response?.data?.mensaje) {
+      } else */ 
+      if (err.response?.data?.mensaje) {
         mensajeError = err.response.data.mensaje;
       }
 

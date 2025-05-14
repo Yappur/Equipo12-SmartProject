@@ -1,0 +1,12 @@
+{
+    "files.watcherExclude": {
+        "**/public/assets/**": true,
+        "**/node_modules/**": true,
+        "**/build/**": true
+    },
+    "search.exclude": {
+        "**/public/assets": true,
+        "**/node_modules": true,
+        "**/build": true
+    }
+}
