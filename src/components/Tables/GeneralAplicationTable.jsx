@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
-import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
 import customStyles from "./DashboardsStyles";
 
@@ -87,8 +86,7 @@ const GeneralApplicationsTable = () => {
           colorClass = "bg-yellow-200 text-yellow-800";
         if (row.status === "Entrevista")
           colorClass = "bg-blue-200 text-blue-800";
-        if (row.status === "Descartado")
-          colorClass = "bg-red-200 text-red-800";
+        if (row.status === "Descartado") colorClass = "bg-red-200 text-red-800";
 
         return (
           <div className="flex flex-col">
@@ -187,7 +185,7 @@ const GeneralApplicationsTable = () => {
           progressComponent={<div>Cargando datos...</div>}
         />
 
-        {showModal && (
+        {/* {showModal && (
           <>
             <div className="fixed inset-0 z-40 bg-black/50"></div>
             <div className="fixed inset-0 flex justify-center items-center z-50">
@@ -196,7 +194,7 @@ const GeneralApplicationsTable = () => {
               </div>
             </div>
           </>
-        )}
+        )} */}
       </div>
     </>
   );

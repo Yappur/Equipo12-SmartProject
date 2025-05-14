@@ -27,6 +27,17 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/auth/, "/auth"),
       },
+      "/api": {
+        target: "https://firebasestorage.googleapis.com",
+        changeOrigin: true,
+        secure: false,
+        configure: (proxy, _options) => {
+          proxy.on("proxyReq", (proxyReq, _req, _res) => {
+            proxyReq.removeHeader("cache-control");
+          });
+        },
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
     },
   },
 });

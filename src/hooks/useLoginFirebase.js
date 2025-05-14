@@ -46,6 +46,7 @@ export const useLoginFirebase = () => {
       );
       const user = userCredential.user;
       const idToken = await user.getIdToken();
+      
 
       if (rememberMe) {
         localStorage.setItem("authToken", idToken);

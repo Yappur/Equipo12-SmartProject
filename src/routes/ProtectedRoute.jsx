@@ -15,6 +15,14 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
     );
   }
 
+  if (!role) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg">Cargando perfil de usuario...</p>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
