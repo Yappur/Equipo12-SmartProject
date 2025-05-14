@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import axiosConfig from "../../helpers/axios.config";
-// import PdfModal from "../Modals/PdfModal";
+import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
 import customStyles from "./DashboardsStyles";
 import flechasIcon from "../../assets/img/TableCandidatosIcon.png";
@@ -51,11 +51,10 @@ const ApplicationsTable = () => {
     }
   };
 
-  // // Maneja la visualización del CV en el modal
-  // const handleViewCV = (cvUrl) => {
-  //   setSelectedCV(cvUrl);
-  //   setShowModal(true);
-  // };
+  const handleViewCV = (cvUrl) => {
+    setSelectedCV(cvUrl);
+    setShowModal(true);
+  };
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -81,7 +80,6 @@ const ApplicationsTable = () => {
         <div className="flex justify-center items-center gap-2 p-3">
           <span></span>
           <span className="flex justify-center items-center gap-2">Nombre</span>
-          <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
         </div>
       ),
       selector: (row) => row.fullName,
@@ -100,7 +98,6 @@ const ApplicationsTable = () => {
           className="flex items-center gap-2 text-green-600 hover:text-green-700 cursor-pointer"
           onClick={() => window.open(`https://wa.me/${row.phone}`, "_blank")}
         >
-          <FaWhatsapp className="text-green-500" />
           <span className="text-gray-800 hover:text-green-700 font-medium">
             {row.phone.startsWith("+") ? row.phone : `+${row.phone}`}
           </span>
@@ -112,7 +109,6 @@ const ApplicationsTable = () => {
       name: (
         <div className="flex items-center gap-2">
           <span>Estado</span>
-          <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
         </div>
       ),
 
@@ -163,9 +159,8 @@ const ApplicationsTable = () => {
 
       cell: (row) => (
         <div className="w-full flex items-center gap-3 p-3">
-          {/* Botón para abrir en nueva pestaña */}
           <button
-            onClick={() => window.open(row.cvUrl, "_blank")}
+            onClick={() => handleViewCV(row.cvUrl)}
             className="flex items-center gap-1 p-2 rounded-lg cursor-pointer duration-500 transform hover:scale-[1.22]"
             title="Abrir en nueva pestaña"
           >
@@ -216,7 +211,7 @@ const ApplicationsTable = () => {
           progressComponent={<div>Cargando datos...</div>}
         />
 
-        {/* {showModal && (
+        {showModal && (
           <>
             <div className="fixed inset-0 z-40 bg-black/50"></div>
             <div className="fixed inset-0 flex justify-center items-center z-50">
@@ -225,7 +220,7 @@ const ApplicationsTable = () => {
               </div>
             </div>
           </>
-        )} */}
+        )}
 
         {showAnalysisModal && (
           <>
