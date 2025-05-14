@@ -5,7 +5,7 @@ const VacanciesDashboard = () => {
   return (
     <>
       <div className="">
-        <VacanciesTable />
+        <VacanciesTable isAdmin/>
       </div>
     </>
   );

@@ -16,7 +16,7 @@ const Loader = () => (
   </div>
 );
 
-const VacanciesTable = () => {
+const VacanciesTable = ({ isAdmin = false }) => {
   const [filtrarVacantes, setFiltrarVacantes] = useState("");
   const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -199,9 +199,8 @@ const VacanciesTable = () => {
           <a
             href={`/reclutador/Descriptionvacancy/${row.id}`}
             className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
-            title={`Ver dashboard de ${
-              row.nombre || row.puesto || "Sin título"
-            }`}
+            title={`Ver dashboard de ${row.nombre || row.puesto || "Sin título"
+              }`}
           >
             {row.nombre || row.puesto || "Sin título"}
           </a>
@@ -322,13 +321,13 @@ const VacanciesTable = () => {
     <>
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Lista de Vacantes</h1>
-          <Link
+          <h1 className="text-2xl text-[#00254B] font-medium">Vacantes</h1>
+          {!isAdmin && <Link
             to={"/crear/vacante"}
             className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
           >
             <FaPlus className="mr-2" /> Crear Vacante
-          </Link>
+          </Link>}
         </div>
         <SearchBar
           value={filtrarVacantes}
@@ -387,9 +386,8 @@ const VacanciesTable = () => {
         onClose={() => setDeleteModal(false)}
         tipo="delete"
         titulo="Eliminar Vacante"
-        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${
-          selectedVacancy?.nombre || ""
-        }? Esta acción no se puede deshacer.`}
+        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${selectedVacancy?.nombre || ""
+          }? Esta acción no se puede deshacer.`}
         btnPrimario="Sí, eliminar"
         btnSecundario="Cancelar"
         accionPrimaria={() => handleDelete(selectedVacancy.id)}
@@ -400,9 +398,8 @@ const VacanciesTable = () => {
         onClose={() => setChangePrioridadModal(false)}
         tipo="confirm"
         titulo="Cambiar Prioridad de Vacante"
-        mensaje={`¿Estás seguro de cambiar la prioridad de ${
-          selectedVacancy?.nombre || ""
-        } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar la prioridad de ${selectedVacancy?.nombre || ""
+          } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
@@ -413,9 +410,8 @@ const VacanciesTable = () => {
         onClose={() => setChangeStatusModal(false)}
         tipo="confirm"
         titulo="Cambiar Estado de Vacante"
-        mensaje={`¿Estás seguro de cambiar el estado de ${
-          selectedVacancy?.nombre || ""
-        } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar el estado de ${selectedVacancy?.nombre || ""
+          } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
