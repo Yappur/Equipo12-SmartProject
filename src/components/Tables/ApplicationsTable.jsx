@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
-import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
-import PdfModal from "../Modals/PdfModal";
+// import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
 import customStyles from "./DashboardsStyles";
 import flechasIcon from "../../assets/img/TableCandidatosIcon.png";
@@ -22,7 +21,6 @@ const ApplicationsTable = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCV, setSelectedCV] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  // Nuevos estados para el modal de análisis
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [cvCount, setCvCount] = useState(1);
 
@@ -53,10 +51,11 @@ const ApplicationsTable = () => {
     }
   };
 
-  const handleViewCV = (cvUrl) => {
-    setSelectedCV(cvUrl);
-    setShowModal(true);
-  };
+  // // Maneja la visualización del CV en el modal
+  // const handleViewCV = (cvUrl) => {
+  //   setSelectedCV(cvUrl);
+  //   setShowModal(true);
+  // };
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -94,21 +93,21 @@ const ApplicationsTable = () => {
       selector: (row) => row.email,
       sortable: true,
     },
-{
-  name: "Contacto",
-  cell: (row) => (
-    <div
-      className="flex items-center gap-2 text-green-600 hover:text-green-700 cursor-pointer"
-      onClick={() => window.open(`https://wa.me/${row.phone}`, "_blank")}
-    >
-      <FaWhatsapp className="text-green-500" />
-      <span className="text-gray-800 hover:text-green-700 font-medium">
-        {row.phone.startsWith("+") ? row.phone : `+${row.phone}`}
-      </span>
-    </div>
-  ),
-  sortable: true,
-},
+    {
+      name: "Contacto",
+      cell: (row) => (
+        <div
+          className="flex items-center gap-2 text-green-600 hover:text-green-700 cursor-pointer"
+          onClick={() => window.open(`https://wa.me/${row.phone}`, "_blank")}
+        >
+          <FaWhatsapp className="text-green-500" />
+          <span className="text-gray-800 hover:text-green-700 font-medium">
+            {row.phone.startsWith("+") ? row.phone : `+${row.phone}`}
+          </span>
+        </div>
+      ),
+      sortable: true,
+    },
     {
       name: (
         <div className="flex items-center gap-2">
@@ -163,12 +162,14 @@ const ApplicationsTable = () => {
       ),
 
       cell: (row) => (
-        <div className="w-full flex p-3">
+        <div className="w-full flex items-center gap-3 p-3">
+          {/* Botón para abrir en nueva pestaña */}
           <button
-            onClick={() => handleViewCV(row.cvUrl)}
-            className="flex items-center gap-1 text-blue-600 hover:text-blue-800 underline"
+            onClick={() => window.open(row.cvUrl, "_blank")}
+            className="flex items-center gap-1 p-2 rounded-lg cursor-pointer duration-500 transform hover:scale-[1.22]"
+            title="Abrir en nueva pestaña"
           >
-            <img src={cvIcon} alt="icono cv" className="w-4 h-4" />
+            <img src={cvIcon} alt="CV" />
           </button>
         </div>
       ),
@@ -190,7 +191,7 @@ const ApplicationsTable = () => {
 
   return (
     <>
-      <div className="bg-white  rounded-lg shadow-sm">
+      <div className="bg-white rounded-lg shadow-sm">
         <button
           onClick={handleOpenAnalysisModal}
           className="bg-blue-600 hover:bg-blue-700 text-white mb-4 font-medium py-2 px-4 rounded-lg transition duration-300"
@@ -215,8 +216,7 @@ const ApplicationsTable = () => {
           progressComponent={<div>Cargando datos...</div>}
         />
 
-        {/* Modal para visualizar CV */}
-        {showModal && (
+        {/* {showModal && (
           <>
             <div className="fixed inset-0 z-40 bg-black/50"></div>
             <div className="fixed inset-0 flex justify-center items-center z-50">
@@ -225,9 +225,8 @@ const ApplicationsTable = () => {
               </div>
             </div>
           </>
-        )}
+        )} */}
 
-        {/* Nuevo modal para análisis de currículums */}
         {showAnalysisModal && (
           <>
             <div className="fixed inset-0 z-40 bg-black/50"></div>
