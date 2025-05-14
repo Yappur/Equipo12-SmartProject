@@ -5,9 +5,7 @@ import axiosConfig from "../../helpers/axios.config";
 import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
 import customStyles from "./DashboardsStyles";
-import flechasIcon from "../../assets/img/TableCandidatosIcon.png";
 import cvIcon from "../../assets/img/cvIcon.png";
-import { FaWhatsapp } from "react-icons/fa";
 
 const ApplicationsTable = () => {
   const { id } = useParams();
@@ -195,9 +193,9 @@ const ApplicationsTable = () => {
         </button>
         <div className="">
           <SearchBar
-            placeholder="Buscar candidatos..."
-            valor={filtrarPostulaciones}
-            onChange={(e) => setFiltrarPostulaciones(e.target.value)}
+            value={filtrarPostulaciones}
+            onChange={setFiltrarPostulaciones}
+            disabled={loading}
           />
         </div>
         <DataTable

@@ -112,7 +112,7 @@ const RecuiterVacancyView = () => {
             <h1 className="text-lg mt-4 mb-4">Detalles</h1>
             <div className="flex items-center space-x-2 mb-4">
               <img
-                src="../../src/assets/img/experiencia.png"
+                src="@/assets/img/experiencia.png"
                 alt="Experiencia Icon"
                 className=" h-5 self-start mt-1"
               />
@@ -120,7 +120,7 @@ const RecuiterVacancyView = () => {
             </div>
             <div className="flex items-center space-x-2 mb-4">
               <img
-                src="../../src/assets/img/modalidad.png"
+                src="@/assets/img/modalidad.png"
                 alt="Modalidad Icon"
                 className="h-5 self-start mt-1"
               />
@@ -128,7 +128,7 @@ const RecuiterVacancyView = () => {
             </div>
             <div className="flex items-center space-x-2 mb-4">
               <img
-                src="../../src/assets/img/ubicacion.png"
+                src="@/assets/img/ubicacion.png"
                 alt="Ubicación Icon"
                 className="h-5 self-start mt-1"
               />
@@ -136,7 +136,7 @@ const RecuiterVacancyView = () => {
             </div>
             <div className="flex items-center space-x-2 mb-4">
               <img
-                src="../../src/assets/img/jornada.png"
+                src="@/assets/img/jornada.png"
                 alt="Jornada Icon"
                 className="h-5 self-start mt-1"
               />
@@ -144,7 +144,7 @@ const RecuiterVacancyView = () => {
             </div>
             <div className="flex items-center space-x-2 mb-4">
               <img
-                src="../../src/assets/img/estado.png"
+                src="@/assets/img/estado.png"
                 alt="Estado Icon"
                 className="h-5 self-start mt-1"
               />

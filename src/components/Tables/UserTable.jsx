@@ -6,14 +6,13 @@ import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
 import customStyles from "./DashboardsStyles";
 import Loader from "../Common/Loader";
-import SearchBarReclutadores from "../SearchBarReclutadores";
+import SearchBar from "./SearchBar";
 
 const UserTable = () => {
   const [filtrarUsuarios, setFiltrarUsuarios] = useState("");
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
 
   // MODALES (sin cambios)
   const [deleteModal, setDeleteModal] = useState(false);
@@ -25,11 +24,6 @@ const UserTable = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [newStatus, setNewStatus] = useState("");
   const [newRole, setNewRole] = useState("");
-
-  // FILTROS
-  const [busqueda, setBusqueda] = useState("");
-  const [rol, setRol] = useState("");
-  const [estado, setEstado] = useState("");
 
   const obtenerUsuarios = async () => {
     try {
@@ -217,15 +211,16 @@ const UserTable = () => {
   ];
 
   const filtrarData = usuarios.filter((user) => {
-    const textoFiltrado =
-      (user.displayName?.toLowerCase() || "").includes(
-        busqueda.toLowerCase()
-      ) || (user.email?.toLowerCase() || "").includes(busqueda.toLowerCase());
+    const searchTerm = filtrarUsuarios.toLowerCase();
+    const nombre = (user.fullName || "").toLowerCase();
+    const correo = (user.email || "").toLowerCase();
+    const telefono = (user.phoneNumber || "").toLowerCase();
 
-    const rolFiltrado = rol ? user.role === rol : true;
-    const estadoFiltrado = estado ? user.estado === estado : true;
-
-    return textoFiltrado && rolFiltrado && estadoFiltrado;
+    return (
+      nombre.includes(searchTerm) ||
+      correo.includes(searchTerm) ||
+      telefono.includes(searchTerm)
+    );
   });
 
   return (
@@ -247,14 +242,10 @@ const UserTable = () => {
         </p>
       </div>
 
-      <SearchBarReclutadores
-        value={busqueda}
-        onChange={setBusqueda}
-        onSearch={() => {}}
-        rol={rol}
-        setRol={setRol}
-        estado={estado}
-        setEstado={setEstado}
+      <SearchBar
+        value={filtrarUsuarios}
+        onChange={setFiltrarUsuarios}
+        disabled={loading}
       />
 
       {error && (

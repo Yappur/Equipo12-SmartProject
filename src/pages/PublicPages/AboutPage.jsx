@@ -1,10 +1,10 @@
 import React from "react";
-import fotoMujer from "../assets/img/FotoAboutMujer.png";
-import fotoSofia from "../assets/img/sofiaAbout.png";
-import fotoLucas from "../assets/img/LucasFernandezAbout.png";
-import fotoMariana from "../assets/img/mariaLopezAbout.png";
-import LandingNavbar from "../components/Navigate/LandingNavbar";
-import Footer from "../components/Footer";
+import fotoMujer from "@/assets/img/FotoAboutMujer.png";
+import fotoSofia from "@/assets/img/sofiaAbout.png";
+import fotoLucas from "@/assets/img/LucasFernandezAbout.png";
+import fotoMariana from "@/assets/img/mariaLopezAbout.png";
+import LandingNavbar from "../../components/Navigate/LandingNavbar";
+import Footer from "../../components/Navigate/Footer";
 const Componente = () => {
   return <img src={fotoMujer} alt="Foto de mujer" />;
 };

@@ -3,7 +3,7 @@ import { useState } from "react";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 import imgVacantes from "@/assets/img/img-vacantes.png";
 import VacancieTable from "../../components/Tables/VacancieTable";
-import Footer from "../../components/Footer";
+import Footer from "../../components/Navigate/Footer";
 import VacancieCards from "../../components/Cards/VacancieCards";
 
 const VacancyGallery = () => {
