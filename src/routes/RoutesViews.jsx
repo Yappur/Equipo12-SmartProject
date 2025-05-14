@@ -40,7 +40,13 @@ const RoutesViews = () => {
         <Route path="/recuperar/cuenta" element={<RecoverAccount />} />
 
         {/* Rutas de Reclutadores */}
-        <Route element={<CompleteNavbarLayout logout={logout} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["admin", "user"]}>
+              <CompleteNavbarLayout logout={logout} />
+            </ProtectedRoute>
+          }
+        >
           <Route
             path="/reclutador"
             element={
@@ -57,7 +63,7 @@ const RoutesViews = () => {
               </ProtectedRoute>
             }
           />
-           <Route
+          <Route
             path="/reclutador/Descriptionvacancy/:id"
             element={
               <ProtectedRoute allowedRoles={["user", "admin"]}>
@@ -65,9 +71,18 @@ const RoutesViews = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/reclutador/vacantes" element={<DashboardVacancyRecuiter/>} />
-        <Route path="/reclutador/ver/candidatos/:id" element={<CandidatosDashboard />} />
-         <Route path="/reclutador/CandidatosTable" element={<GeneralCandidatosDashboard />} />
+          <Route
+            path="/reclutador/vacantes"
+            element={<DashboardVacancyRecuiter />}
+          />
+          <Route
+            path="/reclutador/CandidatosTable"
+            element={<GeneralCandidatosDashboard />}
+          />
+          <Route
+            path="/reclutador/ver/candidatos/:id"
+            element={<CandidatosDashboard />}
+          />
           <Route
             path="/crear/vacante"
             element={

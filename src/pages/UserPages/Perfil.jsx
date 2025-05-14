@@ -113,8 +113,9 @@ const Perfil = () => {
         fileInputRef.current.click();
     };
 
-    fetchUserData();
-  }, [setValue, updateProfileImage]);
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
         try {
             if (!file.type.startsWith('image/')) {
@@ -122,15 +123,10 @@ const Perfil = () => {
                 return;
             }
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+            setUploadingImage(true);
+            setError(null);
 
-    try {
-      if (!file.type.startsWith("image/")) {
-        // showToast("Error", "El archivo debe ser una imagen");
-        return;
-      }
+            const photoURL = await uploadProfileImage(file);
 
             const auth = getAuth();
             const user = auth.currentUser;
@@ -155,9 +151,10 @@ const Perfil = () => {
                 updateProfileImage(photoURL);
             }
 
-      await updateProfile(user, {
-        photoURL,
-      });
+            setUserData(prevData => ({
+                ...prevData,
+                photoURL
+            }));
 
             toast.success("Foto de perfil actualizada correctamente");
         } catch (err) {
@@ -213,21 +210,9 @@ const Perfil = () => {
         }
     };
 
-      // showToast("¡Éxito!", "Foto de perfil actualizada correctamente");
-    } catch (err) {
-      console.error("Error al subir la imagen:", err);
-      // showToast("Error", "Error al actualizar la foto de perfil");
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
-  const onSubmitPerfil = async (data) => {
-    try {
-      setLoading(true);
-
-      const auth = getAuth();
-      const user = auth.currentUser;
+    const onSubmitSeguridad = async (data) => {
+        try {
+            setLoading(true);
 
             const auth = getAuth();
             const user = auth.currentUser;
@@ -245,7 +230,8 @@ const Perfil = () => {
                 password: data.password,
             });
 
-      await axiosConfig.patch(`/users/${uid}`, updateData);
+            document.getElementById("password").value = "";
+            document.getElementById("passwordConfirmacion").value = "";
 
             toast.success("Contraseña actualizada correctamente");
         } catch (err) {
@@ -259,14 +245,7 @@ const Perfil = () => {
         } finally {
             setLoading(false);
         }
-      } else {
-        // showToast("Error", "Error al actualizar el perfil. El servidor no pudo procesar la solicitud.");
-      }
-      setError(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
     if (authLoading) {
         return (
@@ -298,329 +277,317 @@ const Perfil = () => {
             </div>
         );
     }
-  };
 
-  if (loading && !userData) {
     return (
-      <div className="pt-16 flex items-center justify-center h-screen">
-        <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
-        <span className="ml-2">Cargando...</span>
-      </div>
+        <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12">
+            {error && (
+                <div className="w-full max-w-4xl mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+                    {error}
+                </div>
+            )}
+
+            <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div className="md:col-span-3 flex flex-col items-center">
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/*"
+                    />
+
+                    <div
+                        className="mb-4 relative cursor-pointer group"
+                        onClick={handleImageClick}
+                    >
+                        {userData?.photoURL ? (
+                            <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-md">
+                                <img
+                                    src={userData.photoURL}
+                                    alt="Foto de perfil"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+                                    <FaCamera className="text-white text-2xl" />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="relative">
+                                <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
+                                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full transition-opacity duration-200">
+                                    <FaCamera className="text-white text-2xl" />
+                                </div>
+                            </div>
+                        )}
+
+                        {uploadingImage && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="bg-white bg-opacity-75 rounded-full p-2">
+                                    <div className="w-6 h-6 border-2 border-t-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <h2 className="text-xl font-medium text-center">
+                        {userData?.displayName || "Nombre y apellido"}
+                    </h2>
+                    <p className="text-lg text-center">
+                        {userData?.role}
+                    </p>
+                </div>
+
+                <div className="md:col-span-9">
+                    <section className="w-full overflow-hidden">
+                        <div className="border-b border-gray-200">
+                            <div className="flex justify-start">
+                                <button
+                                    onClick={() => setActiveTab("perfil")}
+                                    className={`py-4 px-6 text-center font-medium text-lg transition-colors duration-200 focus:outline-none
+                                        ${activeTab === "perfil"
+                                            ? "border-b-4 border-[#f88623] -mb-px"
+                                            : "text-gray-600 hover:bg-gray-50"
+                                        }`}
+                                >
+                                    Mi perfil
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("seguridad")}
+                                    className={`py-4 px-6 text-center font-medium text-lg transition-colors duration-200 focus:outline-none
+                                        ${activeTab === "seguridad"
+                                            ? "border-b-4 border-[#f88623] -mb-px"
+                                            : "text-gray-600 hover:bg-gray-50"
+                                        }`}
+                                >
+                                    Seguridad
+                                </button>
+                            </div>
+                        </div>
+
+                        {activeTab === "perfil" && (
+                            <article className="p-6">
+                                <form
+                                    onSubmit={handleSubmitPerfil(onSubmitPerfil)}
+                                    className="space-y-6"
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                                        <div className="flex flex-col gap-1">
+                                            <label
+                                                htmlFor="displayName"
+                                                className="font-medium text-gray-700"
+                                            >
+                                                Nombre y apellido
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="displayName"
+                                                {...registerPerfil("displayName", {
+                                                    required: "El nombre y apellido es obligatorio",
+                                                    validate: value => {
+                                                        const words = value.trim().split(/\s+/);
+                                                        if (words.length < 2) {
+                                                            return "Debe ingresar nombre y apellido";
+                                                        }
+
+                                                        for (const word of words) {
+                                                            if (word.length < 2) {
+                                                                return "El nombre y apellido debe tener al menos 2 caracteres";
+                                                            }
+                                                        }
+                                                        return true;
+                                                    }
+                                                })}
+                                                className={`bg-[#f5f2ec] border ${errorsPerfil.displayName ? "border-red-500" : "border-[#f5f2ec]"
+                                                    } rounded-md p-3`}
+                                                placeholder="Escribe tu nombre y apellido"
+                                            />
+                                            {errorsPerfil.displayName && (
+                                                <span className="text-red-500 text-xs mt-1">
+                                                    {errorsPerfil.displayName.message}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="flex flex-col gap-1">
+                                            <label
+                                                htmlFor="phoneNumber"
+                                                className="font-medium text-gray-700"
+                                            >
+                                                Número de teléfono
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                id="phoneNumber"
+                                                {...registerPerfil("phoneNumber", {
+                                                    pattern: {
+                                                        value: /^\+[0-9]{11,}$/,
+                                                        message: "Ingrese un número de teléfono válido",
+                                                    },
+                                                })}
+                                                className={`bg-[#f5f2ec] border ${errorsPerfil.phoneNumber
+                                                    ? "border-red-500"
+                                                    : "border-[#f5f2ec]"
+                                                    } rounded-md p-3`}
+                                                placeholder="Ej: +52123456789"
+                                            />
+                                            {errorsPerfil.phoneNumber && (
+                                                <span className="text-red-500 text-xs mt-1">
+                                                    {errorsPerfil.phoneNumber.message}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="flex flex-col gap-1">
+                                            <label
+                                                htmlFor="email"
+                                                className="font-medium text-gray-700"
+                                            >
+                                                Correo electrónico
+                                            </label>
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                {...registerPerfil("email")}
+                                                className="bg-[#f5f2ec] border border-[#f5f2ec] rounded-md p-3"
+                                                disabled
+                                            />
+                                            <p className="text-xs text-gray-500">
+                                                El correo no puede ser modificado
+                                            </p>
+                                        </div>
+
+                                        <div className="flex flex-col gap-1">
+                                            <label
+                                                htmlFor="role"
+                                                className="font-medium text-gray-700"
+                                            >
+                                                Rol
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="role"
+                                                {...registerPerfil("role")}
+                                                className="bg-[#f5f2ec] border border-[#f5f2ec] rounded-md p-3"
+                                                disabled
+                                            />
+                                            <p className="text-xs text-gray-500">
+                                                El rol no puede ser modificado
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-4 justify-end mt-8">
+                                        <button
+                                            type="button"
+                                            className="border border-[#152d53] py-2 px-6 rounded-md hover:bg-gray-200 transition-colors"
+                                            onClick={() => window.history.back()}
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="bg-[#152d53] text-white py-2 px-6 rounded-md hover:bg-blue-600 transition-colors"
+                                            disabled={loading}
+                                        >
+                                            {loading ? "Guardando..." : "Guardar"}
+                                        </button>
+                                    </div>
+                                </form>
+                            </article>
+                        )}
+
+                        {activeTab === "seguridad" && (
+                            <article className="p-6">
+                                <form
+                                    onSubmit={handleSubmitSeguridad(onSubmitSeguridad)}
+                                    className="space-y-6"
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                                        <div className="flex flex-col gap-1">
+                                            <label
+                                                htmlFor="password"
+                                                className="font-medium text-gray-700"
+                                            >
+                                                Nueva contraseña
+                                            </label>
+                                            <input
+                                                type="password"
+                                                id="password"
+                                                {...registerSeguridad("password", {
+                                                    required: "La nueva contraseña es obligatoria",
+                                                    minLength: {
+                                                        value: 5,
+                                                        message:
+                                                            "La contraseña debe tener al menos 5 caracteres",
+                                                    },
+                                                })}
+                                                className={`bg-[#f5f2ec] border ${errorsSeguridad.password
+                                                    ? "border-red-500"
+                                                    : "border-[#f5f2ec]"
+                                                    } rounded-md p-3`}
+                                                placeholder="Crea una nueva contraseña"
+                                            />
+                                            {errorsSeguridad.password && (
+                                                <span className="text-red-500 text-xs mt-1">
+                                                    {errorsSeguridad.password.message}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="flex flex-col gap-1">
+                                            <label
+                                                htmlFor="passwordConfirmacion"
+                                                className="font-medium text-gray-700"
+                                            >
+                                                Confirmar contraseña
+                                            </label>
+                                            <input
+                                                type="password"
+                                                id="passwordConfirmacion"
+                                                {...registerSeguridad("passwordConfirmacion", {
+                                                    required: "Debes confirmar la contraseña",
+                                                    validate: (value) =>
+                                                        value === watchPassword ||
+                                                        "Las contraseñas no coinciden",
+                                                })}
+                                                className={`bg-[#f5f2ec] border ${errorsSeguridad.passwordConfirmacion
+                                                    ? "border-red-500"
+                                                    : "border-[#f5f2ec]"
+                                                    } rounded-md p-3`}
+                                                placeholder="Confirma tu nueva contraseña"
+                                            />
+                                            {errorsSeguridad.passwordConfirmacion && (
+                                                <span className="text-red-500 text-xs mt-1">
+                                                    {errorsSeguridad.passwordConfirmacion.message}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-4 justify-end mt-8">
+                                        <button
+                                            type="button"
+                                            className="border border-[#152d53] text-gray-800 py-2 px-6 rounded-md hover:bg-gray-200 transition-colors"
+                                            onClick={() => window.history.back()}
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="bg-[#152d53] text-white py-2 px-6 rounded-md hover:bg-blue-600 transition-colors"
+                                            disabled={loading}
+                                        >
+                                            {loading ? "Actualizando..." : "Cambiar contraseña"}
+                                        </button>
+                                    </div>
+                                </form>
+                            </article>
+                        )}
+                    </section>
+                </div>
+            </div>
+        </div>
     );
-  }
-
-  return (
-    <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12">
-      {error && (
-        <div className="w-full max-w-4xl mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-          {error}
-        </div>
-      )}
-
-      <section className="flex flex-col items-center justify-center mb-8 w-full">
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="hidden"
-          accept="image/*"
-        />
-
-        <div
-          className="mb-4 relative cursor-pointer group"
-          onClick={handleImageClick}
-        >
-          {userData?.photoURL ? (
-            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
-              <img
-                src={userData.photoURL}
-                alt="Foto de perfil"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
-                <FaCamera className="text-white text-2xl" />
-              </div>
-            </div>
-          ) : (
-            <div className="relative">
-              <FaUserCircle className="text-8xl sm:text-9xl text-blue-600" />
-              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full transition-opacity duration-200">
-                <FaCamera className="text-white text-2xl" />
-              </div>
-            </div>
-          )}
-
-          {uploadingImage && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white bg-opacity-75 rounded-full p-2">
-                <div className="w-6 h-6 border-2 border-t-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-          {userData?.displayName || "Nombre y apellido"}
-        </h2>
-        <p className="text-lg text-gray-600">
-          {userData?.role === "admin" ? "Super Admin" : "Reclutador"}
-        </p>
-      </section>
-
-      <section className="w-full max-w-4xl bg-white rounded-lg shadow-md overflow-hidden">
-        <article className="flex border-b border-gray-200">
-          <button
-            onClick={() => setActiveTab("perfil")}
-            className={`flex-1 py-4 px-6 text-center font-medium text-lg transition-colors duration-200 focus:outline-none
-                            ${
-                              activeTab === "perfil"
-                                ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
-                                : "text-gray-600 hover:bg-gray-50"
-                            }`}
-          >
-            Mi perfil
-          </button>
-          <button
-            onClick={() => setActiveTab("seguridad")}
-            className={`flex-1 py-4 px-6 text-center font-medium text-lg transition-colors duration-200 focus:outline-none
-                            ${
-                              activeTab === "seguridad"
-                                ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
-                                : "text-gray-600 hover:bg-gray-50"
-                            }`}
-          >
-            Seguridad
-          </button>
-        </article>
-
-        {activeTab === "perfil" && (
-          <article className="p-6">
-            <form
-              onSubmit={handleSubmitPerfil(onSubmitPerfil)}
-              className="space-y-6"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="displayName"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Nombre y apellido
-                  </label>
-                  <input
-                    type="text"
-                    id="displayName"
-                    {...registerPerfil("displayName", {
-                      required: "El nombre y apellido es obligatorio",
-                      validate: (value) => {
-                        const words = value.trim().split(/\s+/);
-                        if (words.length < 2) {
-                          return "Debe ingresar nombre y apellido";
-                        }
-
-                        for (const word of words) {
-                          if (word.length < 2) {
-                            return "El nombre y apellido debe tener al menos 2 caracteres";
-                          }
-                        }
-                        return true;
-                      },
-                    })}
-                    className={`border ${
-                      errorsPerfil.displayName
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    } rounded-md p-2`}
-                    placeholder="Escribe tu nombre y apellido"
-                  />
-                  {errorsPerfil.displayName && (
-                    <span className="text-red-500 text-xs mt-1">
-                      {errorsPerfil.displayName.message}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="phoneNumber"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Número de teléfono
-                  </label>
-                  <input
-                    type="tel"
-                    id="phoneNumber"
-                    {...registerPerfil("phoneNumber", {
-                      pattern: {
-                        value: /^\+[0-9]{11,}$/,
-                        message: "Ingrese un número de teléfono válido",
-                      },
-                    })}
-                    className={`border ${
-                      errorsPerfil.phoneNumber
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    } rounded-md p-2`}
-                    placeholder="Ej: +52123456789"
-                  />
-                  {errorsPerfil.phoneNumber && (
-                    <span className="text-red-500 text-xs mt-1">
-                      {errorsPerfil.phoneNumber.message}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="email"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Correo electrónico
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    {...registerPerfil("email")}
-                    className="border border-gray-300 rounded-md p-2 bg-gray-100"
-                    disabled
-                  />
-                  <p className="text-xs text-gray-500">
-                    El correo no puede ser modificado
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="role"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Rol
-                  </label>
-                  <input
-                    type="text"
-                    id="role"
-                    {...registerPerfil("role")}
-                    className="border border-gray-300 rounded-md p-2 bg-gray-100"
-                    disabled
-                  />
-                  <p className="text-xs text-gray-500">
-                    El rol no puede ser modificado
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-end mt-8">
-                <button
-                  type="button"
-                  className="bg-gray-200 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-300 transition-colors"
-                  onClick={() => window.history.back()}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition-colors"
-                  disabled={loading}
-                >
-                  {loading ? "Guardando..." : "Guardar"}
-                </button>
-              </div>
-            </form>
-          </article>
-        )}
-
-        {activeTab === "seguridad" && (
-          <article className="p-6">
-            <form
-              onSubmit={handleSubmitSeguridad(onSubmitSeguridad)}
-              className="space-y-6"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="password"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Nueva contraseña
-                  </label>
-                  <input
-                    type="password"
-                    id="password"
-                    {...registerSeguridad("password", {
-                      required: "La nueva contraseña es obligatoria",
-                      minLength: {
-                        value: 5,
-                        message:
-                          "La contraseña debe tener al menos 5 caracteres",
-                      },
-                    })}
-                    className={`border ${
-                      errorsSeguridad.password
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    } rounded-md p-2`}
-                    placeholder="Crea una nueva contraseña"
-                  />
-                  {errorsSeguridad.password && (
-                    <span className="text-red-500 text-xs mt-1">
-                      {errorsSeguridad.password.message}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="passwordConfirmacion"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Confirmar contraseña
-                  </label>
-                  <input
-                    type="password"
-                    id="passwordConfirmacion"
-                    {...registerSeguridad("passwordConfirmacion", {
-                      required: "Debes confirmar la contraseña",
-                      validate: (value) =>
-                        value === watchPassword ||
-                        "Las contraseñas no coinciden",
-                    })}
-                    className={`border ${
-                      errorsSeguridad.passwordConfirmacion
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    } rounded-md p-2`}
-                    placeholder="Confirma tu nueva contraseña"
-                  />
-                  {errorsSeguridad.passwordConfirmacion && (
-                    <span className="text-red-500 text-xs mt-1">
-                      {errorsSeguridad.passwordConfirmacion.message}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-end mt-8">
-                <button
-                  type="button"
-                  className="bg-gray-200 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-300 transition-colors"
-                  onClick={() => window.history.back()}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition-colors"
-                  disabled={loading}
-                >
-                  {loading ? "Actualizando..." : "Cambiar contraseña"}
-                </button>
-              </div>
-            </form>
-          </article>
-        )}
-      </section>
-    </div>
-  );
 };
 
 export default Perfil;

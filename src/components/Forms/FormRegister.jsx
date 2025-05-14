@@ -12,6 +12,7 @@ const FormRegister = () => {
     confirmarPassword: "",
     phoneNumber: "",
     role: "",
+    photoURL: "",
   });
 
   const [cargando, setCargando] = useState(false);
@@ -50,7 +51,7 @@ const FormRegister = () => {
   };
 
   const validarPassword = (password) => {
-    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const regex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
     return regex.test(password);
   };
 
@@ -62,7 +63,6 @@ const FormRegister = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Limpieza específica para phoneNumber (solo permitir números y +)
     if (name === "phoneNumber") {
       const cleanedValue = value.replace(/[^\d+]/g, "");
       setUsuario({
