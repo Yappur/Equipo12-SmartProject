@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { ChevronDown } from "lucide-react";
 import bagIcon from "../../assets/img/DesingExports/bag.svg";
-import toast from "react-hot-toast";
+import { showToast } from "../../components/Modals/CustomToaster";
 import { useNavigate } from "react-router-dom";
 
 const MIN_DESCRIPTION_LENGTH = 200;
@@ -26,11 +26,10 @@ const CreateVacancies = () => {
   });
 
   const getInputClass = (field) => {
-    return `w-full px-4 py-2 border rounded-md focus:outline-none ${
-      errors[field]
+    return `w-full px-4 py-2 border rounded-md focus:outline-none ${errors[field]
         ? "border-red-500 focus:border-red-500 bg-red-50"
         : "border-gray-300"
-    }`;
+      }`;
   };
 
   const validationPatterns = {
@@ -152,8 +151,9 @@ const CreateVacancies = () => {
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error(
-        "Por favor, completa todos los campos requeridos correctamente"
+      showToast(
+        "Por favor, completa todos los campos requeridos correctamente",
+        "error"
       );
       return;
     }
@@ -169,22 +169,23 @@ const CreateVacancies = () => {
       const response = await axiosConfig.post("/vacancies", nuevaVacante);
 
       if (response.status === 200 || response.status === 201) {
-        toast.success("Vacante creada con éxito");
+        showToast("Vacante creada con éxito", "success");
 
         const id = response.data?.id || response.data?._id;
 
         if (id) {
           navigate(`/reclutador/Descriptionvacancy/${id}`);
         } else {
-          toast.error("No se pudo redirigir: ID no encontrado en la respuesta");
+          showToast("No se pudo redirigir: ID no encontrado en la respuesta", "error");
         }
       } else {
-        toast.error(`Error al crear la vacante: ${response.statusText}`);
+        showToast(`Error al crear la vacante: ${response.statusText}`, "error");
       }
     } catch (error) {
       console.error("Error al crear vacante:", error);
-      toast.error(
-        `Error al crear la vacante: ${error.message || "Error desconocido"}`
+      showToast(
+        `Error al crear la vacante: ${error.message || "Error desconocido"}`,
+        "error"
       );
     } finally {
       setIsSubmitting(false);
@@ -203,9 +204,8 @@ const CreateVacancies = () => {
             <div>
               <label
                 htmlFor="puesto"
-                className={`block text-sm font-medium mb-1 ${
-                  errors.puesto ? "text-red-600" : ""
-                }`}
+                className={`block text-sm font-medium mb-1 ${errors.puesto ? "text-red-600" : ""
+                  }`}
               >
                 Puesto<span className="text-red-500">*</span>
               </label>
@@ -227,9 +227,8 @@ const CreateVacancies = () => {
               <div>
                 <label
                   htmlFor="ubicacion"
-                  className={`block text-sm font-medium mb-1 ${
-                    errors.ubicacion ? "text-red-600" : ""
-                  }`}
+                  className={`block text-sm font-medium mb-1 ${errors.ubicacion ? "text-red-600" : ""
+                    }`}
                 >
                   Ubicación<span className="text-red-500">*</span>
                 </label>
@@ -252,9 +251,8 @@ const CreateVacancies = () => {
               <div>
                 <label
                   htmlFor="modalidad"
-                  className={`block text-sm font-medium mb-1 ${
-                    errors.modalidad ? "text-red-600" : ""
-                  }`}
+                  className={`block text-sm font-medium mb-1 ${errors.modalidad ? "text-red-600" : ""
+                    }`}
                 >
                   Modalidad<span className="text-red-500">*</span>
                 </label>
@@ -291,9 +289,8 @@ const CreateVacancies = () => {
               <div>
                 <label
                   htmlFor="prioridad"
-                  className={`block text-sm font-medium mb-1 ${
-                    errors.prioridad ? "text-red-600" : ""
-                  }`}
+                  className={`block text-sm font-medium mb-1 ${errors.prioridad ? "text-red-600" : ""
+                    }`}
                 >
                   Prioridad<span className="text-red-500">*</span>
                 </label>
@@ -328,9 +325,8 @@ const CreateVacancies = () => {
               <div>
                 <label
                   htmlFor="jornada"
-                  className={`block text-sm font-medium mb-1 ${
-                    errors.jornada ? "text-red-600" : ""
-                  }`}
+                  className={`block text-sm font-medium mb-1 ${errors.jornada ? "text-red-600" : ""
+                    }`}
                 >
                   Jornada<span className="text-red-500">*</span>
                 </label>
@@ -364,9 +360,8 @@ const CreateVacancies = () => {
               <div>
                 <label
                   htmlFor="experiencia"
-                  className={`block text-sm font-medium mb-1 ${
-                    errors.experiencia ? "text-red-600" : ""
-                  }`}
+                  className={`block text-sm font-medium mb-1 ${errors.experiencia ? "text-red-600" : ""
+                    }`}
                 >
                   Experiencia<span className="text-red-500">*</span>
                 </label>
@@ -389,9 +384,8 @@ const CreateVacancies = () => {
               <div>
                 <label
                   htmlFor="estado"
-                  className={`block text-sm font-medium mb-1 ${
-                    errors.estado ? "text-red-600" : ""
-                  }`}
+                  className={`block text-sm font-medium mb-1 ${errors.estado ? "text-red-600" : ""
+                    }`}
                 >
                   Estado<span className="text-red-500">*</span>
                 </label>
@@ -425,9 +419,8 @@ const CreateVacancies = () => {
             <div>
               <label
                 htmlFor="descripcion"
-                className={`block text-sm font-medium mb-1 ${
-                  errors.descripcion ? "text-red-600" : ""
-                }`}
+                className={`block text-sm font-medium mb-1 ${errors.descripcion ? "text-red-600" : ""
+                  }`}
               >
                 Descripción<span className="text-red-500">*</span>
               </label>
@@ -458,9 +451,8 @@ const CreateVacancies = () => {
             <div>
               <label
                 htmlFor="responsabilidades"
-                className={`block text-sm font-medium mb-1 ${
-                  errors.responsabilidades ? "text-red-600" : ""
-                }`}
+                className={`block text-sm font-medium mb-1 ${errors.responsabilidades ? "text-red-600" : ""
+                  }`}
               >
                 Responsabilidades<span className="text-red-500">*</span>
               </label>
@@ -511,11 +503,10 @@ const CreateVacancies = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-6 py-2 ${
-                  isSubmitting
+                className={`px-6 py-2 ${isSubmitting
                     ? "bg-gray-400"
                     : "bg-[#00254B] hover:bg-[#001a38]"
-                } text-white rounded`}
+                  } text-white rounded`}
               >
                 {isSubmitting ? "Procesando..." : "Guardar"}
               </button>
