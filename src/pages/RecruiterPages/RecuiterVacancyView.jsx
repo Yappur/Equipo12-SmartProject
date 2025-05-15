@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
-
 import axiosConfig from "../../helpers/axios.config";
+import { FiMonitor } from "react-icons/fi";
+import { LuClock5 } from "react-icons/lu";
+import { RiMapPinLine } from "react-icons/ri";
+import { FaRegClipboard, FaArrowRightArrowLeft } from "react-icons/fa6";
 
 const isAuthenticated = true;
 
@@ -16,7 +19,7 @@ const RecuiterVacancyView = () => {
       try {
         console.log("Renderizó la vista del reclutador");
 
-        const response = await axiosConfig.get(`/vacancies/${id}`); // Obtener la vacante usando el ID dinámico
+        const response = await axiosConfig.get(`/vacancies/${id}`);
         console.log("Vacantes obtenidas:", response.data);
 
         if (!response.data) {
@@ -85,72 +88,54 @@ const RecuiterVacancyView = () => {
         <h2 className="text-2xl mt-10 text-black">Sobre el puesto</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 w-full">
-        <div className="md:col-span-2 space-y-6 bg-gray-100">
-          <section className=" rounded-lg p-6">
-            <h2 className="text-lg font-medium mb-2">Descripción</h2>
-            <p className="text-sm text-[#535353]">
-              {vacante.descripcion || "Sin resumen descripcion."}
-            </p>
-            <h2 className="text-lg font-medium mb-2 mt-4">Requisitos</h2>
-            <ul className="list-disc pl-5 text-sm text-[#535353] space-y-1">
-              {(vacante.requisitos || []).map((req, i) => (
-                <li key={i}>{req}</li>
-              ))}
-            </ul>
-            <h2 className="text-lg font-semibold mb-2 mt-4"></h2>
-            <p className="text-sm text-gray-700">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+        {/* Columna Izquierda */}
+        <div className="md:col-span-2">
+          <section className="rounded-lg p-4 ">
+            <h2 className="text-2xl ml-6 font-semilight mb-6">Descripción</h2>
+            <div className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden">
+              {vacante.descripcion ||
+                "Sin descripción, comunicate con el reclutador."}
+            </div>
+            <h2 className="text-2xl ml-5 font-semilight mb-6">
+              Responsabilidades
+            </h2>
+            <div className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden">
               {vacante.responsabilidades ||
-                "Sin responsabilidades disponibles."}
-            </p>
+                "Sin responsabilidades, comunicate con el reclutador."}
+            </div>
           </section>
         </div>
 
         {/* Columna Derecha */}
-        <div className="space-y-4 text-sm text-black bg-gray-50 p-6 rounded-md shadow-sm">
-          <div>
-            <h1 className="text-lg mt-4 mb-4">Detalles</h1>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="@/assets/img/experiencia.png"
-                alt="Experiencia Icon"
-                className=" h-5 self-start mt-1"
-              />
-              <span>Experiencia: {vacante.experiencia ?? "N/A"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="@/assets/img/modalidad.png"
-                alt="Modalidad Icon"
-                className="h-5 self-start mt-1"
-              />
-              <span>Modalidad: {vacante.modalidad ?? "N/A"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="@/assets/img/ubicacion.png"
-                alt="Ubicación Icon"
-                className="h-5 self-start mt-1"
-              />
-              <span>Ubicación: {vacante.ubicacion ?? "N/A"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="@/assets/img/jornada.png"
-                alt="Jornada Icon"
-                className="h-5 self-start mt-1"
-              />
-              <span>Jornada: {vacante.jornada ?? "N/A"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="@/assets/img/estado.png"
-                alt="Estado Icon"
-                className="h-5 self-start mt-1"
-              />
-              <span>Estado: {vacante.estado || "No especificado"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4"></div>
+        <div className="space-y-7 text-md p-4 rounded-md text-gray-800 bg-white/50">
+          <h2 className="text-xl md:text-2xl font-semilight">Detalles</h2>
+          <div className="flex items-start space-x-2">
+            <FaRegClipboard className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="break-words">Experiencia:</span>
+            <span>{vacante.experiencia || "Sin experiencia"}</span>
+          </div>
+          <div className="flex items-start space-x-2">
+            <FiMonitor className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="break-words">Modalidad: </span>
+            <span>{vacante.modalidad || "Remoto"}</span>
+          </div>
+
+          <div className="flex items-start space-x-2">
+            <RiMapPinLine className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="break-words">Ubicación:</span>
+            <span>{vacante.ubicacion || "N/A"}</span>
+          </div>
+          <div className="flex items-start space-x-2">
+            <LuClock5 className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="break-words">Jornada:</span>
+            <span>{vacante.jornada || "Completa"}</span>
+          </div>
+
+          <div className="flex items-start space-x-2">
+            <FaArrowRightArrowLeft className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="break-words">Estado:</span>
+            <span>{vacante.estado}</span>
           </div>
         </div>
       </div>

@@ -20,24 +20,24 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: {
-      "/auth": {
-        target: "https://backend-foo-talent.onrender.com",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/auth/, "/auth"),
-      },
-      "/api": {
-        target: "https://firebasestorage.googleapis.com",
-        changeOrigin: true,
-        secure: false,
-        configure: (proxy, _options) => {
-          proxy.on("proxyReq", (proxyReq, _req, _res) => {
-            proxyReq.removeHeader("cache-control");
-          });
-        },
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
+    // proxy: {
+    //   "/auth": {
+    //     target: "https://backend-foo-talent.onrender.com",
+    //     changeOrigin: true,
+    //     secure: false,
+    //     rewrite: (path) => path.replace(/^\/auth/, "/auth"),
+    //   },
+    //   "/api": {
+    //     target: "https://firebasestorage.googleapis.com",
+    //     changeOrigin: true,
+    //     secure: false,
+    //     configure: (proxy, _options) => {
+    //       proxy.on("proxyReq", (proxyReq, _req, _res) => {
+    //         proxyReq.removeHeader("cache-control");
+    //       });
+    //     },
+    //     rewrite: (path) => path.replace(/^\/api/, ""),
+    //   },
+    // },
   },
 });

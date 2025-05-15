@@ -11,21 +11,17 @@ const VacancyGallery = () => {
     <>
       <LandingNavbar />
       <div className="relative pt-16 md:pt-0">
-        {/* Imagen visible solo en tablets y desktop */}
         <img
           className="w-full hidden md:block"
           src={imgVacantes || "/placeholder.svg"}
           alt=""
         />
-
-        {/* Contenedor con ajustes responsive */}
         <section className="relative bg-[#F9F9F9] max-w-screen-xl mx-auto px-6 py-10 rounded-xl shadow-lg md:-mt-32 mt-0">
           <h1 className="text-center text-[#F88623] font-poppins text-3xl md:text-4xl mt-5 leading-relaxed font-semibold">
             Tu próximo trabajo está más cerca <br className="hidden md:block" />{" "}
             de lo que piensas
           </h1>
 
-          {/* Tabla de vacantes */}
           <div className="mt-8 md:px-10 mb-10">
             <h3 className="text-2xl font-semibold text-[#F88623] mb-4">
               Vacantes disponibles
