@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 
 const MIN_DESCRIPTION_LENGTH = 200;
 const MAX_DESCRIPTION_LENGTH = 2000;
+const MAX_PUESTO_LENGTH = 100;
+
 const CreateVacancies = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFirstStep, setIsFirstStep] = useState(true);
@@ -34,6 +36,7 @@ const CreateVacancies = () => {
   };
 
   const validationPatterns = {
+    puesto: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,()&+-]+$/,
     experiencia: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,+()/]+$/,
     ubicacion: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,]+$/,
   };
@@ -44,6 +47,13 @@ const CreateVacancies = () => {
 
     if (!vacancy.puesto.trim()) {
       formErrors.puesto = "El puesto es requerido";
+      isValid = false;
+    } else if (vacancy.puesto.length > MAX_PUESTO_LENGTH) {
+      formErrors.puesto = `El puesto debe tener máximo ${MAX_PUESTO_LENGTH} caracteres`;
+      isValid = false;
+    } else if (!validationPatterns.puesto.test(vacancy.puesto)) {
+      formErrors.puesto =
+        "El puesto contiene caracteres no permitidos. Solo se permiten letras, números, espacios, comas, puntos, paréntesis, &, + y -";
       isValid = false;
     }
 
@@ -113,8 +123,13 @@ const CreateVacancies = () => {
       return;
     }
 
+    // Control de máximo de caracteres para el campo puesto
+    if (name === "puesto" && value.length > MAX_PUESTO_LENGTH) {
+      return;
+    }
+
     if (
-      (name === "experiencia" || name === "ubicacion") &&
+      (name === "experiencia" || name === "ubicacion" || name === "puesto") &&
       value.trim() !== ""
     ) {
       const pattern = validationPatterns[name];
@@ -131,6 +146,9 @@ const CreateVacancies = () => {
         } else if (name === "ubicacion") {
           errorMessage =
             "Solo se permiten letras, números, espacios, comas, puntos y guiones";
+        } else if (name === "puesto") {
+          errorMessage =
+            "Solo se permiten letras, números, espacios, comas, puntos, paréntesis, &, + y -";
         }
 
         setErrors((prev) => ({
@@ -209,15 +227,21 @@ const CreateVacancies = () => {
               >
                 Puesto<span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                id="puesto"
-                name="puesto"
-                value={vacancy.puesto}
-                onChange={handleInputChange}
-                placeholder="Añadir puesto"
-                className={getInputClass("puesto")}
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  id="puesto"
+                  name="puesto"
+                  value={vacancy.puesto}
+                  onChange={handleInputChange}
+                  placeholder="Añadir puesto"
+                  className={getInputClass("puesto")}
+                  maxLength={MAX_PUESTO_LENGTH}
+                />
+                <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+                  {vacancy.puesto.length}/{MAX_PUESTO_LENGTH}
+                </div>
+              </div>
               {errors.puesto && (
                 <p className="mt-1 text-sm text-red-600">{errors.puesto}</p>
               )}
