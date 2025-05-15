@@ -5,6 +5,7 @@ import logoLogin from "@/assets/img/mujer-hero.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { cambiarTitulo } from "../../hooks/cambiarTitulo";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +13,9 @@ const LoginPage = () => {
   const { isAuthenticated, role, updateNombre,updateProfileImage  } = useAuth();
   const navigate = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
+    useEffect(() => {
+        cambiarTitulo("Login");
+      }, []);
 
   useEffect(() => {
     if (error) {
