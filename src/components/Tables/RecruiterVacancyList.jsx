@@ -151,9 +151,11 @@ const RecruiterVacancyList = () => {
           <Link
             to={`/reclutador/Descriptionvacancy/${row.id}`}
             className="text-[#0E1F3B] hover:text-blue-800 hover:underline cursor-pointer font-medium"
-            title={`Ver detalles de la vacante ${row.nombre || "Sin título"}`}
+            title={`Ver detalles de la vacante ${
+              row.nombre || row.puesto || "Sin título"
+            }`}
           >
-            {row.nombre || "Sin título"}
+            {row.nombre || row.puesto || "Sin título"}
           </Link>
         </div>
       ),

@@ -26,48 +26,77 @@ const ApplicationsTable = () => {
   const [showResultModal, setShowResultModal] = useState(false);
 
   useEffect(() => {
-    obtenerPostulaciones(id);
+    console.log("ID de vacante en useEffect:", id);
+    obtenerPostulaciones();
   }, [id]);
 
-  const obtenerPostulaciones = async (vacancyId) => {
+  const obtenerPostulaciones = async () => {
     try {
       setLoading(true);
-      // Si estás usando axiosConfig, mantener esta estructura
-      const response = await axiosConfig.get("/applications", {
-        params: { vacancyId },
+      console.log("Obteniendo postulaciones para la vacante ID:", id);
+
+      // Llamamos directamente al endpoint correcto según la documentación
+      const response = await fetch(
+        "https://backend-foo-talent.onrender.com/recruitment/obtener_data",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // No se envían parámetros según la documentación
+          body: JSON.stringify({}), // Enviar un objeto vacío o eliminar esta línea si no se requiere body
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Datos recibidos del servidor:", data);
+
+      // Debugger para inspeccionar la estructura de datos
+      debugger;
+
+      // Verificamos si los datos son un array
+      if (!Array.isArray(data)) {
+        console.error("Los datos recibidos no son un array:", data);
+        alert(
+          "Formato de datos incorrecto. Por favor, contacte al administrador."
+        );
+        return;
+      }
+
+      const filteredData = data.filter((postulacion) => {
+        return String(postulacion.vacancyId) === String(id);
       });
-      setPostulaciones(response.data);
+
+      console.log(
+        `Postulaciones filtradas (${filteredData.length}):`,
+        filteredData
+      );
+      setPostulaciones(filteredData);
     } catch (error) {
       console.error("Error al obtener postulaciones:", error);
-      // Para fines de prueba, utiliza el endpoint directamente para obtener datos
-      try {
-        const directResponse = await fetch(
-          "https://backend-foo-talent.onrender.com/recruitment/obtener_data",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (directResponse.ok) {
-          const data = await directResponse.json();
-          setPostulaciones(data.filter((item) => item.vacancyId === vacancyId));
-        }
-      } catch (directError) {
-        console.error("Error al obtener datos directamente:", directError);
-      }
+      alert(
+        "No se pudieron cargar las postulaciones. Por favor, intente nuevamente."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const actualizarEstado = async (id, status, vacancyId) => {
+  const actualizarEstado = async (applicationId, status) => {
     try {
-      await axiosConfig.patch(`/applications/${id}/status`, { status });
-      obtenerPostulaciones(vacancyId);
+      // Se mantiene la estructura original para actualizar estados
+      await axiosConfig.patch(`/applications/${applicationId}/status`, {
+        status,
+      });
+      // Recargamos los datos después de actualizar
+      obtenerPostulaciones();
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
+      alert("Error al actualizar el estado. Por favor, intente nuevamente.");
     }
   };
 
@@ -99,45 +128,81 @@ const ApplicationsTable = () => {
         (p) => p.status === "Recibido"
       );
 
+      console.log("Candidatos en estado 'Recibido':", candidatosRecibidos);
+
       if (candidatosRecibidos.length === 0) {
         alert("No hay candidatos en estado 'Recibido' para analizar");
         setAnalyzing(false);
         return;
       }
 
-      // Limitar a la cantidad seleccionada
       const candidatosParaAnalizar = candidatosRecibidos.slice(0, cvCount);
+      console.log(`Analizando ${cvCount} candidatos:`, candidatosParaAnalizar);
 
-      // Aquí se implementará la llamada al endpoint real
-      // Para pruebas, usando el endpoint mostrado en tu archivo
-      const response = await fetch(
-        "https://backend-foo-talent.onrender.com/recruitment/result_vacancies",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            vacancyId: id,
-            candidates: candidatosParaAnalizar.map((c) => c.id),
-          }),
+      try {
+        console.log("Intentando llamada con parámetro 'amount'");
+        const response = await fetch(
+          "https://backend-foo-talent.onrender.com/recruitment/result_vacancies",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              vacancyId: id,
+              amount: cvCount,
+            }),
+          }
+        );
+
+        console.log("Respuesta del servidor (amount):", response);
+
+        if (!response.ok) {
+          console.warn(
+            "La llamada con 'amount' falló, intentando con 'candidates'"
+          );
+          throw new Error("Intentar con candidates");
         }
-      );
 
-      if (response.ok) {
         const resultData = await response.json();
+        console.log("Datos de análisis recibidos:", resultData);
         setAnalysisResults(resultData);
         setShowResultModal(true);
+      } catch (amountError) {
+        // Si falla, intentar con 'candidates'
+        console.log("Intentando llamada con parámetro 'candidates'");
+        const response = await fetch(
+          "https://backend-foo-talent.onrender.com/recruitment/result_vacancies",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              vacancyId: id,
+              candidates: candidatosParaAnalizar.map((c) => c.id),
+            }),
+          }
+        );
 
-        // Si el análisis fue exitoso, recargar los datos
-        await obtenerPostulaciones(id);
-      } else {
-        console.error("Error en el análisis:", await response.text());
-        alert("Hubo un error al procesar los currículums");
+        console.log("Respuesta del servidor (candidates):", response);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const resultData = await response.json();
+        console.log("Datos de análisis recibidos:", resultData);
+        setAnalysisResults(resultData);
+        setShowResultModal(true);
       }
+
+      await obtenerPostulaciones();
     } catch (error) {
       console.error("Error al analizar los currículums:", error);
-      alert("Hubo un error al procesar los currículums");
+      alert(
+        "Hubo un error al procesar los currículums. Por favor, intente nuevamente."
+      );
     } finally {
       setAnalyzing(false);
     }
@@ -206,7 +271,7 @@ const ApplicationsTable = () => {
           <div className="flex flex-col">
             <select
               value={row.status}
-              onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
+              onChange={(e) => actualizarEstado(row.id, e.target.value)}
               className={`text-sm border border-gray-300 rounded-lg px-2 py-1 ${colorClass}`}
             >
               {estados.map((estado) => (
