@@ -3,7 +3,7 @@ import axiosConfig from "../../helpers/axios.config";
 import { uploadCV } from "../../firebase/Upload/uploadPDF";
 import { useAuth } from "../../context/AuthContext";
 import { ChevronDown } from "lucide-react";
-import toast from "react-hot-toast";
+import { showToast } from "../Modals/CustomToaster";
 
 const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const { idUser } = useAuth();
@@ -19,6 +19,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const [cargando, setCargando] = useState(false);
   const [loadingVacancies, setLoadingVacancies] = useState(false);
   const [loadingCV, setLoadingCV] = useState(false);
+  const [fileError, setFileError] = useState("");
 
   useEffect(() => {
     const fetchRecruiterVacancies = async () => {
@@ -50,7 +51,6 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
           setLoadingVacancies(false);
         }
       } else if (vacancyId) {
-        // Si no es reclutador pero hay un vacancyId proporcionado
         console.log("No es reclutador pero hay vacancyId:", vacancyId);
         setSelectedVacancyId(vacancyId);
         setLoadingVacancies(false);
@@ -82,23 +82,49 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     setSelectedVacancyId(e.target.value);
   };
 
+  const validatePdfFile = (file) => {
+    if (!file) return false;
+
+    const fileType = file.type;
+    const fileName = file.name.toLowerCase();
+
+    if (fileType !== "application/pdf") {
+      return false;
+    }
+
+    if (!fileName.endsWith(".pdf")) {
+      return false;
+    }
+
+    return true;
+  };
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
+    setFileError("");
+
     if (!file) return;
+
+    if (!validatePdfFile(file)) {
+      setFileError(
+        "Solo se permiten archivos PDF. Por favor, seleccione un archivo válido."
+      );
+      e.target.value = null;
+      return;
+    }
 
     try {
       setLoadingCV(true);
-      toast.loading("Subiendo CV...");
       console.log("Subiendo archivo:", file.name);
       const downloadURL = await uploadCV(file);
       console.log("URL de descarga obtenida:", downloadURL);
       setCandidato((prev) => ({ ...prev, cvUrl: downloadURL }));
       toast.dismiss();
-      toast.success("CV subido correctamente");
+      showToast("CV subido correctamente", "success");
     } catch (error) {
       console.error("Error subiendo CV:", error);
       toast.dismiss();
-      toast.error("Error al subir el CV. Inténtalo de nuevo.");
+      showToast("Error al subir el CV. Inténtalo de nuevo.", "error");
     } finally {
       setLoadingCV(false);
     }
@@ -136,7 +162,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       const response = await axiosConfig.post("/applications", candidatoData);
       console.log("Respuesta:", response.data);
 
-      toast.success("Postulacion enviada exitosamente");
+      toast.success("Postulación enviada exitosamente");
       onClose();
     } catch (error) {
       console.error("Error al crear el candidato:", error);
@@ -245,16 +271,19 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
 
         <div className="col-span-2 mt-5">
           <label className="block text-sm font-semilight mb-1">
-            Importar CV (PDF)<span className="text-red-500">*</span>
+            Importar CV (Solo PDF)<span className="text-red-500">*</span>
           </label>
           <input
             type="file"
-            accept=".pdf"
+            accept="application/pdf, .pdf"
             onChange={handleFileChange}
             className="w-full p-3 bg-[#f5f2ea] rounded border-none"
             disabled={loadingCV}
           />
-          {candidato.cvUrl && (
+          {fileError && (
+            <p className="text-sm text-red-500 mt-1">{fileError}</p>
+          )}
+          {candidato.cvUrl && !fileError && (
             <p className="text-sm text-green-600 mt-1">
               CV subido correctamente ✓
             </p>
