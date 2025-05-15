@@ -33,6 +33,11 @@ const CreateVacancies = () => {
     }`;
   };
 
+  const validationPatterns = {
+    experiencia: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,+()/]+$/,
+    ubicacion: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,]+$/,
+  };
+
   const validateForm = () => {
     let formErrors = {};
     let isValid = true;
@@ -44,6 +49,10 @@ const CreateVacancies = () => {
 
     if (!vacancy.ubicacion.trim()) {
       formErrors.ubicacion = "La ubicación es requerida";
+      isValid = false;
+    } else if (!validationPatterns.ubicacion.test(vacancy.ubicacion)) {
+      formErrors.ubicacion =
+        "La ubicación contiene caracteres no permitidos. Solo se permiten letras, números, espacios, comas y guiones.";
       isValid = false;
     }
 
@@ -78,6 +87,10 @@ const CreateVacancies = () => {
     if (!vacancy.experiencia.trim()) {
       formErrors.experiencia = "La experiencia es requerida";
       isValid = false;
+    } else if (!validationPatterns.experiencia.test(vacancy.experiencia)) {
+      formErrors.experiencia =
+        "La experiencia contiene caracteres no permitidos. Solo se permiten letras, números, espacios, comas, puntos y los símbolos: + ( ) /";
+      isValid = false;
     }
 
     if (!vacancy.responsabilidades.trim()) {
@@ -100,11 +113,39 @@ const CreateVacancies = () => {
       return;
     }
 
-    setVacancy({ ...vacancy, [name]: value });
+    if (
+      (name === "experiencia" || name === "ubicacion") &&
+      value.trim() !== ""
+    ) {
+      const pattern = validationPatterns[name];
+      if (!pattern.test(value)) {
+        let errorMessage = "";
 
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: "" });
+        if (name === "experiencia") {
+          errorMessage =
+            "Solo se permiten letras, números, espacios, comas, puntos y los símbolos: + ( ) /";
+
+          if (value.includes("-") && /\b-\d+\b/.test(value)) {
+            errorMessage = "No se permiten números negativos";
+          }
+        } else if (name === "ubicacion") {
+          errorMessage =
+            "Solo se permiten letras, números, espacios, comas, puntos y guiones";
+        }
+
+        setErrors((prev) => ({
+          ...prev,
+          [name]: errorMessage,
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "",
+        }));
+      }
     }
+
+    setVacancy({ ...vacancy, [name]: value });
   };
 
   const handleSubmit = async (e) => {
