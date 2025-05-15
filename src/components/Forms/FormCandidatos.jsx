@@ -3,7 +3,7 @@ import axiosConfig from "../../helpers/axios.config";
 import { uploadCV } from "../../firebase/Upload/uploadPDF";
 import { useAuth } from "../../context/AuthContext";
 import { ChevronDown } from "lucide-react";
-import toast from "react-hot-toast";
+import { showToast } from "../../components/Modals/CustomToaster";
 
 const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const { idUser } = useAuth();
@@ -50,7 +50,6 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
           setLoadingVacancies(false);
         }
       } else if (vacancyId) {
-        // Si no es reclutador pero hay un vacancyId proporcionado
         console.log("No es reclutador pero hay vacancyId:", vacancyId);
         setSelectedVacancyId(vacancyId);
         setLoadingVacancies(false);
@@ -88,17 +87,14 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
 
     try {
       setLoadingCV(true);
-      toast.loading("Subiendo CV...");
       console.log("Subiendo archivo:", file.name);
       const downloadURL = await uploadCV(file);
       console.log("URL de descarga obtenida:", downloadURL);
       setCandidato((prev) => ({ ...prev, cvUrl: downloadURL }));
-      toast.dismiss();
-      toast.success("CV subido correctamente");
+      showToast("CV subido correctamente", "success");
     } catch (error) {
       console.error("Error subiendo CV:", error);
-      toast.dismiss();
-      toast.error("Error al subir el CV. Inténtalo de nuevo.");
+      showToast("Error al subir el CV. Inténtalo de nuevo.", "error");
     } finally {
       setLoadingCV(false);
     }
@@ -108,7 +104,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     e.preventDefault();
 
     if (!candidato.cvUrl) {
-      toast.error("Por favor sube un CV antes de enviar la solicitud");
+      showToast("Por favor sube un CV antes de enviar la solicitud", "error");
       return;
     }
 
@@ -118,7 +114,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       console.log("ID de vacante para enviar:", finalVacancyId);
 
       if (!finalVacancyId) {
-        toast.error("Por favor seleccione una vacante");
+        showToast("Por favor seleccione una vacante", "error");
         setCargando(false);
         return;
       }
@@ -136,14 +132,14 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       const response = await axiosConfig.post("/applications", candidatoData);
       console.log("Respuesta:", response.data);
 
-      toast.success("Postulacion enviada exitosamente");
+      showToast("Postulacion enviada exitosamente", "success");
       onClose();
     } catch (error) {
       console.error("Error al crear el candidato:", error);
-      toast.error(
-        `Error al crear el candidato: ${
-          error.response?.data?.message || error.message
-        }`
+      showToast(
+        `Error al crear el candidato: ${error.response?.data?.message || error.message
+        }`,
+        "error"
       );
     } finally {
       setCargando(false);
