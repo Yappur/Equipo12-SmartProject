@@ -3,8 +3,11 @@ import axiosConfig from "../../helpers/axios.config";
 import Modal from "../Modals/Modal";
 import { uploadProfileImage } from "../../firebase/Upload/uploadProfileImage";
 import editarImagenIcon from "../../assets/img/editarImagenIcon.svg";
+import { useNavigate } from "react-router-dom";
+
 
 const FormRegister = () => {
+  const navigate = useNavigate();
   const [usuario, setUsuario] = useState({
     displayName: "",
     email: "",
@@ -232,6 +235,11 @@ const FormRegister = () => {
         role: "",
         photoUrl: "",
       });
+
+      // ✅ Redirigir a /admin/panelUsuarios
+      setTimeout(() => {
+        navigate("/admin/panelUsuarios");
+      }, 1000);
     } catch (err) {
       console.error("Error completo:", err);
 
@@ -341,11 +349,10 @@ const FormRegister = () => {
                   value={usuario.displayName}
                   onChange={handleChange}
                   placeholder="Escribe aquí"
-                  className={`w-full border ${
-                    errors.errorDisplayName
-                      ? "border-red-500"
-                      : "border-gray-200"
-                  } rounded-md p-2 bg-gray-50`}
+                  className={`w-full border ${errors.errorDisplayName
+                    ? "border-red-500"
+                    : "border-gray-200"
+                    } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorDisplayName && (
                   <p className="text-red-500 text-sm mt-1">
@@ -363,11 +370,11 @@ const FormRegister = () => {
                   value={usuario.phoneNumber}
                   onChange={handleChange}
                   placeholder="+5491123456789"
-                  className={`w-full border ${
-                    errors.errorPhoneNumber
-                      ? "border-red-500"
-                      : "border-gray-200"
-                  } rounded-md p-2 bg-gray-50`}
+                  pattern="^\+[1-9]\d{6,14}$"
+                  className={`w-full border ${errors.errorPhoneNumber
+                    ? "border-red-500"
+                    : "border-gray-200"
+                    } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorPhoneNumber && (
                   <p className="text-red-500 text-sm mt-1">
@@ -385,9 +392,8 @@ const FormRegister = () => {
                   value={usuario.email}
                   onChange={handleChange}
                   placeholder="ejemplo@correo.com"
-                  className={`w-full border ${
-                    errors.errorEmail ? "border-red-500" : "border-gray-200"
-                  } rounded-md p-2 bg-gray-50`}
+                  className={`w-full border ${errors.errorEmail ? "border-red-500" : "border-gray-200"
+                    } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorEmail && (
                   <p className="text-red-500 text-sm mt-1">
@@ -403,9 +409,8 @@ const FormRegister = () => {
                   name="role"
                   value={usuario.role}
                   onChange={handleChange}
-                  className={`w-full border ${
-                    errors.errorRole ? "border-red-500" : "border-gray-200"
-                  } rounded-md p-2 bg-gray-50`}
+                  className={`w-full border ${errors.errorRole ? "border-red-500" : "border-gray-200"
+                    } rounded-md p-2 bg-gray-50`}
                 >
                   <option value="">Seleccionar rol</option>
                   <option value="user">Reclutador</option>
@@ -427,9 +432,8 @@ const FormRegister = () => {
                   value={usuario.password}
                   onChange={handleChange}
                   placeholder="Ingresa tu contraseña"
-                  className={`w-full border ${
-                    errors.errorPassword ? "border-red-500" : "border-gray-200"
-                  } rounded-md p-2 bg-gray-50`}
+                  className={`w-full border ${errors.errorPassword ? "border-red-500" : "border-gray-200"
+                    } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorPassword && (
                   <p className="text-red-500 text-sm mt-1">
@@ -447,11 +451,10 @@ const FormRegister = () => {
                   value={usuario.confirmarPassword}
                   onChange={handleChange}
                   placeholder="Repite tu contraseña"
-                  className={`w-full border ${
-                    errors.errorConfirmarPassword
-                      ? "border-red-500"
-                      : "border-gray-200"
-                  } rounded-md p-2 bg-gray-50`}
+                  className={`w-full border ${errors.errorConfirmarPassword
+                    ? "border-red-500"
+                    : "border-gray-200"
+                    } rounded-md p-2 bg-gray-50`}
                 />
                 {errors.errorConfirmarPassword && (
                   <p className="text-red-500 text-sm mt-1">

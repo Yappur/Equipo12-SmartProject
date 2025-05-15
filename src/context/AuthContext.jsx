@@ -12,6 +12,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [idUser, setIdUser] = useState(null);
 
+  const updateNombre = (nuevoNombre) => {
+    setNombre(nuevoNombre);
+  };
+  // ✅ Método para actualizar la imagen manualmente
+  const updateProfileImage = (newImageUrl) => {
+    setProfileImg(newImageUrl);
+  };
+
   useEffect(() => {
     const verifyToken = async () => {
       try {
@@ -28,6 +36,8 @@ export const AuthProvider = ({ children }) => {
           // Si el token es válido, establecer estados
           setIsAuthenticated(true);
           setRole(data.role);
+          setProfileImg(data.photoURL || data.photoUrl || null); 
+
 
           setIdUser({
             id: data.uid || data.id,
@@ -51,7 +61,7 @@ export const AuthProvider = ({ children }) => {
               if (userResponse.data && userResponse.data.photoURL) {
                 photoUrl = userResponse.data.photoURL;
               }
-            } catch (userError) {}
+            } catch (userError) { }
           }
 
           if (
@@ -98,9 +108,7 @@ export const AuthProvider = ({ children }) => {
     verifyToken();
   }, []);
 
-  const updateProfileImage = (newImageUrl) => {
-    setProfileImg(newImageUrl);
-  };
+
 
   return (
     <AuthContext.Provider
@@ -117,6 +125,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         idUser,
         setIdUser,
+        updateNombre,
       }}
     >
       {children}
