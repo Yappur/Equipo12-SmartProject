@@ -1,7 +1,7 @@
 import { useRef, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
-import Footer from "../../components/Footer";
+import Footer from "../../components/Navigate/Footer";
 import { initAnimationsWithRefs } from "../../helpers/animate";
 
 // Images

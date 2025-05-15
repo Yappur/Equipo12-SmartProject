@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
-import {
-  FiCheckCircle,
-  FiUsers,
-  FiBriefcase,
-  FiCalendar,
-} from "react-icons/fi";
-import { FaRegClipboard } from "react-icons/fa6";
+import { FiMonitor } from "react-icons/fi";
+import { LuClock5 } from "react-icons/lu";
+import { RiMapPinLine } from "react-icons/ri";
+import { FaRegClipboard, FaArrowRightArrowLeft } from "react-icons/fa6";
 
 const isAuthenticated = true;
 
@@ -91,55 +88,53 @@ const RecuiterVacancyView = () => {
         <h2 className="text-2xl mt-10 text-black">Sobre el puesto</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 w-full">
-        <div className="md:col-span-2 space-y-6 bg-gray-100">
-          <section className=" rounded-lg p-6">
-            <h2 className="text-lg font-medium mb-2">Descripción</h2>
-            <p className="text-sm text-[#535353]">
-              {vacante.descripcion || "Sin resumen descripcion."}
-            </p>
-            <h2 className="text-lg font-medium mb-2 mt-4">Requisitos</h2>
-            <ul className="list-disc pl-5 text-sm text-[#535353] space-y-1">
-              {(vacante.requisitos || []).map((req, i) => (
-                <li key={i}>{req}</li>
-              ))}
-            </ul>
-            <h2 className="text-lg font-semibold mb-2 mt-4"></h2>
-            <p className="text-sm text-gray-700">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+        {/* Columna Izquierda */}
+        <div className="md:col-span-2">
+          <section className="rounded-lg p-4 ">
+            <h2 className="text-2xl ml-6 font-semilight mb-6">Descripción</h2>
+            <div className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden">
+              {vacante.descripcion ||
+                "Sin descripción, comunicate con el reclutador."}
+            </div>
+            <h2 className="text-2xl ml-5 font-semilight mb-6">
+              Responsabilidades
+            </h2>
+            <div className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden">
               {vacante.responsabilidades ||
-                "Sin responsabilidades disponibles."}
-            </p>
+                "Sin responsabilidades, comunicate con el reclutador."}
+            </div>
           </section>
         </div>
 
         {/* Columna Derecha */}
-        <div className="space-y-4 text-sm p-4 rounded-md bg-white/50">
-          <h2 className="text-xl md:text-2xl font-semibold">Detalles</h2>
+        <div className="space-y-7 text-md p-4 rounded-md text-gray-800 bg-white/50">
+          <h2 className="text-xl md:text-2xl font-semilight">Detalles</h2>
           <div className="flex items-start space-x-2">
             <FaRegClipboard className="w-5 h-5 mt-0.5 flex-shrink-0" />
-            <span className="font-medium break-words">Experiencia:</span>
+            <span className="break-words">Experiencia:</span>
             <span>{vacante.experiencia || "Sin experiencia"}</span>
           </div>
           <div className="flex items-start space-x-2">
-            <FiBriefcase className="w-5 h-5 mt-0.5 flex-shrink-0" />
-            <span className="font-medium break-words">Modalidad: </span>
+            <FiMonitor className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="break-words">Modalidad: </span>
             <span>{vacante.modalidad || "Remoto"}</span>
           </div>
 
           <div className="flex items-start space-x-2">
-            <FiUsers className="w-5 h-5 mt-0.5 flex-shrink-0" />
-            <span className="font-medium break-words">Ubicación:</span>
+            <RiMapPinLine className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="break-words">Ubicación:</span>
             <span>{vacante.ubicacion || "N/A"}</span>
           </div>
           <div className="flex items-start space-x-2">
-            <FiCalendar className="w-5 h-5 mt-0.5 flex-shrink-0" />
-            <span className="font-medium break-words">Jornada:</span>
+            <LuClock5 className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="break-words">Jornada:</span>
             <span>{vacante.jornada || "Completa"}</span>
           </div>
 
           <div className="flex items-start space-x-2">
-            <FiCheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-            <span className="font-medium break-words">Estado:</span>
+            <FaArrowRightArrowLeft className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="break-words">Estado:</span>
             <span>{vacante.estado}</span>
           </div>
         </div>

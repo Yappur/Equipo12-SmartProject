@@ -1,16 +1,10 @@
 import { useEffect, useState } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
-import Footer from "../../components/Footer";
+import Footer from "../../components/Navigate/Footer";
 import imgVacantes from "@/assets/img/img-vacantes.png";
 import { useParams } from "react-router-dom";
-import {
-  FiCheckCircle,
-  FiUsers,
-  FiBriefcase,
-  FiCalendar,
-  FiMonitor,
-} from "react-icons/fi";
+import { FiMonitor } from "react-icons/fi";
 import { LuClock5 } from "react-icons/lu";
 import { RiMapPinLine } from "react-icons/ri";
 import { FaRegClipboard, FaArrowRightArrowLeft } from "react-icons/fa6";
