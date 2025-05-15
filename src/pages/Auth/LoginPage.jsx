@@ -9,7 +9,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, error, cargando } = useLoginFirebase();
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, updateNombre,updateProfileImage  } = useAuth();
   const navigate = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -26,8 +26,18 @@ const LoginPage = () => {
 
     const resultado = await login({ email, password, rememberMe });
     if (resultado) {
-      const { role } = resultado;
+      const { role, name, photoURL  } = resultado;
+         
+    if (name) {
+      updateNombre(name); 
+    }
+
+    if (photoURL) {
+      updateProfileImage(photoURL);
+    } 
+
       showToast("Inicio de sesión exitoso", "success");
+
 
       setTimeout(() => {
         if (role === "admin") {

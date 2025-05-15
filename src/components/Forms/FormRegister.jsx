@@ -291,6 +291,7 @@ const FormRegister = () => {
 
       resetForm();
       navigate("/admin/panelUsuarios");
+
     } catch (err) {
       console.error("Error completo:", err);
 
@@ -450,6 +451,7 @@ const FormRegister = () => {
                       ? "border-red-500 bg-red-50"
                       : "border-gray-200"
                   } rounded-md p-2 bg-gray-50`}
+
                 />
                 {errors.errorPhoneNumber && (
                   <p className="text-red-500 text-sm mt-1">
@@ -542,6 +544,7 @@ const FormRegister = () => {
                       : "border-gray-200"
                   } rounded-md p-2 bg-gray-50`}
                   maxLength={20} // Limitando a 20 caracteres máximo
+
                 />
                 {errors.errorPassword && (
                   <p className="text-red-500 text-sm mt-1">
