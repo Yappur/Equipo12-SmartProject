@@ -1,7 +1,7 @@
 import RoutesViews from "./routes/RoutesViews";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import { Toaster } from "react-hot-toast";
+import CustomToaster from "./components/Modals/CustomToaster";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
           <main className="flex-grow">
             <RoutesViews />
           </main>
-          <Toaster position="top-center" />
+          <CustomToaster />
         </div>
       </Router>
     </AuthProvider>

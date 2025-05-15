@@ -44,7 +44,7 @@ const Footer = () => {
               <h3 className="text-lg font-medium">Seguimos</h3>
               <div className="flex space-x-4">
                 <a
-                  href="https://www.linkedin.com"
+                  href="https://www.linkedin.com/company/thetalentmatch/posts/?feedView=all"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white hover:text-blue-400 transition-colors"

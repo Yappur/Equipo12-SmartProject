@@ -46,15 +46,21 @@ export const useLoginFirebase = () => {
       );
       const user = userCredential.user;
       const idToken = await user.getIdToken();
-      
+
 
       if (rememberMe) {
+        // Guardar en LocalStorage
         localStorage.setItem("authToken", idToken);
         sessionStorage.removeItem("authToken");
       } else {
+        // Guardar en SessionStorage
         sessionStorage.setItem("authToken", idToken);
-        localStorage.removeItem("authToken");
+        // Backup temporal en LocalStorage
+        localStorage.setItem("authToken", idToken);
       }
+
+      console.log("📝 Token guardado en LocalStorage:", localStorage.getItem("authToken"));
+      console.log("📝 Token guardado en SessionStorage:", sessionStorage.getItem("authToken"));
 
       const { data } = await axiosConfig.post("/auth/verify-token", {
         idToken,
@@ -63,7 +69,6 @@ export const useLoginFirebase = () => {
       setIsAuthenticated(true);
       setRole(data.role);
       setNombre(data.displayName || email); // Asignar el nombre o correo al estado
-
       return data;
     } catch (err) {
       console.error("Error de login:", err.code, err.message);
