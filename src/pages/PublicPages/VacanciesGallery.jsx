@@ -1,12 +1,16 @@
-import React from "react";
+import { useEffect, useRef, useLayoutEffect } from "react";
 import { useState } from "react";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 import imgVacantes from "@/assets/img/img-vacantes.png";
 import VacancieTable from "../../components/Tables/VacancieTable";
 import Footer from "../../components/Navigate/Footer";
 import VacancieCards from "../../components/Cards/VacancieCards";
+import { cambiarTitulo } from "../../hooks/cambiarTitulo";
 
 const VacancyGallery = () => {
+    useEffect(() => {
+        cambiarTitulo("VacantesGaleria");
+      }, []);
   return (
     <>
       <LandingNavbar />

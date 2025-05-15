@@ -73,38 +73,26 @@ const LandingNavbar = () => {
               <span className="text-orange-500 italic">Match</span>
             </h1>
 
-            {isAuthenticated ? (
-              <button
-                onClick={() => {
-                  navigate("/perfil");
-                  setMenuOpen(false);
-                }}
-                className="px-6 py-3 rounded-full bg-white text-[#00598A] font-semibold hover:bg-gray-100 transition"
+            <>
+              <Link
+                to={"/about"}
+                className="text-sm text-gray-800 rounded-full px-10 py-1.5 hover:bg-gray-300 bg-white"
               >
-                Ir a mi perfil
-              </button>
-            ) : (
-              <>
-                <Link
-                  to={"/about"}
-                  className="text-sm text-gray-800 rounded-full px-10 py-1.5 hover:bg-gray-300 bg-white"
-                >
-                  Quiénes somos
-                </Link>
-                <Link
-                  to="/galeria/vacantes"
-                  className="text-sm text-white bg-orange-500 rounded-full px-10 py-1.5 hover:bg-orange-600"
-                >
-                  Ver vacantes
-                </Link>
-                <Link
-                  to="/login"
-                  className="text-sm text-white bg-blue-900 rounded-full px-10 py-1.5 hover:bg-blue-950"
-                >
-                  Acceso reclutadores
-                </Link>
-              </>
-            )}
+                Quiénes somos
+              </Link>
+              <Link
+                to="/galeria/vacantes"
+                className="text-sm text-white bg-orange-500 rounded-full px-10 py-1.5 hover:bg-orange-600"
+              >
+                Ver vacantes
+              </Link>
+              <Link
+                to="/login"
+                className="text-sm text-white bg-blue-900 rounded-full px-10 py-1.5 hover:bg-blue-950"
+              >
+                Acceso reclutadores
+              </Link>
+            </>
           </div>
         )}
       </nav>

@@ -59,22 +59,24 @@ const FormRegister = () => {
         `/auth/check-email?email=${encodeURIComponent(email)}`
       );
 
-      // Si la respuesta es exitosa (código 200), significa que el email ya existe
-      if (response.status === 200) {
+      if (response.data === true) {
         setErrors((prevErrors) => ({
           ...prevErrors,
           errorEmail: "Este correo electrónico ya está registrado",
         }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          errorEmail: false,
+        }));
       }
     } catch (error) {
-      // Si obtenemos un error 404, el email no existe (lo cual es lo que queremos)
       if (error.response && error.response.status === 404) {
         setErrors((prevErrors) => ({
           ...prevErrors,
           errorEmail: false,
         }));
       } else {
-        // Si es otro tipo de error (conexión, servidor, etc.)
         console.error("Error al verificar email:", error);
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -291,7 +293,6 @@ const FormRegister = () => {
 
       resetForm();
       navigate("/admin/panelUsuarios");
-
     } catch (err) {
       console.error("Error completo:", err);
 
@@ -451,7 +452,6 @@ const FormRegister = () => {
                       ? "border-red-500 bg-red-50"
                       : "border-gray-200"
                   } rounded-md p-2 bg-gray-50`}
-
                 />
                 {errors.errorPhoneNumber && (
                   <p className="text-red-500 text-sm mt-1">
@@ -544,7 +544,6 @@ const FormRegister = () => {
                       : "border-gray-200"
                   } rounded-md p-2 bg-gray-50`}
                   maxLength={20} // Limitando a 20 caracteres máximo
-
                 />
                 {errors.errorPassword && (
                   <p className="text-red-500 text-sm mt-1">
