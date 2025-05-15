@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
-import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
-import customStyles from "./DashboardsStyles";
+import { FaPlus, FaChevronDown } from "react-icons/fa";
+import { customStyles, paginationOptions } from "./DashboardsStyles";
 import Loader from "../Common/Loader";
 import SearchBar from "./SearchBar";
 import { showToast } from "../Modals/CustomToaster";
@@ -234,6 +234,7 @@ const UserTable = () => {
           pagination
           pointerOnHover
           responsive
+          paginationComponentOptions={paginationOptions}
           customStyles={customStyles}
           noDataComponent="No hay usuarios disponibles"
           progressPending={loading}

@@ -1,4 +1,4 @@
-const customStyles = {
+export const customStyles = {
   table: {
     style: {
       border: "none",
@@ -37,4 +37,9 @@ const customStyles = {
   },
 };
 
-export default customStyles;
+export const paginationOptions = {
+  rowsPerPageText: "Filas por página:",
+  rangeSeparatorText: "de",
+  selectAllRowsItem: true,
+  selectAllRowsItemText: "Todos",
+};

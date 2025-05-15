@@ -4,7 +4,7 @@ import DataTable from "react-data-table-component";
 import axiosConfig from "../../helpers/axios.config";
 import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
-import customStyles from "./DashboardsStyles";
+import { customStyles, paginationOptions } from "./DashboardsStyles";
 import cvIcon from "../../assets/img/cvIcon.png";
 
 const ApplicationsTable = () => {
@@ -342,8 +342,8 @@ const ApplicationsTable = () => {
           columns={columns}
           data={filtrarData}
           pagination
-          highlightOnHover
           customStyles={customStyles}
+          paginationComponentOptions={paginationOptions}
           noDataComponent="No hay postulantes disponibles"
           progressPending={loading}
           progressComponent={
