@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import logoLogin from "@/assets/img/mujer-hero.png";
 import Modal from "../../components/Modals/Modal";
 import { usePasswordReset } from "@/hooks/usePasswordReset";
-import LandingNavbar from "../../components/Navigate/LandingNavbar";
 
 const RecoverAccount = () => {
   const [email, setEmail] = useState("");
@@ -45,8 +44,7 @@ const RecoverAccount = () => {
 
   return (
     <>
-      <LandingNavbar />
-      <div className="poppins py-40 bg-white flex items-center justify-center p-4 ">
+      <div className="poppins min-h-screen bg-white flex items-center justify-center p-4 ">
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
             <div className="p-8 md:p-12 text-black flex flex-col justify-center">

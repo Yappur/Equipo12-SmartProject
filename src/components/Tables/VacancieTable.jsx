@@ -9,7 +9,6 @@ const VacancieTable = ({ isPublic = false }) => {
   const [page, setPage] = useState(1);
   const [ubicaciones, setUbicaciones] = useState([]);
 
-  // Filtros del formulario
   const [busqueda, setBusqueda] = useState("");
   const [modalidad, setModalidad] = useState("");
   const [ubicacion, setUbicacion] = useState("");
@@ -18,12 +17,9 @@ const VacancieTable = ({ isPublic = false }) => {
 
   const navigate = useNavigate();
 
-  // Función para obtener las vacantes con filtros
   const obtenerVacantes = async (initial = false) => {
     try {
       setLoading(true);
-
-      // ✅ Parámetros para el backend
       const params = {
         status: estado,
         search: busqueda,
@@ -95,22 +91,11 @@ const VacancieTable = ({ isPublic = false }) => {
     };
 
     obtenerUbicaciones();
-    obtenerVacantes(true); // el true indica que es un primer load
+    obtenerVacantes(true);
   }, []);
 
-  // ✅ Función para redirigir a la página de la vacante
   const handleVerVacante = (id) => {
     navigate(`/ver/vacante/${id}`);
-  };
-
-  // ✅ Limpiar Filtros
-  const limpiarFiltros = () => {
-    setBusqueda("");
-    setModalidad("");
-    setUbicacion("");
-    setEstado("");
-    setPrioridad("");
-    obtenerVacantes(true);
   };
 
   return (
@@ -134,77 +119,6 @@ const VacancieTable = ({ isPublic = false }) => {
             onClick={obtenerVacantes}
           >
             Buscar
-          </button>
-        </div>
-
-        {/* Filtros secundarios: Modalidad, Ubicación, Estado, Prioridad, Limpiar */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-          {/* Select de Modalidad */}
-          <select
-            className={`border rounded-md px-4 py-2 w-full focus:outline-none ${
-              modalidad ? "bg-orange-100 border-orange-500" : "border-gray-300"
-            }`}
-            value={modalidad}
-            onChange={(e) => setModalidad(e.target.value)}
-          >
-            <option value="">Modalidad</option>
-            <option value="presencial">Presencial</option>
-            <option value="remoto">Remoto</option>
-            <option value="híbrido">Híbrido</option>
-          </select>
-
-          {/* Select de Ubicación */}
-          <select
-            className={`border rounded-md px-4 py-2 w-full focus:outline-none ${
-              ubicacion ? "bg-orange-100 border-orange-500" : "border-gray-300"
-            }`}
-            value={ubicacion}
-            onChange={(e) => setUbicacion(e.target.value)}
-          >
-            <option value="">Ubicación</option>
-            {ubicaciones.map((ubic, index) => (
-              <option key={index} value={ubic}>
-                {ubic}
-              </option>
-            ))}
-          </select>
-
-          {/* Select de Estado */}
-          <select
-            className={`border rounded-md px-4 py-2 w-full focus:outline-none ${
-              estado ? "bg-orange-100 border-orange-500" : "border-gray-300"
-            }`}
-            value={estado}
-            onChange={(e) => setEstado(e.target.value)}
-          >
-            <option value="">Estado</option>
-            <option value="activo">Activo</option>
-            <option value="pausado">Pausado</option>
-            <option value="borrador">Borrador</option>
-            <option value="terminado">Terminado</option>
-            <option value="cancelado">Cancelado</option>
-          </select>
-
-          {/* Select de Prioridad */}
-          <select
-            className={`border rounded-md px-4 py-2 w-full focus:outline-none ${
-              prioridad ? "bg-orange-100 border-orange-500" : "border-gray-300"
-            }`}
-            value={prioridad}
-            onChange={(e) => setPrioridad(e.target.value)}
-          >
-            <option value="">Prioridad</option>
-            <option value="alta">Alta</option>
-            <option value="media">Media</option>
-            <option value="baja">Baja</option>
-          </select>
-
-          {/* Botón de limpiar */}
-          <button
-            className="text-center bg-gray-400 hover:bg-gray-500 text-white rounded-md px-6 py-2 flex items-center justify-center"
-            onClick={limpiarFiltros}
-          >
-            Limpiar
           </button>
         </div>
       </div>

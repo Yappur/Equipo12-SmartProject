@@ -9,7 +9,7 @@ const obtenerToken = () => {
 };
 
 const axiosConfig = axios.create({
-  baseURL: "https://backend-foo-talent.onrender.com",
+  baseURL: import.meta.env.VITE_BACKEND_URL,
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
@@ -37,12 +37,10 @@ axiosConfig.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Si recibimos un 401 (no autorizado) o 403 (prohibido), podría ser un token expirado
     if (
       error.response &&
       (error.response.status === 401 || error.response.status === 403)
     ) {
-      // Limpiar tokens
       localStorage.removeItem("authToken");
       sessionStorage.removeItem("authToken");
 

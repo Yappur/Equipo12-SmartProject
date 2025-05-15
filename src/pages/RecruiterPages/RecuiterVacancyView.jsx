@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
-
 import axiosConfig from "../../helpers/axios.config";
+import {
+  FiCheckCircle,
+  FiUsers,
+  FiBriefcase,
+  FiCalendar,
+} from "react-icons/fi";
+import { FaRegClipboard } from "react-icons/fa6";
 
 const isAuthenticated = true;
 
@@ -16,7 +22,7 @@ const RecuiterVacancyView = () => {
       try {
         console.log("Renderizó la vista del reclutador");
 
-        const response = await axiosConfig.get(`/vacancies/${id}`); // Obtener la vacante usando el ID dinámico
+        const response = await axiosConfig.get(`/vacancies/${id}`);
         console.log("Vacantes obtenidas:", response.data);
 
         if (!response.data) {
@@ -107,50 +113,34 @@ const RecuiterVacancyView = () => {
         </div>
 
         {/* Columna Derecha */}
-        <div className="space-y-4 text-sm text-black bg-gray-50 p-6 rounded-md shadow-sm">
-          <div>
-            <h1 className="text-lg mt-4 mb-4">Detalles</h1>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="../../src/assets/img/experiencia.png"
-                alt="Experiencia Icon"
-                className=" h-5 self-start mt-1"
-              />
-              <span>Experiencia: {vacante.experiencia ?? "N/A"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="../../src/assets/img/modalidad.png"
-                alt="Modalidad Icon"
-                className="h-5 self-start mt-1"
-              />
-              <span>Modalidad: {vacante.modalidad ?? "N/A"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="../../src/assets/img/ubicacion.png"
-                alt="Ubicación Icon"
-                className="h-5 self-start mt-1"
-              />
-              <span>Ubicación: {vacante.ubicacion ?? "N/A"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="../../src/assets/img/jornada.png"
-                alt="Jornada Icon"
-                className="h-5 self-start mt-1"
-              />
-              <span>Jornada: {vacante.jornada ?? "N/A"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4">
-              <img
-                src="../../src/assets/img/estado.png"
-                alt="Estado Icon"
-                className="h-5 self-start mt-1"
-              />
-              <span>Estado: {vacante.estado || "No especificado"}</span>
-            </div>
-            <div className="flex items-center space-x-2 mb-4"></div>
+        <div className="space-y-4 text-sm p-4 rounded-md bg-white/50">
+          <h2 className="text-xl md:text-2xl font-semibold">Detalles</h2>
+          <div className="flex items-start space-x-2">
+            <FaRegClipboard className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="font-medium break-words">Experiencia:</span>
+            <span>{vacante.experiencia || "Sin experiencia"}</span>
+          </div>
+          <div className="flex items-start space-x-2">
+            <FiBriefcase className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="font-medium break-words">Modalidad: </span>
+            <span>{vacante.modalidad || "Remoto"}</span>
+          </div>
+
+          <div className="flex items-start space-x-2">
+            <FiUsers className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="font-medium break-words">Ubicación:</span>
+            <span>{vacante.ubicacion || "N/A"}</span>
+          </div>
+          <div className="flex items-start space-x-2">
+            <FiCalendar className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="font-medium break-words">Jornada:</span>
+            <span>{vacante.jornada || "Completa"}</span>
+          </div>
+
+          <div className="flex items-start space-x-2">
+            <FiCheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="font-medium break-words">Estado:</span>
+            <span>{vacante.estado}</span>
           </div>
         </div>
       </div>
