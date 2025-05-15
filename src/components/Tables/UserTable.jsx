@@ -89,7 +89,7 @@ const UserTable = () => {
     return date.toLocaleDateString("es-ES", {
       day: "2-digit",
       month: "2-digit",
-      year: "numeric",
+      year: "2-digit",
     });
   };
 
@@ -106,8 +106,8 @@ const UserTable = () => {
 
         const colorClass =
           row.role === "user"
-            ? "bg-[#d8e9ff] text-gray-800"
-            : "bg-[#fcffd2] text-gray-800";
+            ? "bg-[#fcffd2] text-gray-800"
+            : "bg-[#d8e9ff] text-gray-800";
 
         const displayName = {
           user: "Reclutador",
