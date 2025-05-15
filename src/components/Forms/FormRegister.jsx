@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import { uploadProfileImage } from "../../firebase/Upload/uploadProfileImage";
 import editarImagenIcon from "../../assets/img/editarImagenIcon.svg";
-import toast from "react-hot-toast"; // Para notificaciones de éxito
+import { showToast } from "../Modals/CustomToaster";
 
 const FormRegister = () => {
-  const navigate = useNavigate(); // Para la redirección
+  const navigate = useNavigate();
   const [usuario, setUsuario] = useState({
     displayName: "",
     email: "",
@@ -27,26 +27,19 @@ const FormRegister = () => {
 
   useEffect(() => {
     if (errors.serverError) {
-      toast.error(errors.serverError, {
-        duration: 4000,
-        position: "top-center",
-      });
+      showToast(errors.serverError, "error");
     }
   }, [errors]);
 
-  // Efecto para verificar si el email ya existe después de que el usuario deje de escribir
   useEffect(() => {
-    // Limpiar el timer anterior si existe
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
 
-    // No verificar si el email está vacío o inválido
     if (!usuario.email || !validarEmail(usuario.email)) {
       return;
     }
 
-    // Establecer un temporizador para verificar después de que el usuario deje de escribir
     timerRef.current = setTimeout(() => {
       verificarEmailExistente(usuario.email);
     }, 800); // Verificar después de 800ms de inactividad
@@ -66,18 +59,27 @@ const FormRegister = () => {
         `/auth/check-email?email=${encodeURIComponent(email)}`
       );
 
-      // Si llegamos aquí, el email ya existe (código 200)
-      setErrors({
-        ...errors,
-        errorEmail: "Este correo electrónico ya está registrado",
-      });
+      // Si la respuesta es exitosa (código 200), significa que el email ya existe
+      if (response.status === 200) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          errorEmail: "Este correo electrónico ya está registrado",
+        }));
+      }
     } catch (error) {
-      // Si obtenemos un error, el email no existe (lo cual es lo que queremos)
-      if (errors.errorEmail === "Este correo electrónico ya está registrado") {
-        setErrors({
-          ...errors,
+      // Si obtenemos un error 404, el email no existe (lo cual es lo que queremos)
+      if (error.response && error.response.status === 404) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
           errorEmail: false,
-        });
+        }));
+      } else {
+        // Si es otro tipo de error (conexión, servidor, etc.)
+        console.error("Error al verificar email:", error);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          errorEmail: "Error al verificar el email. Inténtalo más tarde.",
+        }));
       }
     } finally {
       setVerificandoEmail(false);
@@ -143,12 +145,12 @@ const FormRegister = () => {
     fileInputRef.current.click();
   };
 
-  // Manejador para cuando se selecciona un archivo
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     try {
+      // Validar que sea una imagen
       if (!file.type.startsWith("image/")) {
         setErrors({
           ...errors,
@@ -157,6 +159,7 @@ const FormRegister = () => {
         return;
       }
 
+      // Crear una URL para previsualizar la imagen
       const objectUrl = URL.createObjectURL(file);
       setPreviewImage(objectUrl);
 
@@ -196,7 +199,7 @@ const FormRegister = () => {
     const newErrors = {};
     let isValid = true;
 
-    // Validación nombre - Corregido para separar los diferentes tipos de errores
+    // Validación nombre
     if (!displayName || displayName.trim() === "") {
       newErrors.errorDisplayName = "Por favor, ingresa tu nombre y apellido";
       isValid = false;
@@ -246,6 +249,7 @@ const FormRegister = () => {
       isValid = false;
     }
 
+    // Validación teléfono
     if (!phoneNumber) {
       newErrors.errorPhoneNumber = "Por favor, ingresa tu número de teléfono";
       isValid = false;
@@ -283,10 +287,7 @@ const FormRegister = () => {
         datosProcesados
       );
 
-      toast.success("Usuario registrado correctamente", {
-        duration: 4000,
-        position: "top-center",
-      });
+      showToast("Usuario registrado correctamente", "success");
 
       resetForm();
       navigate("/admin/panelUsuarios");
@@ -306,10 +307,7 @@ const FormRegister = () => {
         serverError: mensajeError,
       });
 
-      toast.error(mensajeError, {
-        duration: 4000,
-        position: "top-center",
-      });
+      showToast(mensajeError, "error");
     } finally {
       setCargando(false);
     }
@@ -367,7 +365,7 @@ const FormRegister = () => {
               />
             ) : (
               <img
-                src={editarImagenIcon}
+                src={editarImagenIcon || "/placeholder.svg"}
                 alt="Editar imagen"
                 className="w-full h-full object-contain"
               />
@@ -389,6 +387,7 @@ const FormRegister = () => {
           <p className="text-sm text-gray-500 mt-1">{getRoleText() || "Rol"}</p>
         </div>
 
+        {/* Formulario */}
         <div className="w-full lg:w-2/3 p-8 ">
           <h2 className="text-2xl font-medium mb-6 pb-2">
             <span className="border-b-4 border-amber-500">
@@ -542,7 +541,7 @@ const FormRegister = () => {
                       ? "border-red-500 bg-red-50"
                       : "border-gray-200"
                   } rounded-md p-2 bg-gray-50`}
-                  maxLength={20}
+                  maxLength={20} // Limitando a 20 caracteres máximo
                 />
                 {errors.errorPassword && (
                   <p className="text-red-500 text-sm mt-1">
@@ -615,7 +614,7 @@ const FormRegister = () => {
                       ? "border-red-500 bg-red-50"
                       : "border-gray-200"
                   } rounded-md p-2 bg-gray-50`}
-                  maxLength={20}
+                  maxLength={20} // Limitando a 20 caracteres máximo
                 />
                 {errors.errorConfirmarPassword && (
                   <p className="text-red-500 text-sm mt-1">
