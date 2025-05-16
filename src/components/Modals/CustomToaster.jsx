@@ -1,39 +1,7 @@
-import { useEffect, useRef, useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { AlertCircle } from "lucide-react";
-import gsap from "gsap";
 
 const CustomToast = ({ message, type, t }) => {
-  const toastRef = useRef(null);
-
-  useEffect(() => {
-    if (toastRef.current) {
-      gsap.set(toastRef.current, {
-        opacity: 0,
-        y: -20,
-        scale: 0.95,
-      });
-
-      gsap.to(toastRef.current, {
-        duration: 0.2,
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        ease: "power2.out",
-      });
-    }
-
-    return () => {
-      if (toastRef.current) {
-        gsap.killTweensOf(toastRef.current);
-      }
-    };
-  }, [t]);
-
-  const handleDismiss = () => {
-    animateOut();
-  };
-
   const renderIcon = () => {
     if (type === "success") {
       return (
@@ -50,16 +18,17 @@ const CustomToast = ({ message, type, t }) => {
           />
         </svg>
       );
-    } else {
+    } else if (type === "error") {
       return <AlertCircle size={20} color="#ef4444" />;
+    } else {
+      return null;
     }
   };
 
   return (
     <div
-      ref={toastRef}
-      className="py-3 px-4 rounded-lg text-center bg-[#152d53] text-white w-full max-w-md flex items-center justify-center"
-      onClick={handleDismiss}
+      className="py-3 px-4 rounded-lg text-center bg-[#152d53] text-white w-full max-w-md flex items-center justify-center transition-all duration-300 cursor-pointer"
+      onClick={() => toast.dismiss(t.id)}
     >
       <div className="flex items-center gap-3">
         {renderIcon()}
@@ -69,10 +38,27 @@ const CustomToast = ({ message, type, t }) => {
   );
 };
 
+const activeToasts = new Set();
+
 export const showToast = (message, type = "success") => {
+  const toastId = `${message}-${type}`;
+
+  if (activeToasts.has(toastId)) {
+    return;
+  }
+
+  activeToasts.add(toastId);
+
   return toast.custom(
-    (t) => <CustomToast message={message} type={type} t={t} />,
+    (t) => {
+
+      if (!t.visible) {
+        setTimeout(() => activeToasts.delete(toastId), 300);
+      }
+      return <CustomToast message={message} type={type} t={t} />;
+    },
     {
+      id: toastId,
       duration: 2000,
     }
   );

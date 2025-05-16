@@ -32,7 +32,6 @@ const LoginPage = () => {
     },
   });
 
-  // Valores actuales de los campos para verificar si están vacíos
   const emailValue = watch("email");
   const passwordValue = watch("password");
   const formIsEmpty = !emailValue || !passwordValue;
@@ -116,7 +115,7 @@ const LoginPage = () => {
                     placeholder="Introduce tu mail..."
                   />
                   {errors.email && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm mt-1">
                       {errors.email.message || "El formato del correo es inválido"}
                     </p>
                   )}
@@ -124,38 +123,40 @@ const LoginPage = () => {
 
                 <div className="relative">
                   <h2 className="text-gray-800">Contraseña</h2>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    {...register("password", {
-                      required: true,
-                      minLength: {
-                        value: 8,
-                        message: "La contraseña debe tener al menos 8 carácteres",
-                      },
-                    })}
-                    className={`w-full p-2.5 ${
-                      errors.password
-                        ? "bg-red-50 border-red-500"
-                        : "bg-white border-gray-400"
-                    } border rounded-xl placeholder-gray-600 py-3 text-sm pr-10`}
-                    placeholder="Introduce tu contraseña..."
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      {...register("password", {
+                        required: true,
+                        minLength: {
+                          value: 8,
+                          message: "La contraseña debe tener al menos 8 carácteres",
+                        },
+                      })}
+                      className={`w-full p-2.5 ${
+                        errors.password
+                          ? "bg-red-50 border-red-500"
+                          : "bg-white border-gray-400"
+                      } border rounded-xl placeholder-gray-600 py-3 text-sm pr-10`}
+                      placeholder="Introduce tu contraseña..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xl"
+                    >
+                      {showPassword ? (
+                        <FaRegEye className="text-[#152d53]" />
+                      ) : (
+                        <FaRegEyeSlash className="text-gray-500" />
+                      )}
+                    </button>
+                  </div>
                   {errors.password && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm mt-1">
                       {errors.password.message || "La contraseña debe tener al menos 8 carácteres"}
                     </p>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-3xl mt-3.5"
-                  >
-                    {showPassword ? (
-                      <FaRegEye className="text-[#152d53]" />
-                    ) : (
-                      <FaRegEyeSlash className="text-gray-500" />
-                    )}
-                  </button>
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
