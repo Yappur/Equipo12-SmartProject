@@ -42,11 +42,14 @@ const Sidebar = () => {
           title: "Candidatos",
           icon: Users,
           path: "/reclutador/nuevaTabla",
+<<<<<<< HEAD
         },
         {
           title: "Prueba Vacante",
           icon: User,
           path: "/reclutador/crear/vacante",
+=======
+>>>>>>> 092ec322e9f1a1d16097b7a3d49557dc6b76011e
         },
       ];
     } else {

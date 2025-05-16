@@ -4,8 +4,14 @@ import SearchBar from "./SearchBar";
 import Modal from "../Modals/Modal";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
+<<<<<<< HEAD
 import { FaPlus } from "react-icons/fa";
 import { customStyles, paginationOptions } from "./DashboardsStyles";
+=======
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import {customStyles} from "./DashboardsStyles";
+import {paginationOptions} from "./DashboardsStyles";
+>>>>>>> 092ec322e9f1a1d16097b7a3d49557dc6b76011e
 import ModalEditarVacante from "../Modals/ModalEditarVacante";
 import BotonEditar from "../../assets/img/editar.png";
 import { useAuth } from "../../context/AuthContext";

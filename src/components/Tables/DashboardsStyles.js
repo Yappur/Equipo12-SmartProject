@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// DashboardsStyles.js
+>>>>>>> 092ec322e9f1a1d16097b7a3d49557dc6b76011e
 export const customStyles = {
   table: {
     style: {
