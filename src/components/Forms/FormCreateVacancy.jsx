@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { State, City } from "country-state-city";
 import SelectLocation from "../../components/Forms/SelectLocation";
+import { showToast } from "../Modals/CustomToaster";
 
 const MIN_DESCRIPTION_LENGTH = 200;
 const MAX_DESCRIPTION_LENGTH = 2000;
@@ -45,6 +46,31 @@ const FormCreateVacancy = ({
 
     setCityOptions(cities);
   }, []);
+
+  // Efecto adicional para manejar la ubicación cuando se cargan los valores iniciales
+  useEffect(() => {
+    if (initialValues.ubicacion && cityOptions.length > 0) {
+      // Buscar la opción de ciudad correspondiente a la ubicación inicial
+      const selectedCity = cityOptions.find(
+        (option) => option.value === initialValues.ubicacion
+      );
+
+      // Si no existe una coincidencia exacta, podríamos intentar una coincidencia parcial
+      if (!selectedCity && typeof initialValues.ubicacion === "string") {
+        const cityName = initialValues.ubicacion.split(",")[0]?.trim();
+        const matchingCity = cityOptions.find((option) =>
+          option.value.includes(cityName)
+        );
+
+        if (matchingCity) {
+          setVacancy((prev) => ({
+            ...prev,
+            ubicacion: matchingCity.value,
+          }));
+        }
+      }
+    }
+  }, [initialValues.ubicacion, cityOptions]);
 
   const getInputClass = (field) => {
     return `w-full px-4 py-2 border rounded-md focus:outline-none ${
@@ -196,15 +222,16 @@ const FormCreateVacancy = ({
     e.preventDefault();
 
     if (!validateForm()) {
+      showToast(
+        "Por favor, complete correctamente todos los campos requeridos",
+        "error"
+      );
       return false;
     }
 
-    const nuevaVacante = {
-      fecha: new Date().toISOString().split("T")[0],
-      ...vacancy,
-    };
+    const { fecha, ...vacancyData } = vacancy;
 
-    onSubmit(nuevaVacante);
+    onSubmit(vacancyData);
     return true;
   };
 
