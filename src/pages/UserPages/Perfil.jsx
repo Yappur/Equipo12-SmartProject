@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import axiosConfig from "@/helpers/axios.config";
-import { getAuth, updateProfile } from "firebase/auth";
+import { getAuth, updateProfile, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { uploadProfileImage } from "@/firebase/Upload/uploadProfileImage";
 import { useAuth } from "@/context/AuthContext";
 import { showToast } from "@/components/Modals/CustomToaster";
@@ -37,6 +37,7 @@ const Perfil = () => {
         formState: { errors: errorsSeguridad },
     } = useForm({
         defaultValues: {
+            passwordActual: "",
             password: "",
             passwordConfirmacion: "",
         },
@@ -211,22 +212,25 @@ const Perfil = () => {
     };
 
     const onSubmitSeguridad = async (data) => {
+        setLoading(true);
+        const auth = getAuth();
+        const user = auth.currentUser;
+
         try {
-            setLoading(true);
-
-            const auth = getAuth();
-            const user = auth.currentUser;
-            let uid;
-
-            if (user) {
-                uid = user.uid;
-            } else if (idUser && idUser.uid) {
-                uid = idUser.uid;
-            } else {
-                throw new Error("No se pudo determinar el ID del usuario");
+            if (!user || !user.email) {
+                throw new Error("No hay usuario autenticado o falta el email");
             }
 
-            await axiosConfig.patch(`/users/${uid}/password`, {
+            const credential = EmailAuthProvider.credential(user.email, data.passwordActual);
+
+            await reauthenticateWithCredential(user, credential);
+
+            let uid = user.uid;
+            if (!uid && idUser?.uid) {
+                uid = idUser.uid;
+            }
+
+            await axiosConfig.patch(`auth/${uid}/password`, {
                 password: data.password,
             });
 
@@ -237,7 +241,9 @@ const Perfil = () => {
         } catch (err) {
             console.error("Error al cambiar la contraseña:", err);
 
-            if (err.response && err.response.data && err.response.data.message) {
+            if (err.code === "auth/invalid-credential") {
+                showToast("La contraseña actual es incorrecta", "error");
+            } else if (err.response?.data?.message) {
                 showToast(`${err.response.data.message}`, "error");
             } else {
                 showToast("Error al cambiar la contraseña", "error");
@@ -246,6 +252,7 @@ const Perfil = () => {
             setLoading(false);
         }
     };
+
 
     if (authLoading) {
         return (
@@ -503,6 +510,37 @@ const Perfil = () => {
                                     className="space-y-6"
                                 >
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                                        <div className="flex flex-col gap-1">
+                                            <label
+                                                htmlFor="password"
+                                                className="font-medium text-gray-700"
+                                            >
+                                                Contraseña actual*
+                                            </label>
+                                            <input
+                                                type="password"
+                                                id="passwordActual"
+                                                {...registerSeguridad("passwordActual", {
+                                                    required: "La contraseña actual es obligatoria",
+                                                    minLength: {
+                                                        value: 5,
+                                                        message:
+                                                            "La contraseña debe tener al menos 5 caracteres",
+                                                    },
+                                                })}
+                                                className={`bg-[#f5f2ec] border ${errorsSeguridad.passwordActual
+                                                    ? "border-red-500"
+                                                    : "border-[#f5f2ec]"
+                                                    } rounded-md p-3`}
+                                                placeholder="Contraseña actual"
+                                            />
+                                            {errorsSeguridad.passwordActual && (
+                                                <span className="text-red-500 text-xs mt-1">
+                                                    {errorsSeguridad.passwordActual.message}
+                                                </span>
+                                            )}
+                                        </div>
+
                                         <div className="flex flex-col gap-1">
                                             <label
                                                 htmlFor="password"
