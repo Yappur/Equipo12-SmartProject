@@ -157,7 +157,6 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     setCargando(true);
     try {
       const finalVacancyId = isRecruiter ? selectedVacancyId : vacancyId;
-      console.log("ID de vacante para enviar:", finalVacancyId);
 
       if (!finalVacancyId) {
         setErrorModal(true);
@@ -174,12 +173,15 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
         vacancyId: finalVacancyId,
       };
 
-      console.log("Enviando datos del candidato:", candidatoData);
       const response = await axiosConfig.post("/applications", candidatoData);
       console.log("Respuesta:", response.data);
 
       showToast("Postulacion enviada exitosamente", "success");
-      navigate(`/reclutador/ver/candidatos/${finalVacancyId}`);
+      if (isRecruiter) {
+        navigate(`/reclutador/ver/candidatos/${finalVacancyId}`);
+      } else {
+        onClose();
+      }
       onClose();
     } catch (error) {
       console.error("Error al crear el candidato:", error);
