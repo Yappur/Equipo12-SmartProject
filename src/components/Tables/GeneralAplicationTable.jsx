@@ -4,7 +4,7 @@ import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import SearchBar from "./SearchBar";
 import { customStyles, paginationOptions } from "./DashboardsStyles";
-import IconoCV from "../../assets/img/cvicon.png";
+import IconoCV from "@/assets/img/cvIcon.png";
 import PdfModal from "../Modals/PdfModal";
 
 const GeneralApplicationsTable = () => {
@@ -14,7 +14,6 @@ const GeneralApplicationsTable = () => {
   const [selectedCV, setSelectedCV] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [nombreVacante, setNombreVacante] = useState("");
-
 
   const obtenerNombreVacante = async (id) => {
     try {
@@ -27,7 +26,6 @@ const GeneralApplicationsTable = () => {
     }
   };
 
-
   useEffect(() => {
     obtenerNombreVacante();
   }, []);
@@ -39,12 +37,12 @@ const GeneralApplicationsTable = () => {
   const obtenerPostulaciones = async () => {
     try {
       setLoading(true);
-      const response = await axiosConfig.get("/applications/all",{
+      const response = await axiosConfig.get("/applications/all", {
         params: {
-        limit: 100,
-        page: 1, // Puedes modificar el número de página si lo necesitas
-      },}
-      ); // 👈 sin parámetro
+          limit: 100,
+          page: 1, // Puedes modificar el número de página si lo necesitas
+        },
+      }); // 👈 sin parámetro
       setPostulaciones(response.data);
       console.log("Postulaciones obtenidas:", response.data);
     } catch (error) {
@@ -53,7 +51,6 @@ const GeneralApplicationsTable = () => {
       setLoading(false);
     }
   };
-
 
   const handleViewCV = (cvUrl) => {
     setSelectedCV(cvUrl);
@@ -111,19 +108,19 @@ const GeneralApplicationsTable = () => {
           // Si es un timestamp de Firebase
           if (row.createdAt._seconds) {
             const fecha = new Date(row.createdAt._seconds * 1000);
-            return fecha.toLocaleDateString('es-ES', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
+            return fecha.toLocaleDateString("es-ES", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
             });
           } else {
             // Si es un string ISO
             const fecha = new Date(row.createdAt);
             if (!isNaN(fecha)) {
-              return fecha.toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
+              return fecha.toLocaleDateString("es-ES", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
               });
             }
           }
@@ -132,7 +129,6 @@ const GeneralApplicationsTable = () => {
       },
       sortable: true,
     },
-
 
     {
       name: "Estado",
@@ -165,7 +161,6 @@ const GeneralApplicationsTable = () => {
     {
       name: "CV",
       cell: (row) => (
-
         <button
           onClick={() => handleViewCV(row.cvUrl)}
           className="text-blue-600 underline hover:text-blue-800 flex items-center cursor-pointer"

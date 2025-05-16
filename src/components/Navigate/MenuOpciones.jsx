@@ -9,6 +9,7 @@ import axiosConfig from "@/helpers/axios.config";
 import { showToast } from "../../components/Modals/CustomToaster";
 import ModalEditarVacante from "../Modals/ModalEditarVacante";
 import { useAuth } from "../../context/AuthContext";
+import Modal from "../Modals/Modal";
 
 export default function MenuOpciones({ idVacante, estado }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,24 +19,31 @@ export default function MenuOpciones({ idVacante, estado }) {
   const [isClosed, setIsClosed] = useState(false);
   const {idUser} = useAuth();
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showToggleModal, setShowToggleModal] = useState(false);
+
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleDelete = async (id) => {
+  const deleteVacancy = async () => {
     try {
-      const response = await axiosConfig.delete(`/vacancies/${id}`);
+      const response = await axiosConfig.delete(`/vacancies/${idVacante}`);
       showToast("La vacante fue eliminada correctamente", "success");
       setIsOpen(false);
       window.dispatchEvent(new Event("vacancyUpdated"));
       navigate("/reclutador/vacantes");
     } catch (error) {
       console.error("❌ Error al eliminar la vacante:", error.message);
-      showToast("Hubo un error al eliminar la vacante", "error");
     }
   };
 
-  const handleToggleVacancy = async () => {
+  const confirmDelete = () => {
+    setShowDeleteModal(true);
+    setIsOpen(false);
+  };
+
+  const toggleVacancy = async () => {
     try {
       const nuevoEstado = isClosed ? "abierta" : "cerrada";
 
@@ -51,10 +59,14 @@ export default function MenuOpciones({ idVacante, estado }) {
       setIsClosed(!isClosed);
 
       window.dispatchEvent(new Event("vacancyUpdated"));
-      setIsOpen(false);
     } catch (error) {
-      showToast("Hubo un error al actualizar la vacante", "error");
+      console.error("❌ Error al actualizar la vacante:", error.message);
     }
+  };
+
+  const confirmToggleVacancy = () => {
+    setShowToggleModal(true);
+    setIsOpen(false);
   };
 
   const handleVacancyUpdated = (updatedVacancy) => {
@@ -115,7 +127,7 @@ return (
             </li>
             <li
               className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={handleToggleVacancy}
+              onClick={confirmToggleVacancy}
             >
               <img
                 src={CerrarVacante}
@@ -142,7 +154,7 @@ return (
             <hr className="my-1 text-gray-200/70" />
             <li
               className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer "
-              onClick={() => handleDelete(idVacante)}
+              onClick={confirmDelete}
             >
               <img
                 src={Eliminar}
@@ -154,6 +166,30 @@ return (
           </ul>
         </div>
       )}
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        tipo="delete"
+        titulo="Eliminar vacante"
+        mensaje="¿Estás seguro que deseas eliminar esta vacante? Esta acción no se puede deshacer."
+        btnPrimario="Eliminar"
+        btnSecundario="Cancelar"
+        accionPrimaria={deleteVacancy}
+      />
+
+      <Modal
+        isOpen={showToggleModal}
+        onClose={() => setShowToggleModal(false)}
+        tipo="confirm"
+        titulo={isClosed ? "Abrir vacante" : "Cerrar vacante"}
+        mensaje={`¿Estás seguro que deseas ${
+          isClosed ? "abrir" : "cerrar"
+        } esta vacante?`}
+        btnPrimario={isClosed ? "Abrir" : "Cerrar"}
+        btnSecundario="Cancelar"
+        accionPrimaria={toggleVacancy}
+      />
 
       <ModalEditarVacante
         isOpen={isEditModalOpen}
