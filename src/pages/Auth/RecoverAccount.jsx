@@ -67,11 +67,9 @@ const RecoverAccount = () => {
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
             <div className="p-8 md:p-12 text-black flex flex-col justify-center">
-              <h1 className="text-5xl text-center mb-2 drop-shadow text-[#152d53]">
-                Talent{" "}
-                <span className="text-orange-500 italic font-semibold">
-                  Match
-                </span>
+              <h1 className="font-bold text-5xl text-center mb-2 drop-shadow tracking-wide">
+                <span className="text-[#152d53]">Talent </span>
+                <span className="text-[#F88623] italic">Match</span>
               </h1>
 
               <form className="space-y-4" onSubmit={handleSubmit}>
@@ -103,7 +101,7 @@ const RecoverAccount = () => {
                   <button
                     type="submit"
                     disabled={cargando || isCheckingEmail}
-                    className="inter text-2xl w-1/3 flex items-center justify-center mx-auto bg-[#152d53] hover:bg-[#181f31] text-white font-semilight py-2 rounded-md transition shadow-md shadow-blue-950"
+                    className="inter text-2xl w-1/3 flex items-center justify-center mx-auto bg-[#152d53] hover:bg-[#181f31] text-white font-semilight py-2 rounded-md transition shadow-sm shadow-blue-950"
                   >
                     {isCheckingEmail ? "Enviar" : "Enviar"}
                   </button>
