@@ -5,9 +5,10 @@ import Modal from "../Modals/Modal";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import {customStyles} from "./DashboardsStyles";
+import { customStyles, paginationOptions } from "./DashboardsStyles";
 import flechasIcon from "../../assets/img/TableCandidatosIcon.png";
 import { useAuth } from "../../context/AuthContext";
+
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
     <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -52,9 +53,6 @@ const RecruiterVacancyList = () => {
     }
   };
 
-
-
-  // Efecto para obtener las vacantes al cargar el componente
   useEffect(() => {
     if (idUser?.uid) {
       console.log("🔄 Cambio detectado en RecruiterVacancyList para el UID:", idUser.uid);
@@ -96,7 +94,6 @@ const RecruiterVacancyList = () => {
     setTempFieldValue(newPrioridad);
     setChangePrioridadModal(true);
   };
-
 
   const showSuccessMessage = (message) => {
     setSuccessMessage(message);
@@ -183,15 +180,15 @@ const RecruiterVacancyList = () => {
         <div className="flex justify-center items-center gap-2 p-3">
           <span></span><span className="flex justify-center items-center gap-2">Puesto</span>
         </div>
-
       ),
       cell: (row) => (
         <div className="group relative">
           <Link
             to={`/reclutador/Descriptionvacancy/${row.id}`}
-
             className="text-[#0E1F3B] hover:text-blue-800 hover:underline cursor-pointer font-medium"
-            title={`Ver detalles de la vacante ${row.nombre || row.puesto || "Sin título"}`}
+            title={`Ver detalles de la vacante ${
+              row.nombre || row.puesto || "Sin título"
+            }`}
           >
             {row.nombre || row.puesto || "Sin título"}
           </Link>
@@ -215,7 +212,7 @@ const RecruiterVacancyList = () => {
         let colorClass = "bg-gray-200 text-gray-800";
 
         if (row.modalidad === "remoto") {
-          colorClass = "bg-[#DAB0FA] text-black";
+          colorClass = "bg-[#E9D6FE] text-purple-800";
         } else if (row.modalidad === "presencial") {
           colorClass = "bg-[#FFE3CA] text-black";
         }
@@ -233,16 +230,14 @@ const RecruiterVacancyList = () => {
     {
       name: (
         <div className="flex justify-center items-center gap-2 p-3">
-          <span></span><span className="flex justify-center items-center gap-2">Fecha</span>
-
+          <span></span>
+          <span className="flex justify-center items-center gap-2">Fecha</span>
         </div>
-
       ),
       cell: (row) => (
         <div className="group relative">
           <Link
             to={`/reclutador/Descriptionvacancy/${row.id}`}
-
             className="text-[#0E1F3B] hover:text-blue-800 hover:underline cursor-pointer "
             title={`Ver detalles de la vacante ${row.fecha || "Sin título"}`}
           >

@@ -1,4 +1,3 @@
-// DashboardsStyles.js
 export const customStyles = {
   table: {
     style: {

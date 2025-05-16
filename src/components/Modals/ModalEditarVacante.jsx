@@ -1,229 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import LogoCancelar from '../../assets/img/cancelar.png';
-import axiosConfig from '@/helpers/axios.config';
-import { showToast } from './CustomToaster';
-const opciones = {
-    modalidad: ["presencial", "remoto", "híbrido"],
-    prioridad: ["alta", "media", "baja"],
-    jornada: ["completa", "medio_tiempo"],
-    estado: ["abierta", "cerrada", "pausa"]
-};
+import React, { useState, useEffect } from "react";
+import axiosConfig from "../../helpers/axios.config";
+import { showToast } from "./CustomToaster";
+import { X } from "lucide-react";
+import FormCreateVacancy from "../Forms/FormCreateVacancy";
 
-const ModalEditarVacante = ({ isOpen, onClose, vacancy, refreshVacancies }) => {
-    const [formData, setFormData] = useState({
-        puesto: '',
-        ubicacion: '',
-        modalidad: '',
-        prioridad: '',
-        jornada: '',
-        estado: '',
-        experiencia: '',
-        descripcion: '',
-        responsabilidades: ''
-    });
+const ModalEditarVacante = ({
+  isOpen,
+  onClose,
+  vacancyId,
+  onVacancyUpdated,
+}) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [vacancyData, setVacancyData] = useState(null);
+  const [error, setError] = useState(null);
 
-    const [showCancelModal, setShowCancelModal] = useState(false);
+  useEffect(() => {
+    if (isOpen && vacancyId) {
+      fetchVacancyData();
+    }
+  }, [isOpen, vacancyId]);
 
-    useEffect(() => {
-        if (vacancy) {
-            setFormData({
-                puesto: vacancy.puesto || '',
-                ubicacion: vacancy.ubicacion || '',
-                modalidad: vacancy.modalidad || '',
-                prioridad: vacancy.prioridad || '',
-                jornada: vacancy.jornada || '',
-                estado: vacancy.estado || '',
-                experiencia: vacancy.experiencia || '',
-                descripcion: vacancy.descripcion || '',
-                responsabilidades: vacancy.responsabilidades || ''
-            });
+  const fetchVacancyData = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await axiosConfig.get(`/vacancies/${vacancyId}`);
+      if (response.status === 200) {
+        setVacancyData(response.data);
+      } else {
+        setError("Error al cargar los datos de la vacante");
+        showToast("No se pudo cargar la información de la vacante", "error");
+      }
+    } catch (error) {
+      console.error("Error al obtener vacante:", error);
+      setError(`Error: ${error.message || "Error desconocido"}`);
+      showToast("Error al cargar la vacante", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (updatedVacancy) => {
+    setIsSubmitting(true);
+
+    try {
+      // Cambiado de PUT a PATCH según la especificación del endpoint
+      const response = await axiosConfig.patch(
+        `/vacancies/${vacancyId}`,
+        updatedVacancy
+      );
+
+      if (response.status === 200) {
+        showToast("Vacante actualizada con éxito", "success");
+        if (onVacancyUpdated) {
+          onVacancyUpdated(response.data);
         }
-    }, [vacancy]);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleUpdate = async () => {
-        try {
-            await axiosConfig.patch(`/vacancies/${vacancy.id}`, formData);
-            showToast("Vacante actualizada correctamente", "success");
-            refreshVacancies();
-            onClose();
-        } catch (error) {
-            showToast("Error al actualizar la vacante", "error");
-            console.error(error.message);
-        }
-    };
-
-    const handleCancel = () => {
-        setShowCancelModal(true);
-    };
-
-    const confirmCancel = () => {
-        setShowCancelModal(false);
         onClose();
-    };
+      } else {
+        showToast(
+          `Error al actualizar la vacante: ${response.statusText}`,
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Error al actualizar vacante:", error);
+      showToast(
+        `Error al actualizar la vacante: ${
+          error.message || "Error desconocido"
+        }`,
+        "error"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-    return isOpen ? (
-        <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex justify-center items-start overflow-y-auto z-50">
-            <div className="bg-white p-8 rounded-lg w-full max-w-3xl mt-16 shadow-2xl mb-10">
-                <h2 className="text-2xl font-bold mb-4">Editar Vacante</h2>
-                <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="col-span-1 md:col-span-2">
-                        <label className="mb-1 text-lg font-semibold">Puesto*</label>
-                        <input
-                            type="text"
-                            name="puesto"
-                            value={formData.puesto}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-md p-3 w-full bg-[#F5F2EC]"
-                        />
-                    </div>
-                    <div>
-                        <label className="mb-1 text-lg font-semibold">Ubicación*</label>
-                        <input
-                            type="text"
-                            name="ubicacion"
-                            value={formData.ubicacion}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-md p-3 w-full bg-[#F5F2EC]"
-                        />
-                    </div>
-                    <div>
-                        <label className="mb-1 text-lg font-semibold">Modalidad*</label>
-                        <select
-                            name="modalidad"
-                            value={formData.modalidad}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-md p-3 w-full bg-[#F5F2EC]"
-                        >
-                            {opciones.modalidad.map((mod) => (
-                                <option key={mod} value={mod}>
-                                    {mod}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+  if (!isOpen) return null;
 
-                    <div>
-                        <label className="mb-1 text-lg font-semibold">Prioridad*</label>
-                        <select
-                            name="prioridad"
-                            value={formData.prioridad}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-md p-3 w-full bg-[#F5F2EC]"
-                        >
-                            {opciones.prioridad.map((pri) => (
-                                <option key={pri} value={pri}>
-                                    {pri}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+  return (
+    <>
+      <div className="fixed inset-0 z-50 bg-black/50"></div>
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="p-6 flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-[#00254B]">
+              Editar Vacante
+            </h2>
+            <button
+              onClick={onClose}
+              className="p-1 rounded-full hover:bg-gray-100"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
 
-                    <div>
-                        <label className="mb-1 text-lg font-semibold">Jornada*</label>
-                        <select
-                            name="jornada"
-                            value={formData.jornada}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-md p-3 w-full bg-[#F5F2EC]"
-                        >
-                            {opciones.jornada.map((jor) => (
-                                <option key={jor} value={jor}>
-                                    {jor}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="mb-1 text-lg font-semibold">Estado*</label>
-                        <select
-                            name="estado"
-                            value={formData.estado}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-md p-3 w-full bg-[#F5F2EC]"
-                        >
-                            {opciones.estado.map((est) => (
-                                <option key={est} value={est}>
-                                    {est}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="mb-1 text-lg font-semibold">Experiencia</label>
-                        <input
-                            type="text"
-                            name="experiencia"
-                            value={formData.experiencia}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-md p-3 w-full bg-[#F5F2EC]"
-                        />
-                    </div>
-                    <div className="col-span-1 md:col-span-2">
-                        <label className="mb-1 text-lg font-semibold">Descripción*</label>
-                        <textarea
-                            name="descripcion"
-                            value={formData.descripcion}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-md p-3 w-full bg-[#F5F2EC] h-32"
-                        />
-                    </div>
-                    <div className="col-span-1 md:col-span-2">
-                        <label className="mb-1 text-lg font-semibold">Responsabilidades*</label>
-                        <textarea
-                            name="responsabilidades"
-                            value={formData.responsabilidades}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-md p-3 w-full bg-[#F5F2EC] h-32"
-                        />
-                    </div>
-                </form>
-                <div className="flex justify-end gap-4 mt-6">
-                    <button
-                        onClick={handleCancel}
-                        className="bg-white text-black border border-black px-4 py-2 rounded-md"
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        onClick={handleUpdate}
-                        className="bg-blue-950 text-white px-4 py-2 rounded-md"
-                    >
-                        Guardar Cambios
-                    </button>
-                </div>
-            </div>
-
-            {showCancelModal && (
-                <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-96 text-center flex flex-col items-center">
-                        <div className="text-red-600 text-5xl mb-4 bg-red-400/30 rounded-full p-4"><img src={LogoCancelar} alt="Logo de cancelar" /></div>
-                        <p className="text-lg mb-6">¿Desea descartar los cambios?</p>
-                        <div className="flex justify-around gap-x-5">
-                            <button
-                                onClick={() => setShowCancelModal(false)}
-                                className="border px-4 py-2 rounded-md"
-                            >
-                                Volver
-                            </button>
-                            <button
-                                onClick={confirmCancel}
-                                className="bg-blue-950 text-white px-4 py-2 rounded-md"
-                            >
-                                Descartar
-                            </button>
-                        </div>
-                    </div>
-                </div>
+          <div className="p-6">
+            {isLoading ? (
+              <div className="flex justify-center p-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00254B]"></div>
+              </div>
+            ) : error ? (
+              <div className="text-red-500 p-4 text-center">
+                {error}
+                <button
+                  onClick={fetchVacancyData}
+                  className="block mx-auto mt-4 px-4 py-2 bg-[#00254B] text-white rounded hover:bg-[#001a38]"
+                >
+                  Reintentar
+                </button>
+              </div>
+            ) : (
+              <FormCreateVacancy
+                initialValues={vacancyData}
+                onSubmit={handleSubmit}
+                onCancel={onClose}
+                isSubmitting={isSubmitting}
+              />
             )}
+          </div>
         </div>
-    ) : null;
+      </div>
+    </>
+  );
 };
 
 export default ModalEditarVacante;

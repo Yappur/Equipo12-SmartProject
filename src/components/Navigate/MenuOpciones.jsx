@@ -1,14 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import menuIcon from '@/assets/img/menu-tres-puntos.png';
-import Editar from '@/assets/img/editar2.png';
-import Eliminar from '@/assets/img/eliminar.png';
-import CargarCandidato from '@/assets/img/cargar-candidato.png';
-import CerrarVacante from '@/assets/img/cerrar-vacante.png';
-import axiosConfig from '@/helpers/axios.config';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import menuIcon from "@/assets/img/menu-tres-puntos.png";
+import Editar from "@/assets/img/editar2.png";
+import Eliminar from "@/assets/img/eliminar.png";
+import CargarCandidato from "@/assets/img/cargar-candidato.png";
+import CerrarVacante from "@/assets/img/cerrar-vacante.png";
+import axiosConfig from "@/helpers/axios.config";
+import { showToast } from "../../components/Modals/CustomToaster";
+import ModalEditarVacante from "../Modals/ModalEditarVacante";
 
-export default function MenuOpciones({ onEdit, onDelete, onView, onClose, onLoadCandidate, idVacante,estado }) {
+export default function MenuOpciones({ idVacante, estado }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const [isClosed, setIsClosed] = useState(false);
@@ -20,12 +23,13 @@ export default function MenuOpciones({ onEdit, onDelete, onView, onClose, onLoad
   const handleDelete = async (id) => {
     try {
       const response = await axiosConfig.delete(`/vacancies/${id}`);
-      console.log(`✅ Vacante con ID ${id} eliminada correctamente.`);
-      alert(`La vacante fue eliminada correctamente.`);
+      showToast("La vacante fue eliminada correctamente", "success");
       setIsOpen(false);
+      window.dispatchEvent(new Event("vacancyUpdated"));
+      navigate("/reclutador/vacantes");
     } catch (error) {
       console.error("❌ Error al eliminar la vacante:", error.message);
-      alert("Hubo un error al eliminar la vacante.");
+      showToast("Hubo un error al eliminar la vacante", "error");
     }
   };
 
@@ -33,30 +37,33 @@ export default function MenuOpciones({ onEdit, onDelete, onView, onClose, onLoad
     try {
       const nuevoEstado = isClosed ? "abierta" : "cerrada";
 
-      // 🔄 Actualización del estado en el backend
       const response = await axiosConfig.patch(`/vacancies/${idVacante}`, {
         estado: nuevoEstado,
       });
 
-      console.log(`✅ Vacante actualizada correctamente a ${nuevoEstado}:`, response.data);
+      showToast(
+        `La vacante fue ${isClosed ? "abierta" : "cerrada"} correctamente`,
+        "success"
+      );
 
-      // ✅ Mensaje de éxito
-      alert(`La vacante fue ${isClosed ? "abierta" : "cerrada"} correctamente.`);
-
-      // 🔄 Cambiar el estado local para reflejar el cambio
       setIsClosed(!isClosed);
 
-      // 🔄 Opcional: lanzar un evento global para actualizar la lista
       window.dispatchEvent(new Event("vacancyUpdated"));
-
       setIsOpen(false);
     } catch (error) {
-      console.error("❌ Error al actualizar la vacante:", error.message);
-      alert("Hubo un error al actualizar la vacante.");
+      showToast("Hubo un error al actualizar la vacante", "error");
     }
   };
 
+  const handleVacancyUpdated = (updatedVacancy) => {
+    console.log("Vacante actualizada:", updatedVacancy);
+    window.dispatchEvent(new Event("vacancyUpdated"));
+  };
 
+  const handleOpenEditModal = () => {
+    setIsEditModalOpen(true);
+    setIsOpen(false);
+  };
 
   const handleClickOutside = (e) => {
     if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -65,9 +72,9 @@ export default function MenuOpciones({ onEdit, onDelete, onView, onClose, onLoad
   };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -94,9 +101,13 @@ export default function MenuOpciones({ onEdit, onDelete, onView, onClose, onLoad
           <ul className="py-1">
             <li
               className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => { onEdit(); setIsOpen(false); }}
+              onClick={handleOpenEditModal}
             >
-              <img src={Editar} alt="Editar" className="w-4 h-4 mr-2 object-contain" />
+              <img
+                src={Editar}
+                alt="Editar"
+                className="w-4 h-4 mr-2 object-contain"
+              />
               Editar vacante
             </li>
             <li
@@ -118,20 +129,35 @@ export default function MenuOpciones({ onEdit, onDelete, onView, onClose, onLoad
                 setIsOpen(false);
               }}
             >
-              <img src={CargarCandidato} alt="Cargar" className="w-4 h-4 mr-2 object-contain" />
+              <img
+                src={CargarCandidato}
+                alt="Cargar"
+                className="w-4 h-4 mr-2 object-contain"
+              />
               Cargar candidato
             </li>
             <hr className="my-1 text-gray-200/70" />
             <li
               className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer "
-              onClick={onDelete}
+              onClick={() => handleDelete(idVacante)}
             >
-              <img src={Eliminar} alt="Eliminar" className="w-4 h-4 mr-2 object-contain" />
+              <img
+                src={Eliminar}
+                alt="Eliminar"
+                className="w-4 h-4 mr-2 object-contain"
+              />
               Eliminar vacante
             </li>
           </ul>
         </div>
       )}
+
+      <ModalEditarVacante
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        vacancyId={idVacante}
+        onVacancyUpdated={handleVacancyUpdated}
+      />
     </div>
   );
 }
