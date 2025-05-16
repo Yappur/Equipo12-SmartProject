@@ -22,6 +22,7 @@ import CompleteNavbarLayout from "../components/Navigate/CompleteNavbarLayout";
 import LandingView from "../pages/PublicPages/LandingView";
 import AboutPage from "../pages/PublicPages/AboutPage";
 import DashboardVacancyRecuiter from "../pages/RecruiterPages/DashboardVacancyRecuiter";
+import ViewCreateVacancy from "../pages/RecruiterPages/ViewCreateVacancy";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -54,6 +55,10 @@ const RoutesViews = () => {
                 <RecruiterView />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/reclutador/crear/vacante"
+            element={<ViewCreateVacancy />}
           />
           <Route
             path="/reclutador/candidatos"
