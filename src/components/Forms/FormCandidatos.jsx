@@ -3,9 +3,9 @@ import axiosConfig from "../../helpers/axios.config";
 import { uploadCV } from "../../firebase/Upload/uploadPDF";
 import { useAuth } from "../../context/AuthContext";
 import { ChevronDown } from "lucide-react";
+import { showToast } from "../Modals/CustomToaster";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
-
 
 const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const { idUser } = useAuth();
@@ -26,6 +26,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const [cargando, setCargando] = useState(false);
   const [loadingVacancies, setLoadingVacancies] = useState(false);
   const [loadingCV, setLoadingCV] = useState(false);
+  const [fileError, setFileError] = useState("");
 
 
 
@@ -87,9 +88,36 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     setSelectedVacancyId(e.target.value);
   };
 
+  const validatePdfFile = (file) => {
+    if (!file) return false;
+
+    const fileType = file.type;
+    const fileName = file.name.toLowerCase();
+
+    if (fileType !== "application/pdf") {
+      return false;
+    }
+
+    if (!fileName.endsWith(".pdf")) {
+      return false;
+    }
+
+    return true;
+  };
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
+    setFileError("");
+
     if (!file) return;
+
+    if (!validatePdfFile(file)) {
+      setFileError(
+        "Solo se permiten archivos PDF. Por favor, seleccione un archivo válido."
+      );
+      e.target.value = null;
+      return;
+    }
 
     try {
       setLoadingCV(true);
@@ -244,16 +272,19 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
 
         <div className="col-span-2 mt-5">
           <label className="block text-sm font-semilight mb-1">
-            Importar CV (PDF)<span className="text-red-500">*</span>
+            Importar CV (Solo PDF)<span className="text-red-500">*</span>
           </label>
           <input
             type="file"
-            accept=".pdf"
+            accept="application/pdf, .pdf"
             onChange={handleFileChange}
             className="w-full p-3 bg-[#f5f2ea] rounded border-none"
             disabled={loadingCV}
           />
-          {candidato.cvUrl && (
+          {fileError && (
+            <p className="text-sm text-red-500 mt-1">{fileError}</p>
+          )}
+          {candidato.cvUrl && !fileError && (
             <p className="text-sm text-green-600 mt-1">
               CV subido correctamente ✓
             </p>

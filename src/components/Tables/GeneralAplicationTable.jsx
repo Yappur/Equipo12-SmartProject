@@ -3,7 +3,7 @@ import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import SearchBar from "./SearchBar";
-import customStyles from "./DashboardsStyles";
+import { customStyles, paginationOptions } from "./DashboardsStyles";
 
 const GeneralApplicationsTable = () => {
   const [postulaciones, setPostulaciones] = useState([]);
@@ -178,7 +178,7 @@ const GeneralApplicationsTable = () => {
           columns={columns}
           data={filtrarData}
           pagination
-          highlightOnHover
+          paginationComponentOptions={paginationOptions}
           customStyles={customStyles}
           noDataComponent="No hay postulantes disponibles"
           progressPending={loading}

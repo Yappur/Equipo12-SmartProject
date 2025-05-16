@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
-import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
-import customStyles from "./DashboardsStyles";
+import { FaPlus, FaChevronDown } from "react-icons/fa";
+import { customStyles, paginationOptions } from "./DashboardsStyles";
 import Loader from "../Common/Loader";
 import SearchBar from "./SearchBar";
+import { showToast } from "../Modals/CustomToaster";
+import iconEliminar from "../../assets/img/DesingExports/Eliminar.svg";
 
 const UserTable = () => {
   const [filtrarUsuarios, setFiltrarUsuarios] = useState("");
@@ -14,15 +16,10 @@ const UserTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // MODALES (sin cambios)
+  // MODALES
   const [deleteModal, setDeleteModal] = useState(false);
   const [changeRoleModal, setChangeRoleModal] = useState(false);
-  const [changeStatusModal, setChangeStatusModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [successModal, setSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [newStatus, setNewStatus] = useState("");
   const [newRole, setNewRole] = useState("");
 
   const obtenerUsuarios = async () => {
@@ -32,19 +29,9 @@ const UserTable = () => {
       const response = await axiosConfig.get("/users");
 
       if (response.data && Array.isArray(response.data)) {
-        setUsuarios(
-          response.data.map((user) => ({
-            ...user,
-            estado: user.estado || "Activo",
-          }))
-        );
+        setUsuarios(response.data);
       } else if (response.data && Array.isArray(response.data.users)) {
-        setUsuarios(
-          response.data.users.map((user) => ({
-            ...user,
-            estado: user.estado || "Activo",
-          }))
-        );
+        setUsuarios(response.data.users);
       } else {
         setUsuarios([]);
         setError("No se pudieron cargar los datos correctamente");
@@ -68,25 +55,12 @@ const UserTable = () => {
     setChangeRoleModal(true);
   };
 
-  const openChangeStatusModal = (user, status) => {
-    setSelectedUser(user);
-    setNewStatus(status);
-    setChangeStatusModal(true);
-  };
-
-  const showSuccessMessage = (message) => {
-    setSuccessMessage(message);
-    setSuccessModal(true);
-  };
-
   const handleDelete = async () => {
     try {
       await axiosConfig.delete(`/users/${selectedUser.uid}`);
       obtenerUsuarios();
       setDeleteModal(false);
-      showSuccessMessage(
-        `El usuario ${selectedUser.displayName} ha sido eliminado correctamente`
-      );
+      showToast(`Usuario eliminado exitosamente.`, "success");
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);
     }
@@ -99,32 +73,25 @@ const UserTable = () => {
       });
       obtenerUsuarios();
       setChangeRoleModal(false);
-      showSuccessMessage(
-        `El rol de ${selectedUser.displayName} ha sido actualizado correctamente`
-      );
+      showToast("Tus cambios se guardaron exitosamente.", "success");
     } catch (error) {
       console.error("Error al cambiar el rol del usuario:", error);
-    }
-  };
-
-  const handleChangeStatus = async () => {
-    try {
-      await axiosConfig.patch(`/users/${selectedUser.uid}/status`, {
-        status: newStatus,
-      });
-      obtenerUsuarios();
-      setChangeStatusModal(false);
-      showSuccessMessage(
-        `El estado de ${selectedUser.displayName} ha sido actualizado a ${newStatus} correctamente`
-      );
-    } catch (error) {
-      console.error("Error al cambiar el estado del usuario:", error);
     }
   };
 
   useEffect(() => {
     obtenerUsuarios();
   }, []);
+
+  const formatDate = (timestamp) => {
+    if (!timestamp) return "No disponible";
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+  };
 
   const columns = [
     {
@@ -133,12 +100,43 @@ const UserTable = () => {
       sortable: true,
     },
     {
+      name: "Rol",
+      cell: (row) => {
+        const roles = ["user", "admin"];
+
+        const colorClass =
+          row.role === "user"
+            ? "bg-[#fcffd2] text-gray-800"
+            : "bg-[#d8e9ff] text-gray-800";
+
+        const displayName = {
+          user: "Reclutador",
+          admin: "Supervisor",
+        };
+
+        return (
+          <select
+            value={row.role}
+            onChange={(e) => openChangeRoleModal(row, e.target.value)}
+            className={`text-sm font-medium rounded-4xl px-2 py-1 ${colorClass}`}
+          >
+            {roles.map((role) => (
+              <option key={role} value={role}>
+                {displayName[role]}
+              </option>
+            ))}
+          </select>
+        );
+      },
+      sortable: true,
+    },
+    {
       name: "Email",
       selector: (row) => row.email,
       sortable: true,
     },
     {
-      name: "Número",
+      name: "Teléfono",
       selector: (row) => {
         const telefono = row.phoneNumber;
         const mostrar =
@@ -157,53 +155,20 @@ const UserTable = () => {
       sortable: true,
     },
     {
-      name: "Rol",
-      cell: (row) => {
-        const displayRole = row.role === "admin" ? "Super Admin" : "Reclutador";
+      name: "Fecha",
+      selector: (row) => formatDate(row.createdAt),
+      sortable: true,
+    },
 
-        return (
-          <div
-            className="cursor-pointer hover:text-[#8a9dc0]"
-            onClick={() => {
-              const newRole = row.role === "admin" ? "user" : "admin";
-              openChangeRoleModal(row, newRole);
-            }}
-          >
-            {displayRole} <FaChevronDown className="inline ml-1 text-xs" />
-          </div>
-        );
-      },
-      sortable: true,
-    },
-    {
-      name: "Busqueda",
-      cell: (row) => (
-        <div
-          className={`px-4 py-1 rounded-full text-sm font-medium cursor-pointer ${
-            row.estado === "Activo"
-              ? "bg-[#ffe3ca] text-amber-800"
-              : "bg-[#d8e9ff] text-blue-800"
-          }`}
-          onClick={() =>
-            openChangeStatusModal(
-              row,
-              row.estado === "Activo" ? "Inactivo" : "Activo"
-            )
-          }
-        >
-          {row.estado} <FaChevronDown className="inline ml-1 text-xs" />
-        </div>
-      ),
-      sortable: true,
-    },
     {
       name: "Eliminar",
       cell: (row) => (
-        <div className="flex gap-2 transform hover:scale-135 transition-all duration-400 cursor-pointer">
-          <FaRegTrashAlt
-            size={28}
+        <div className=" mx-7.5 flex justify-center items-center">
+          <img
+            src={iconEliminar}
             onClick={() => openDeleteModal(row)}
-            className="text-gray-600 hover:text-red-500 transition-colors duration-600"
+            className="cursor-pointer transition-transform duration-300 hover:scale-110"
+            alt="Eliminar"
           />
         </div>
       ),
@@ -224,9 +189,9 @@ const UserTable = () => {
   });
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
+    <div className="p-6 rounded-lg">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Lista de Usuarios</h1>
+        <h1 className="text-4xl font-medium text-[#152D53] ">Usuarios</h1>
         <Link
           to={"/admin/crear/usuario"}
           className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
@@ -236,17 +201,17 @@ const UserTable = () => {
         </Link>
       </div>
 
-      <div>
-        <p className="text-gray-500 text-sm mb-3">
-          {filtrarData.length} Usuarios Encontrados
-        </p>
-      </div>
-
       <SearchBar
         value={filtrarUsuarios}
         onChange={setFiltrarUsuarios}
         disabled={loading}
       />
+
+      <div>
+        <p className="text-gray-500 text-sm mb-3">
+          Número de usuarios encontrados: {filtrarData.length}
+        </p>
+      </div>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -267,7 +232,9 @@ const UserTable = () => {
           columns={columns}
           data={filtrarData}
           pagination
-          highlightOnHover
+          pointerOnHover
+          responsive
+          paginationComponentOptions={paginationOptions}
           customStyles={customStyles}
           noDataComponent="No hay usuarios disponibles"
           progressPending={loading}
@@ -295,33 +262,10 @@ const UserTable = () => {
         titulo="Cambiar Rol de Usuario"
         mensaje={`¿Estás seguro de cambiar el rol de ${
           selectedUser?.displayName || ""
-        } a ${newRole === "admin" ? "Super Admin" : "Reclutador"}?`}
-        btnPrimario="Confirmar Cambio"
+        } a ${newRole === "admin" ? "Supervisor" : "Reclutador"}?`}
+        btnPrimario="Si, Confirmar"
         btnSecundario="Cancelar"
         accionPrimaria={handleChangeRole}
-      />
-
-      <Modal
-        isOpen={changeStatusModal}
-        onClose={() => setChangeStatusModal(false)}
-        tipo="confirm"
-        titulo="Cambiar Estado de Usuario"
-        mensaje={`¿Estás seguro de cambiar el estado de ${
-          selectedUser?.displayName || ""
-        } a ${newStatus}?`}
-        btnPrimario="Confirmar Cambio"
-        btnSecundario="Cancelar"
-        accionPrimaria={handleChangeStatus}
-      />
-
-      <Modal
-        isOpen={successModal}
-        onClose={() => setSuccessModal(false)}
-        tipo="success"
-        titulo="El cambio se realizo con exito"
-        mensaje={successMessage}
-        btnPrimario="Aceptar"
-        accionPrimaria={() => setSuccessModal(false)}
       />
     </div>
   );

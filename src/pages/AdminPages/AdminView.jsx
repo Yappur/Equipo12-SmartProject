@@ -40,7 +40,7 @@ const AdminView = () => {
             >
               <img src={modificarUserIcon} alt="Bag" className="ml-8" />
               <p className="sm:text-lg md:text-xl font-medium mt-2 text-center text-black">
-                Modificar Usuario
+                Gestionar Usuarios
               </p>
             </Link>
           </div>

@@ -1,17 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { ChevronDown } from "lucide-react";
 import bagIcon from "../../assets/img/DesingExports/bag.svg";
 import { showToast } from "../../components/Modals/CustomToaster";
 import { useNavigate } from "react-router-dom";
+import { State, City } from "country-state-city";
+import SelectLocation from "../../components/Forms/SelectLocation";
 
 const MIN_DESCRIPTION_LENGTH = 200;
 const MAX_DESCRIPTION_LENGTH = 2000;
+const MAX_PUESTO_LENGTH = 100;
+
 const CreateVacancies = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFirstStep, setIsFirstStep] = useState(true);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const [cityOptions, setCityOptions] = useState([]);
 
   const [vacancy, setVacancy] = useState({
     puesto: "",
@@ -25,6 +30,23 @@ const CreateVacancies = () => {
     responsabilidades: "",
   });
 
+  useEffect(() => {
+    const states = State.getStatesOfCountry("AR");
+    let cities = [];
+
+    states.forEach((state) => {
+      const citiesInState = City.getCitiesOfState("AR", state.isoCode);
+      citiesInState.forEach((city) => {
+        cities.push({
+          value: `${city.name}, ${state.name}`,
+          label: `Argentina, ${city.name}`,
+        });
+      });
+    });
+
+    setCityOptions(cities);
+  }, []);
+
   const getInputClass = (field) => {
     return `w-full px-4 py-2 border rounded-md focus:outline-none ${errors[field]
         ? "border-red-500 focus:border-red-500 bg-red-50"
@@ -33,6 +55,7 @@ const CreateVacancies = () => {
   };
 
   const validationPatterns = {
+    puesto: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,()&+-/]+$/,
     experiencia: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,+()/]+$/,
     ubicacion: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,]+$/,
   };
@@ -44,14 +67,17 @@ const CreateVacancies = () => {
     if (!vacancy.puesto.trim()) {
       formErrors.puesto = "El puesto es requerido";
       isValid = false;
+    } else if (vacancy.puesto.length > MAX_PUESTO_LENGTH) {
+      formErrors.puesto = `El puesto debe tener máximo ${MAX_PUESTO_LENGTH} caracteres`;
+      isValid = false;
+    } else if (!validationPatterns.puesto.test(vacancy.puesto)) {
+      formErrors.puesto =
+        "El puesto contiene caracteres no permitidos. Solo se permiten letras, números, espacios, comas, puntos, paréntesis, &, + y -";
+      isValid = false;
     }
 
-    if (!vacancy.ubicacion.trim()) {
+    if (!vacancy.ubicacion) {
       formErrors.ubicacion = "La ubicación es requerida";
-      isValid = false;
-    } else if (!validationPatterns.ubicacion.test(vacancy.ubicacion)) {
-      formErrors.ubicacion =
-        "La ubicación contiene caracteres no permitidos. Solo se permiten letras, números, espacios, comas y guiones.";
       isValid = false;
     }
 
@@ -112,8 +138,12 @@ const CreateVacancies = () => {
       return;
     }
 
+    if (name === "puesto" && value.length > MAX_PUESTO_LENGTH) {
+      return;
+    }
+
     if (
-      (name === "experiencia" || name === "ubicacion") &&
+      (name === "experiencia" || name === "ubicacion" || name === "puesto") &&
       value.trim() !== ""
     ) {
       const pattern = validationPatterns[name];
@@ -130,6 +160,9 @@ const CreateVacancies = () => {
         } else if (name === "ubicacion") {
           errorMessage =
             "Solo se permiten letras, números, espacios, comas, puntos y guiones";
+        } else if (name === "puesto") {
+          errorMessage =
+            "Solo se permiten letras, números, espacios, comas, puntos, paréntesis, &, + y -";
         }
 
         setErrors((prev) => ({
@@ -145,6 +178,18 @@ const CreateVacancies = () => {
     }
 
     setVacancy({ ...vacancy, [name]: value });
+  };
+
+  const handleCitySelect = (selectedOption) => {
+    if (selectedOption) {
+      setVacancy({ ...vacancy, ubicacion: selectedOption.value });
+      setErrors((prev) => ({
+        ...prev,
+        ubicacion: "",
+      }));
+    } else {
+      setVacancy({ ...vacancy, ubicacion: "" });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -192,6 +237,10 @@ const CreateVacancies = () => {
     }
   };
 
+  const selectedCityOption = cityOptions.find(
+    (option) => option.value === vacancy.ubicacion
+  );
+
   return (
     <>
       <div className="p-8 max-w-4xl mx-auto">
@@ -209,15 +258,21 @@ const CreateVacancies = () => {
               >
                 Puesto<span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                id="puesto"
-                name="puesto"
-                value={vacancy.puesto}
-                onChange={handleInputChange}
-                placeholder="Añadir puesto"
-                className={getInputClass("puesto")}
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  id="puesto"
+                  name="puesto"
+                  value={vacancy.puesto}
+                  onChange={handleInputChange}
+                  placeholder="Añadir puesto"
+                  className={getInputClass("puesto")}
+                  maxLength={MAX_PUESTO_LENGTH}
+                />
+                <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+                  {vacancy.puesto.length}/{MAX_PUESTO_LENGTH}
+                </div>
+              </div>
               {errors.puesto && (
                 <p className="mt-1 text-sm text-red-600">{errors.puesto}</p>
               )}
@@ -232,14 +287,14 @@ const CreateVacancies = () => {
                 >
                   Ubicación<span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <SelectLocation
                   id="ubicacion"
                   name="ubicacion"
-                  value={vacancy.ubicacion}
-                  onChange={handleInputChange}
-                  placeholder="Añadir ubicación"
-                  className={getInputClass("ubicacion")}
+                  options={cityOptions}
+                  value={selectedCityOption}
+                  onChange={handleCitySelect}
+                  placeholder="Selecciona una ciudad en Argentina"
+                  hasError={!!errors.ubicacion}
                 />
                 {errors.ubicacion && (
                   <p className="mt-1 text-sm text-red-600">

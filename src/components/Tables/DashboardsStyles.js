@@ -1,4 +1,4 @@
-const customStyles = {
+export const customStyles = {
   table: {
     style: {
       border: "none",
@@ -14,7 +14,7 @@ const customStyles = {
   headCells: {
     style: {
       color: "#152D53",
-      fontSize: "14px",
+      fontSize: "18px",
       paddingLeft: "16px",
       paddingRight: "16px",
       borderBottom: "none",
@@ -27,9 +27,6 @@ const customStyles = {
       paddingLeft: "16px",
       paddingRight: "16px",
       borderBottom: "none",
-      "&:hover": {
-        backgroundColor: "#f8fafc",
-      },
     },
   },
   pagination: {
@@ -40,5 +37,9 @@ const customStyles = {
   },
 };
 
-// ESTA LÍNEA ES CLAVE PARA RESOLVER TU ERROR
-export default customStyles;
+export const paginationOptions = {
+  rowsPerPageText: "Filas por página:",
+  rangeSeparatorText: "de",
+  selectAllRowsItem: true,
+  selectAllRowsItemText: "Todos",
+};
