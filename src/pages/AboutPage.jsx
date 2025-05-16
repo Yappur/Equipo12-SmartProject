@@ -178,9 +178,8 @@ export default function TalentMatchPage() {
     </div>
   </div>
 </section>
-
-
       <Footer />
+
     </div>
   );
 }
