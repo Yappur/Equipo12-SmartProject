@@ -6,7 +6,6 @@ import UserRegister from "../pages/Auth/UserRegister";
 import AdminView from "../pages/AdminPages/AdminView";
 import VacanciesDashboard from "../pages/AdminPages/VacanciesDashboard";
 import UsersDashboard from "../pages/AdminPages/UsersDashboard";
-import CreateVacancies from "../pages/AdminPages/CreateVacancies";
 import VacanciesGallery from "../pages/PublicPages/VacanciesGallery";
 import VacancyView from "../pages/PublicPages/VacancyView";
 import Perfil from "../pages/UserPages/Perfil";
@@ -23,6 +22,7 @@ import LandingView from "../pages/PublicPages/LandingView";
 import AboutPage from "../pages/PublicPages/AboutPage";
 import DashboardVacancyRecuiter from "../pages/RecruiterPages/DashboardVacancyRecuiter";
 import ViewCreateVacancy from "../pages/RecruiterPages/ViewCreateVacancy";
+import CandidatosDelReclutador from "../components/Tables/CandidatosDelReclutador";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -58,7 +58,11 @@ const RoutesViews = () => {
           />
           <Route
             path="/reclutador/crear/vacante"
-            element={<ViewCreateVacancy />}
+            element={
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
+                <ViewCreateVacancy />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/reclutador/candidatos"
@@ -77,6 +81,14 @@ const RoutesViews = () => {
             }
           />
           <Route
+            path="/reclutador/candidatosPorReclutador"
+            element={
+              <ProtectedRoute allowedRoles={[ "user"]}>
+                <CandidatosDelReclutador />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/reclutador/vacantes"
             element={<DashboardVacancyRecuiter />}
           />
@@ -87,14 +99,6 @@ const RoutesViews = () => {
           <Route
             path="/reclutador/ver/candidatos/:id"
             element={<CandidatosDashboard />}
-          />
-          <Route
-            path="/crear/vacante"
-            element={
-              <ProtectedRoute allowedRoles={["admin", "user"]}>
-                <CreateVacancies />
-              </ProtectedRoute>
-            }
           />
 
           <Route

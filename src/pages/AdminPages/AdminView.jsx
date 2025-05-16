@@ -19,7 +19,7 @@ const AdminView = () => {
             ¡Bienvenido/a {nombre}!
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-center text-gray-500">
-            Super Administrador
+            Supervisor
           </p>
         </section>
 
