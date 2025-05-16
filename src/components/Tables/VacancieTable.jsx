@@ -4,6 +4,7 @@ import axiosConfig from "../../helpers/axios.config";
 
 const VacancieTable = ({ isPublic = false }) => {
   const [vacantes, setVacantes] = useState([]);
+  const [allVacantes, setAllVacantes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [moreAvailable, setMoreAvailable] = useState(true);
   const [page, setPage] = useState(1);
@@ -37,12 +38,15 @@ const VacancieTable = ({ isPublic = false }) => {
 
       if (Object.keys(params).length > 0 || initial) {
         const response = await axiosConfig.get("/vacancies", { params });
+        const responseAll = await axiosConfig.get("/vacancies");
 
         if (initial) {
           setVacantes(response.data);
         } else {
           setVacantes((prev) => [...prev, ...response.data]);
         }
+
+        setAllVacantes(responseAll.data)
 
         // Validar si hay más para cargar
         if (response.data.length < 3) {
@@ -82,7 +86,7 @@ const VacancieTable = ({ isPublic = false }) => {
     setFiltrarVacantes(e.target.value);
   };
 
-  const filtrarData = vacantes.filter((vacancy) => {
+  const filtrarData = filtrarVacantes === '' ? vacantes : allVacantes.filter((vacancy) => {
     const searchTerm = filtrarVacantes.toLowerCase();
     const puesto = (vacancy.puesto || "").toLowerCase();
     const ubicacion = (vacancy.ubicacion || "").toLowerCase();

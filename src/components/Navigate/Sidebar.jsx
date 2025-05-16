@@ -46,8 +46,6 @@ const Sidebar = () => {
           title: "Candidatos",
           icon: Users,
           path: "/reclutador/candidatosPorReclutador",
-        }
-          path: "/reclutador/nuevaTabla",
         },
       ];
     } else {
@@ -141,10 +139,11 @@ const Sidebar = () => {
         <div className="p-6 flex flex-col h-full">
           <div className="mt-10 mb-4">
             <h1 className="font-semibold text-2xl tracking-wide">
-
               <Link to="/" className="flex gap-2">
                 <span className="text-white font-semibold">Talent</span>
-                <span className="text-orange-400 italic font-semibold">Match</span>
+                <span className="text-orange-400 italic font-semibold">
+                  Match
+                </span>
               </Link>
             </h1>
           </div>
