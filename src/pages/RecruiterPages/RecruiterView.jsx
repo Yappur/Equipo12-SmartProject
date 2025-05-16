@@ -5,9 +5,9 @@ import { cambiarTitulo } from "../../hooks/cambiarTitulo";
 import { useEffect } from "react";
 
 const RecruiterView = () => {
-   useEffect(() => {
-        cambiarTitulo("Reclutador");
-      }, []);
+  useEffect(() => {
+    cambiarTitulo("Reclutador");
+  }, []);
   return (
     <div className="flex ">
       <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
@@ -24,7 +24,7 @@ const RecruiterView = () => {
 
         <section className="flex flex-col sm:flex-row gap-6 sm:gap-12 md:gap-16 lg:gap-40 text-gray-500 ">
           <Link
-            to="/crear/vacante"
+            to="/reclutador/crear/vacante"
             className="flex flex-col items-center justify-center gap-2 p-4 sm:p-6 rounded-xl transition-all hover:bg-slate-50 duration-300 transform hover:scale-[1.02]"
           >
             <img src={bagIcon} alt="Bag" className="ml-8" />
