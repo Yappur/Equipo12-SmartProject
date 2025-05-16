@@ -1,8 +1,9 @@
 import React from "react";
 import UserTable from "../../components/Tables/UserTable";
-import Sidebar from "../../components/Navigate/Sidebar";
+import { cambiarTitulo } from "../../hooks/useCambiarTitulo";
 
 const UsersDashboard = () => {
+  cambiarTitulo("PanelUsuarios");
   return (
     <>
       <div className="">
