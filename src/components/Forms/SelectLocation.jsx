@@ -79,7 +79,7 @@ const SelectLocation = ({
         }}
         classNamePrefix="react-select"
         noOptionsMessage={() => "No hay opciones disponibles"}
-        isClearable
+        
       />
     </div>
   );

@@ -240,11 +240,12 @@ const FormCreateVacancy = ({
   );
 
   return (
+<section className="bg-white p-6 rounded-lg shadow-md border border-gray-200 w-[110%]">
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label
           htmlFor="puesto"
-          className={`block text-sm font-medium mb-1 ${
+          className={`block text-sm font-medium mb-1 text-[18px] ${
             errors.puesto ? "text-red-600" : ""
           }`}
         >
@@ -258,12 +259,16 @@ const FormCreateVacancy = ({
             value={vacancy.puesto}
             onChange={handleInputChange}
             placeholder="Añadir puesto"
-            className={getInputClass("puesto")}
+          className={`${getInputClass("puesto")} pr-14 text-[#535353]`}
             maxLength={MAX_PUESTO_LENGTH}
           />
-          <div className="absolute bottom-2 right-2 text-xs text-gray-500">
-            {vacancy.puesto.length}/{MAX_PUESTO_LENGTH}
-          </div>
+         <div className={`absolute bottom-2 right-2 text-xs ${
+        vacancy.puesto.length >= MAX_PUESTO_LENGTH ? 'text-orange-500' : 'text-gray-500'}`}>
+      
+          {vacancy.puesto.length}/{MAX_PUESTO_LENGTH}
+    
+</div>
+
         </div>
         {errors.puesto && (
           <p className="mt-1 text-sm text-red-600">{errors.puesto}</p>
@@ -274,7 +279,7 @@ const FormCreateVacancy = ({
         <div>
           <label
             htmlFor="ubicacion"
-            className={`block text-sm font-medium mb-1 ${
+            className={`block text-sm font-medium mb-1 text-[18px] ${
               errors.ubicacion ? "text-red-600" : ""
             }`}
           >
@@ -287,6 +292,7 @@ const FormCreateVacancy = ({
             value={selectedCityOption}
             onChange={handleCitySelect}
             placeholder="Selecciona una ciudad en Argentina"
+            className={` text-[#535353] appearance-none pr-10`}
             hasError={!!errors.ubicacion}
           />
           {errors.ubicacion && (
@@ -297,7 +303,7 @@ const FormCreateVacancy = ({
         <div>
           <label
             htmlFor="modalidad"
-            className={`block text-sm font-medium mb-1 ${
+            className={`block text-sm font-medium mb-1 text-[18px]${
               errors.modalidad ? "text-red-600" : ""
             }`}
           >
@@ -309,7 +315,7 @@ const FormCreateVacancy = ({
               name="modalidad"
               value={vacancy.modalidad}
               onChange={handleInputChange}
-              className={`${getInputClass("modalidad")} appearance-none pr-10`}
+              className={`${getInputClass("modalidad") }  text-[#535353] appearance-none pr-10`}
             >
               <option value="" disabled hidden>
                 Añadir Modalidad
@@ -332,7 +338,7 @@ const FormCreateVacancy = ({
         <div>
           <label
             htmlFor="prioridad"
-            className={`block text-sm font-medium mb-1 ${
+            className={`block text-sm font-medium mb-1 text-[18px]${
               errors.prioridad ? "text-red-600" : ""
             }`}
           >
@@ -344,7 +350,7 @@ const FormCreateVacancy = ({
               name="prioridad"
               value={vacancy.prioridad}
               onChange={handleInputChange}
-              className={`${getInputClass("prioridad")} appearance-none pr-10`}
+              className={`${getInputClass("prioridad")} text-[#535353] appearance-none pr-10`}
             >
               <option value="" disabled hidden>
                 Añadir Prioridad
@@ -365,7 +371,7 @@ const FormCreateVacancy = ({
         <div>
           <label
             htmlFor="jornada"
-            className={`block text-sm font-medium mb-1 ${
+            className={`block text-sm font-medium mb-1 text-[18px] ${
               errors.jornada ? "text-red-600" : ""
             }`}
           >
@@ -377,9 +383,9 @@ const FormCreateVacancy = ({
               name="jornada"
               value={vacancy.jornada}
               onChange={handleInputChange}
-              className={`${getInputClass("jornada")} appearance-none pr-10`}
+              className={`${getInputClass("jornada")}   text-[#535353] appearance-none pr-10`}
             >
-              <option value="" disabled hidden>
+              <option value="" disabled hidden >
                 Añadir Jornada
               </option>
               <option value="completa">Completa</option>
@@ -399,7 +405,7 @@ const FormCreateVacancy = ({
         <div>
           <label
             htmlFor="experiencia"
-            className={`block text-sm font-medium mb-1 ${
+            className={`block text-sm font-medium mb-1 text-[18px] ${
               errors.experiencia ? "text-red-600" : ""
             }`}
           >
@@ -422,7 +428,7 @@ const FormCreateVacancy = ({
         <div>
           <label
             htmlFor="estado"
-            className={`block text-sm font-medium mb-1 ${
+            className={`block text-sm font-medium mb-1 text-[18px] ${
               errors.estado ? "text-red-600" : ""
             }`}
           >
@@ -434,7 +440,7 @@ const FormCreateVacancy = ({
               name="estado"
               value={vacancy.estado}
               onChange={handleInputChange}
-              className={`${getInputClass("estado")} appearance-none pr-10`}
+              className={`${getInputClass("estado")}  text-[#535353] appearance-none pr-10`}
             >
               <option value="" disabled hidden>
                 Añadir Estado
@@ -456,7 +462,7 @@ const FormCreateVacancy = ({
       <div>
         <label
           htmlFor="descripcion"
-          className={`block text-sm font-medium mb-1 ${
+          className={`block text-sm font-medium mb-1 text-[18px] ${
             errors.descripcion ? "text-red-600" : ""
           }`}
         >
@@ -471,9 +477,12 @@ const FormCreateVacancy = ({
             placeholder="Añadir descripción"
             className={`${getInputClass("descripcion")} min-h-[120px]`}
           />
-          <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+          
+           <div className={`absolute bottom-2 right-2 text-xs ${
+        vacancy.descripcion.length >= MAX_DESCRIPTION_LENGTH ? 'text-orange-500' : 'text-gray-500'}`}>
             {vacancy.descripcion.length}/{MAX_DESCRIPTION_LENGTH}
-          </div>
+        </div>
+            
         </div>
 
         {errors.descripcion && (
@@ -487,7 +496,7 @@ const FormCreateVacancy = ({
       <div>
         <label
           htmlFor="responsabilidades"
-          className={`block text-sm font-medium mb-1 ${
+          className={`block text-sm font-medium mb-1 text-[18px] ${
             errors.responsabilidades ? "text-red-600" : ""
           }`}
         >
@@ -502,7 +511,8 @@ const FormCreateVacancy = ({
             placeholder="Añadir Responsabilidades"
             className={`${getInputClass("responsabilidades")} min-h-[120px]`}
           />
-          <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+           <div className={`absolute bottom-2 right-2 text-xs ${
+        vacancy.responsabilidades.length >= MAX_DESCRIPTION_LENGTH ? 'text-orange-500' : 'text-gray-500'}`}>
             {vacancy.responsabilidades.length}/{MAX_DESCRIPTION_LENGTH}
           </div>
         </div>
@@ -532,6 +542,7 @@ const FormCreateVacancy = ({
         </button>
       </div>
     </form>
+    </section>
   );
 };
 
