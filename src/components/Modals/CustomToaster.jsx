@@ -1,7 +1,39 @@
+import { useEffect, useRef, useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { AlertCircle } from "lucide-react";
+import gsap from "gsap";
 
-const CustomToast = ({ message, type }) => {
+const CustomToast = ({ message, type, t }) => {
+  const toastRef = useRef(null);
+
+  useEffect(() => {
+    if (toastRef.current) {
+      gsap.set(toastRef.current, {
+        opacity: 0,
+        y: -20,
+        scale: 0.95,
+      });
+
+      gsap.to(toastRef.current, {
+        duration: 0.2,
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        ease: "power2.out",
+      });
+    }
+
+    return () => {
+      if (toastRef.current) {
+        gsap.killTweensOf(toastRef.current);
+      }
+    };
+  }, [t]);
+
+  const handleDismiss = () => {
+    animateOut();
+  };
+
   const renderIcon = () => {
     if (type === "success") {
       return (
@@ -24,20 +56,25 @@ const CustomToast = ({ message, type }) => {
   };
 
   return (
-    <div className="flex items-center gap-3">
-      {renderIcon()}
-      <span>{message}</span>
+    <div
+      ref={toastRef}
+      className="mt-22 py-3 px-4 rounded-lg text-center bg-[#152d53] text-white w-full max-w-md flex items-center justify-center"
+      onClick={handleDismiss}
+    >
+      <div className="flex items-center gap-3">
+        {renderIcon()}
+        <span>{message}</span>
+      </div>
     </div>
   );
 };
 
 export const showToast = (message, type = "success") => {
   return toast.custom(
-    <div
-      className={`py-3 px-4 rounded-lg text-center bg-[#152d53] text-white w-full max-w-md flex items-center justify-center`}
-    >
-      <CustomToast message={message} type={type} />
-    </div>
+    (t) => <CustomToast message={message} type={type} t={t} />,
+    {
+      duration: 2500,
+    }
   );
 };
 
@@ -46,7 +83,7 @@ const CustomToaster = () => {
     <Toaster
       position="top-center"
       toastOptions={{
-        duration: 4000,
+        duration: 3000,
         style: {
           background: "transparent",
           boxShadow: "none",
