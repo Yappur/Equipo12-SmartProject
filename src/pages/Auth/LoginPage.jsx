@@ -5,7 +5,7 @@ import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
 import Modal from "../../components/Modals/Modal";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { cambiarTitulo } from "../../hooks/cambiarTitulo";
+import { cambiarTitulo } from "../../hooks/useCambiarTitulo";
 import { showToast } from "../../components/Modals/CustomToaster";
 
 const LoginPage = () => {
