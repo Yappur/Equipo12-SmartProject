@@ -43,6 +43,13 @@ const Sidebar = () => {
           icon: Users,
           path: "/reclutador/candidatosPorReclutador",
         }
+          path: "/reclutador/nuevaTabla",
+        },
+        {
+          title: "Prueba Vacante",
+          icon: User,
+          path: "/reclutador/crear/vacante",
+        },
       ];
     } else {
       return baseItems;

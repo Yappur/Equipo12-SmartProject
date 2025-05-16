@@ -433,6 +433,7 @@ const VacanciesTable = () => {
               pagination
               paginationComponentOptions={paginationOptions}
               pointerOnHover
+              pointerOnHover
               customStyles={customStyles}
               noDataComponent={
                 <div className="p-6 text-center text-gray-500">

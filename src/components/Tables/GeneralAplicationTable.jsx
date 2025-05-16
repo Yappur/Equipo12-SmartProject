@@ -7,7 +7,6 @@ import { customStyles, paginationOptions } from "./DashboardsStyles";
 import IconoCV from "../../assets/img/cvicon.png";
 import PdfModal from "../Modals/PdfModal";
 
-
 const GeneralApplicationsTable = () => {
   const [postulaciones, setPostulaciones] = useState([]);
   const [filtrarPostulaciones, setFiltrarPostulaciones] = useState("");
