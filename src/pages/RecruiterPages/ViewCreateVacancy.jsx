@@ -55,12 +55,7 @@ const ViewCreateVacancy = () => {
             onSubmit={handleSubmit}
             onCancel={handleCancel}
             isSubmitting={isSubmitting}
-            initialValues={{
-              estado: "abierta",
-              modalidad: "remoto",
-              prioridad: "media",
-              jornada: "completa",
-            }}
+            initialValues={{}}
           />
         ) : (
           <div
