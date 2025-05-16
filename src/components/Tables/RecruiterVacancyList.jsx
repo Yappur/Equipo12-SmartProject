@@ -5,11 +5,7 @@ import Modal from "../Modals/Modal";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-<<<<<<< HEAD
 import { customStyles, paginationOptions } from "./DashboardsStyles";
-=======
-import {customStyles} from "./DashboardsStyles";
->>>>>>> 092ec322e9f1a1d16097b7a3d49557dc6b76011e
 import flechasIcon from "../../assets/img/TableCandidatosIcon.png";
 import { useAuth } from "../../context/AuthContext";
 

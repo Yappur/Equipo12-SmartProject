@@ -4,18 +4,13 @@ import SearchBar from "./SearchBar";
 import Modal from "../Modals/Modal";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
-<<<<<<< HEAD
 import { FaPlus } from "react-icons/fa";
 import { customStyles, paginationOptions } from "./DashboardsStyles";
-=======
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import {customStyles} from "./DashboardsStyles";
-import {paginationOptions} from "./DashboardsStyles";
->>>>>>> 092ec322e9f1a1d16097b7a3d49557dc6b76011e
 import ModalEditarVacante from "../Modals/ModalEditarVacante";
 import BotonEditar from "../../assets/img/editar.png";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../Modals/CustomToaster";
+
 
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
@@ -397,7 +392,7 @@ const VacanciesTable = () => {
     <>
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Lista de Vacantes</h1>
+          <h1 className="text-2xl poppins text-[#152D53]">Vacantes</h1>
           <Link
             to={"/crear/vacante"}
             className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
@@ -412,7 +407,7 @@ const VacanciesTable = () => {
         />
         <div>
           <p className="text-gray-500 text-sm mb-3">
-            {vacantes.length} vacantes en totalss
+            {vacantes.length} vacantes en total
           </p>
         </div>
 

@@ -4,11 +4,7 @@ import DataTable from "react-data-table-component";
 import axiosConfig from "../../helpers/axios.config";
 import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
-<<<<<<< HEAD
 import { customStyles, paginationOptions } from "./DashboardsStyles";
-=======
-import {customStyles} from "./DashboardsStyles";
->>>>>>> 092ec322e9f1a1d16097b7a3d49557dc6b76011e
 import cvIcon from "../../assets/img/cvIcon.png";
 
 const ApplicationsTable = () => {

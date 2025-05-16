@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, Link } from "react-router-dom";
 import { Home, Briefcase, Users, User, Menu, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,23 +34,15 @@ const Sidebar = () => {
       return [
         ...baseItems,
         {
-          title: "Mis Vacantes",
+          title: "Vacantes",
           icon: Briefcase,
           path: "/reclutador/vacantes",
         },
         {
           title: "Candidatos",
           icon: Users,
-          path: "/reclutador/nuevaTabla",
-<<<<<<< HEAD
-        },
-        {
-          title: "Prueba Vacante",
-          icon: User,
-          path: "/reclutador/crear/vacante",
-=======
->>>>>>> 092ec322e9f1a1d16097b7a3d49557dc6b76011e
-        },
+          path: "/reclutador/candidatosPorReclutador",
+        }
       ];
     } else {
       return baseItems;
@@ -143,8 +135,11 @@ const Sidebar = () => {
         <div className="p-6 flex flex-col h-full">
           <div className="mt-10 mb-4">
             <h1 className="font-semibold text-2xl tracking-wide">
-              <span className="text-white">Talent </span>
-              <span className="text-orange-400 italic">Match</span>
+
+              <Link to="/" className="flex gap-2">
+                <span className="text-white font-semibold">Talent</span>
+                <span className="text-orange-400 italic font-semibold">Match</span>
+              </Link>
             </h1>
           </div>
 
