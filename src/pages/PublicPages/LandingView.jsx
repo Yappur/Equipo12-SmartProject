@@ -1,8 +1,10 @@
-import { useRef, useLayoutEffect } from "react";
+import { useEffect, useRef, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 import Footer from "../../components/Navigate/Footer";
 import { initAnimationsWithRefs } from "../../helpers/animate";
+import { cambiarTitulo } from "../../hooks/cambiarTitulo";
+
 
 // Images
 import imgMujer from "@/assets/img/mujer-hero.png";
@@ -13,8 +15,13 @@ import imgHerramientas3 from "@/assets/img/herramientas-3.jpg";
 import VacancieTable from "../../components/Tables/VacancieTable";
 import VacancieCards from "../../components/Cards/VacancieCards";
 
+
+
 export default function AnimatedLandingView() {
   const heroTitleRef = useRef(null);
+  useEffect(() => {
+    cambiarTitulo("Landing");
+  }, []);
   const heroDescriptionRef = useRef(null);
   const heroButtonRef = useRef(null);
   const heroImageRef = useRef(null);

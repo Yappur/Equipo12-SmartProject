@@ -9,13 +9,19 @@ import { LuClock5 } from "react-icons/lu";
 import { RiMapPinLine } from "react-icons/ri";
 import { FaRegClipboard, FaArrowRightArrowLeft } from "react-icons/fa6";
 import FormCandidatos from "../../components/Forms/FormCandidatos";
+import { cambiarTitulo } from "../../hooks/cambiarTitulo";
 
 const VacancyView = () => {
+
+
   const [vacante, setVacante] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const { id } = useParams();
+  useEffect(() => {
+  cambiarTitulo("VacanteDetalle");
+}, []);
 
   const obtenerVacante = async () => {
     try {

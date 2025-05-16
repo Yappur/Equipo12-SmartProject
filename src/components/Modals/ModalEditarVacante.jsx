@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
 import LogoCancelar from '../../assets/img/cancelar.png';
 import axiosConfig from '@/helpers/axios.config';
+import { showToast } from './CustomToaster';
 const opciones = {
     modalidad: ["presencial", "remoto", "híbrido"],
     prioridad: ["alta", "media", "baja"],
@@ -49,11 +48,11 @@ const ModalEditarVacante = ({ isOpen, onClose, vacancy, refreshVacancies }) => {
     const handleUpdate = async () => {
         try {
             await axiosConfig.patch(`/vacancies/${vacancy.id}`, formData);
-            toast.success('Vacante actualizada correctamente');
+            showToast("Vacante actualizada correctamente", "success");
             refreshVacancies();
             onClose();
         } catch (error) {
-            toast.error('Error al actualizar la vacante');
+            showToast("Error al actualizar la vacante", "error");
             console.error(error.message);
         }
     };

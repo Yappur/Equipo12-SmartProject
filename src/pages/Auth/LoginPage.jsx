@@ -5,6 +5,7 @@ import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
 import Modal from "../../components/Modals/Modal";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { cambiarTitulo } from "../../hooks/cambiarTitulo";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,9 @@ const LoginPage = () => {
   const [errorModal, setErrorModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+    useEffect(() => {
+        cambiarTitulo("Login");
+      }, []);
 
   useEffect(() => {
     if (error) {

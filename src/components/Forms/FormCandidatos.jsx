@@ -11,7 +11,6 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const { idUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  // 🔍 Leer el query param de la URL
   const queryParams = new URLSearchParams(location.search);
   const vacancyIdFromURL = queryParams.get("vacancyId");
 
@@ -94,17 +93,14 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
 
     try {
       setLoadingCV(true);
-      toast.loading("Subiendo CV...");
       console.log("Subiendo archivo:", file.name);
       const downloadURL = await uploadCV(file);
       console.log("URL de descarga obtenida:", downloadURL);
       setCandidato((prev) => ({ ...prev, cvUrl: downloadURL }));
-      toast.dismiss();
-      toast.success("CV subido correctamente");
+      showToast("CV subido correctamente", "success");
     } catch (error) {
       console.error("Error subiendo CV:", error);
-      toast.dismiss();
-      toast.error("Error al subir el CV. Inténtalo de nuevo.");
+      showToast("Error al subir el CV. Inténtalo de nuevo.", "error");
     } finally {
       setLoadingCV(false);
     }
@@ -114,7 +110,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     e.preventDefault();
 
     if (!candidato.cvUrl) {
-      toast.error("Por favor sube un CV antes de enviar la solicitud");
+      showToast("Por favor sube un CV antes de enviar la solicitud", "error");
       return;
     }
 
@@ -124,7 +120,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       console.log("ID de vacante para enviar:", finalVacancyId);
 
       if (!finalVacancyId) {
-        toast.error("Por favor seleccione una vacante");
+        showToast("Por favor seleccione una vacante", "error");
         setCargando(false);
         return;
       }
@@ -143,7 +139,6 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       console.log("Respuesta:", response.data);
 
       toast.success("Postulacion enviada exitosamente");
-      // ✅ Redirigir a la URL correcta con el ID de la vacante
       navigate(`/reclutador/ver/candidatos/${finalVacancyId}`);
       onClose();
     } catch (error) {
