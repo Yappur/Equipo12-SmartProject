@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { showToast } from "../../components/Modals/CustomToaster";
 import logoLogin from "@/assets/img/mujer-hero.png";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
+import Modal from "../../components/Modals/Modal";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { cambiarTitulo } from "../../hooks/cambiarTitulo";
 
@@ -12,6 +12,10 @@ const LoginPage = () => {
   const { login, error, cargando } = useLoginFirebase();
   const { isAuthenticated, role, updateNombre,updateProfileImage  } = useAuth();
   const navigate = useNavigate();
+
+  const [successModal, setSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
     useEffect(() => {
         cambiarTitulo("Login");
@@ -19,9 +23,15 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (error) {
-      showToast(error, "error");
+      setModalMessage(error);
+      setErrorModal(true);
     }
   }, [error]);
+
+  const showSuccessMessage = (message) => {
+    setModalMessage(message || "Inicio de sesión exitoso");
+    setSuccessModal(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,8 +50,7 @@ const LoginPage = () => {
       updateProfileImage(photoURL);
     } 
 
-      showToast("Inicio de sesión exitoso", "success");
-
+      showSuccessMessage("Inicio de sesión exitoso");
 
       setTimeout(() => {
         if (role === "admin") {
@@ -51,12 +60,20 @@ const LoginPage = () => {
         } else {
           navigate("/");
         }
-      }, 1000);
+      }, 500);
     }
   };
 
   const handleRememberMeChange = (e) => {
     setRememberMe(e.target.checked);
+  };
+
+  const handleCloseSuccessModal = () => {
+    setSuccessModal(false);
+  };
+
+  const handleCloseErrorModal = () => {
+    setErrorModal(false);
   };
 
   return (
@@ -150,6 +167,25 @@ const LoginPage = () => {
             />
           </div>
         </div>
+        <Modal
+          isOpen={successModal}
+          onClose={handleCloseSuccessModal}
+          tipo="success"
+          titulo="Inicio de sesión exitoso"
+          mensaje={modalMessage}
+          btnPrimario="Aceptar"
+          accionPrimaria={handleCloseSuccessModal}
+        />
+
+        <Modal
+          isOpen={errorModal}
+          onClose={handleCloseErrorModal}
+          tipo="error"
+          titulo="Error de autenticación"
+          mensaje={modalMessage}
+          btnPrimario="Entendido"
+          accionPrimaria={handleCloseErrorModal}
+        />
       </div>
     </>
   );
