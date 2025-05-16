@@ -4,7 +4,7 @@ import SearchBar from "./SearchBar";
 import Modal from "../Modals/Modal";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { customStyles, paginationOptions } from "./DashboardsStyles";
 import ModalEditarVacante from "../Modals/ModalEditarVacante";
 import BotonEditar from "../../assets/img/editar.png";
@@ -430,9 +430,8 @@ const VacanciesTable = () => {
               columns={columns}
               data={filtrarData}
               pagination
-              highlightOnHover
-              pointerOnHover
               paginationComponentOptions={paginationOptions}
+              pointerOnHover
               customStyles={customStyles}
               noDataComponent={
                 <div className="p-6 text-center text-gray-500">
