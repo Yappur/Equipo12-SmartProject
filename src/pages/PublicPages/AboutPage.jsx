@@ -5,15 +5,14 @@ import fotoLucas from "@/assets/img/LucasFernandezAbout.png";
 import fotoMariana from "@/assets/img/mariaLopezAbout.png";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 import Footer from "../../components/Navigate/Footer";
-import { cambiarTitulo } from "../../hooks/cambiarTitulo";
+import { cambiarTitulo } from "../../hooks/useCambiarTitulo";
 const Componente = () => {
   return <img src={fotoMujer} alt="Foto de mujer" />;
 };
 
 export default function TalentMatchPage() {
-    useEffect(() => {
-      cambiarTitulo("About");
-    }, []);
+  cambiarTitulo("About");
+
   return (
     <>
       <LandingNavbar />

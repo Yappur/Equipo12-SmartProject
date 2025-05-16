@@ -4,6 +4,7 @@ import bagIcon from "../../assets/img/DesingExports/bag.svg";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import FormCreateVacancy from "../../components/Forms/FormCreateVacancy";
+import { showToast } from "../../components/Modals/CustomToaster";
 
 const ViewCreateVacancy = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,12 +18,12 @@ const ViewCreateVacancy = () => {
       const response = await axiosConfig.post("/vacancies", nuevaVacante);
 
       if (response.status === 200 || response.status === 201) {
-        toast.success("Vacante creada con éxito");
+        showToast("Vacante creada con éxito", "success");
 
         const id = response.data?.id || response.data?._id;
 
         if (id) {
-          navigate(`/reclutador/Descriptionvacancy/${id}`);
+          navigate(`/reclutador/vacantes`);
         } else {
           toast.error("No se pudo redirigir: ID no encontrado en la respuesta");
         }

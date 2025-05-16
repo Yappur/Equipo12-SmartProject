@@ -30,14 +30,9 @@ const traducirFirebaseError = (errorCode) => {
 export const useLoginFirebase = () => {
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(false);
-const {
-  setIsAuthenticated,
-  setRole,
-  setNombre,
-  setProfileImg,
-  setIdUser,
-} = useAuth(); 
- const navigate = useNavigate();
+  const { setIsAuthenticated, setRole, setNombre, setProfileImg, setIdUser } =
+    useAuth();
+  const navigate = useNavigate();
 
   const login = async ({ email, password, rememberMe = false }) => {
     setCargando(true);
@@ -53,20 +48,22 @@ const {
       const user = userCredential.user;
       const idToken = await user.getIdToken();
 
-
       if (rememberMe) {
-        // Guardar en LocalStorage
         localStorage.setItem("authToken", idToken);
         sessionStorage.removeItem("authToken");
       } else {
-        // Guardar en SessionStorage
         sessionStorage.setItem("authToken", idToken);
-        // Backup temporal en LocalStorage
         localStorage.setItem("authToken", idToken);
       }
 
-      console.log("📝 Token guardado en LocalStorage:", localStorage.getItem("authToken"));
-      console.log("📝 Token guardado en SessionStorage:", sessionStorage.getItem("authToken"));
+      console.log(
+        "📝 Token guardado en LocalStorage:",
+        localStorage.getItem("authToken")
+      );
+      console.log(
+        "📝 Token guardado en SessionStorage:",
+        sessionStorage.getItem("authToken")
+      );
 
       const { data } = await axiosConfig.post("/auth/verify-token", {
         idToken,
@@ -74,10 +71,8 @@ const {
 
       const imagen = await axiosConfig.get(`/users/${data.uid}`);
       if (imagen.data && imagen.data.photoURL) {
-        console.log("Imagen de usuario:", imagen.data.photoURL);
         data.photoURL = imagen.data.photoURL;
       }
-      
 
       console.log("Respuesta backend:", data);
 
@@ -88,12 +83,11 @@ const {
         id: data.uid || data.id,
         uid: data.uid,
         role: data.role,
-        timestamp: Date.now(), // Agregamos un timestamp para forzar el cambio
+        timestamp: Date.now(),
       });
       setProfileImg(data.photoURL || data.photoUrl || null);
       return data;
     } catch (err) {
-      console.error("Error de login:", err.code, err.message);
       const mensajeError = traducirFirebaseError(err.code || "unknown-error");
       setError(mensajeError);
 
@@ -103,25 +97,20 @@ const {
     }
   };
 
-const logout = () => {
-  // 🔄 Limpiar LocalStorage y SessionStorage
-  localStorage.removeItem("authToken");
-  sessionStorage.removeItem("authToken");
+  const logout = () => {
+    localStorage.removeItem("authToken");
+    sessionStorage.removeItem("authToken");
 
-  // 🔄 Limpiar el contexto de autenticación
-  setIsAuthenticated(false);
-  setRole(null);
-  setProfileImg(null);
-  setNombre(null);
-  setIdUser(null);
+    setIsAuthenticated(false);
+    setRole(null);
+    setProfileImg(null);
+    setNombre(null);
+    setIdUser(null);
 
-  // 🔄 Emitimos un evento global para que otros componentes se actualicen
-  window.dispatchEvent(new Event("userChanged"));
+    window.dispatchEvent(new Event("userChanged"));
 
-  // 🔄 Redirigir al login
-  navigate("/login");
-};
-
+    navigate("/");
+  };
 
   return { login, logout, error, cargando };
 };

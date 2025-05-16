@@ -5,8 +5,10 @@ import Modal from "../../components/Modals/Modal";
 import { usePasswordReset } from "@/hooks/usePasswordReset";
 import axiosConfig from "../../helpers/axios.config";
 import { showToast } from "../../components/Modals/CustomToaster";
+import cambiarTitulo from "../../hooks/useCambiarTitulo";
 
 const RecoverAccount = () => {
+  cambiarTitulo("RecuperarCuenta");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const [errorModal, setErrorModal] = useState(false);

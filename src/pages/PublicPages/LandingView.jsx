@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 import Footer from "../../components/Navigate/Footer";
 import { initAnimations } from "../../helpers/animate";
-import { cambiarTitulo } from "../../hooks/cambiarTitulo";
+import { cambiarTitulo } from "../../hooks/useCambiarTitulo";
 
 // Images
 import imgMujer from "@/assets/img/mujer-hero.png";
