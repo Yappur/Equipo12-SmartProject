@@ -11,9 +11,7 @@ import BotonEditar from "../../assets/img/editar.png";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../Modals/CustomToaster";
 import PdfModal from "../Modals/PdfModal";
-import IconoCV from "../../assets/img/cvicon.png";
-
-
+import IconoCV from "@/assets/img/cvIcon.png";
 
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
@@ -45,34 +43,29 @@ const CandidatosDelReclutador = () => {
   const [showModal, setShowModal] = useState(false);
   const { idUser } = useAuth();
 
+  const obtenerAplicacionesDelReclutador = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-const obtenerAplicacionesDelReclutador = async () => {
-  try {
-    setLoading(true);
-    setError(null);
-
-    // 🔄 Endpoint actualizado al de la imagen
-    const response = await axiosConfig.get(
-      `/applications/${idUser?.uid}`,
-      {
+      // 🔄 Endpoint actualizado al de la imagen
+      const response = await axiosConfig.get(`/applications/${idUser?.uid}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      }
-    );
+      });
 
-    // 🔄 Asignar los datos obtenidos al estado
-    setVacantes(response.data);
-    console.log("✅ Aplicaciones obtenidas: ", response.data);
-
-  } catch (error) {
-    console.error("❌ Error al cargar las aplicaciones:", error.message);
-    setError(`Error al cargar las aplicaciones: ${error.message}`);
-    setVacantes([]);
-  } finally {
-    setLoading(false);
-  }
-};
+      // 🔄 Asignar los datos obtenidos al estado
+      setVacantes(response.data);
+      console.log("✅ Aplicaciones obtenidas: ", response.data);
+    } catch (error) {
+      console.error("❌ Error al cargar las aplicaciones:", error.message);
+      setError(`Error al cargar las aplicaciones: ${error.message}`);
+      setVacantes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Efecto para obtener las vacantes al cargar el componente
   useEffect(() => {
@@ -86,27 +79,26 @@ const obtenerAplicacionesDelReclutador = async () => {
     }
   }, [idUser?.timestamp]);
 
-
   const cambiarEstado = async (application, nuevoEstado) => {
-  try {
-    setLoading(true);
-    await axiosConfig.patch(`/applications/${application.id}/status`, {
-      status: nuevoEstado,
-    });
-    // Actualizamos el estado localmente
-    setVacantes((prev) =>
-      prev.map((item) =>
-        item.id === application.id ? { ...item, status: nuevoEstado } : item
-      )
-    );
-    showToast("Estado actualizado correctamente", "success");
-  } catch (error) {
-    console.error("❌ Error al actualizar el estado:", error.message);
-    showToast("Error al actualizar el estado", "error");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      await axiosConfig.patch(`/applications/${application.id}/status`, {
+        status: nuevoEstado,
+      });
+      // Actualizamos el estado localmente
+      setVacantes((prev) =>
+        prev.map((item) =>
+          item.id === application.id ? { ...item, status: nuevoEstado } : item
+        )
+      );
+      showToast("Estado actualizado correctamente", "success");
+    } catch (error) {
+      console.error("❌ Error al actualizar el estado:", error.message);
+      showToast("Error al actualizar el estado", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const refreshVacantes = () => {
     obtenerVacantes();
@@ -124,8 +116,6 @@ const obtenerAplicacionesDelReclutador = async () => {
     setChangeStatusModal(true);
   };
 
-
-
   const handleViewCV = (cvUrl) => {
     setSelectedCV(cvUrl);
     setShowModal(true);
@@ -140,8 +130,6 @@ const obtenerAplicacionesDelReclutador = async () => {
     setSuccessMessage(message);
     setSuccessModal(true);
   };
-
-
 
   const handleVacancyUpdated = (updatedVacancy) => {
     showToast("Vacante actualizada con éxito", "success");
@@ -192,93 +180,96 @@ const obtenerAplicacionesDelReclutador = async () => {
     }
   };
 
+  const columns = [
+    {
+      name: "Nombre",
+      selector: (row) => row.fullName || "No especificado",
+      sortable: true,
+    },
+    {
+      name: "Vacante",
+      cell: (row) => {
+        console.log("Verificando row: ", row);
 
+        // Si vacancyId es undefined o null, muestra un aviso y no permite click
+        const vacancyId = row.vacancyId ?? "not-found";
+        const linkClass =
+          vacancyId === "not-found" ? "pointer-events-none text-gray-400" : "";
 
+        return (
+          <div className="group relative">
+            <a
+              href={`/reclutador/Descriptionvacancy/${vacancyId}`}
+              className={`text-black hover:underline cursor-pointer font-medium ${linkClass}`}
+              title={
+                vacancyId !== "not-found"
+                  ? `Ver dashboard de ${row.job_posicion || "Sin título"}`
+                  : "ID no encontrado"
+              }
+            >
+              {row.job_posicion || "Sin título"}
+            </a>
+          </div>
+        );
+      },
+      sortable: true,
+    },
+    {
+      name: "Fecha",
+      selector: (row) => row.date || "Sin fecha",
+      sortable: true,
+    },
+    {
+      name: "Estado",
+      cell: (row) => {
+        const estados = [
+          "Recibido",
+          "En revisión",
+          "Entrevista",
+          "Finalista",
+          "Descartado",
+        ];
 
-const columns = [
-  {
-    name: "Nombre",
-    selector: (row) => row.fullName || "No especificado",
-    sortable: true,
-  },
-{
-  name: "Vacante",
-  cell: (row) => {
-    console.log("Verificando row: ", row);
+        let colorClass = "bg-[#FCFFD2] text-black";
+        if (row.status === "Entrevista") colorClass = "bg-[#D8E9FF] text-black";
+        if (row.status === "Finalista") colorClass = "bg-[#A9EDC8] text-black";
+        if (row.status === "Descartado") colorClass = "bg-[#FBAAB2] text-black";
+        if (row.status === "En revisión")
+          colorClass = "bg-[#ECE8DC] text-black";
 
-    // Si vacancyId es undefined o null, muestra un aviso y no permite click
-    const vacancyId = row.vacancyId ?? "not-found";
-    const linkClass = vacancyId === "not-found" ? "pointer-events-none text-gray-400" : "";
-
-    return (
-      <div className="group relative">
+        return (
+          <select
+            value={row.status}
+            onChange={(e) => cambiarEstado(row, e.target.value)}
+            className={`text-[14px] border border-gray-300 rounded-full px-2 py-1 ${colorClass}`}
+          >
+            {estados.map((estado) => (
+              <option key={estado} value={estado}>
+                {estado}
+              </option>
+            ))}
+          </select>
+        );
+      },
+      sortable: true,
+    },
+    {
+      name: "Contacto",
+      cell: (row) => (
         <a
-          href={`/reclutador/Descriptionvacancy/${vacancyId}`}
-          className={`text-black hover:underline cursor-pointer font-medium ${linkClass}`}
-          title={
-            vacancyId !== "not-found"
-              ? `Ver dashboard de ${row.job_posicion || "Sin título"}`
-              : "ID no encontrado"
-          }
+          href={`https://wa.me/${row.phone}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-black hover:text-green-700 font-medium underline"
         >
-          {row.job_posicion || "Sin título"}
+          {row.phone}
         </a>
-      </div>
-    );
-  },
-  sortable: true,
-}
-,
-  {
-    name: "Fecha",
-    selector: (row) => row.date || "Sin fecha",
-    sortable: true,
-  },
-{
-  name: "Estado",
-  cell: (row) => {
-    const estados = ["Recibido", "En revisión", "Entrevista", "Finalista", "Descartado"];
-    
-    let colorClass = "bg-[#FCFFD2] text-black";
-    if (row.status === "Entrevista") colorClass = "bg-[#D8E9FF] text-black";
-    if (row.status === "Finalista") colorClass = "bg-[#A9EDC8] text-black";
-    if (row.status === "Descartado") colorClass = "bg-[#FBAAB2] text-black";
-    if (row.status === "En revisión") colorClass = "bg-[#ECE8DC] text-black";
-
-    return (
-      <select
-        value={row.status}
-        onChange={(e) => cambiarEstado(row, e.target.value)}
-        className={`text-[14px] border border-gray-300 rounded-full px-2 py-1 ${colorClass}`}
-      >
-        {estados.map((estado) => (
-          <option key={estado} value={estado}>
-            {estado}
-          </option>
-        ))}
-      </select>
-    );
-  },
-  sortable: true,
-},
-  {
-    name: "Contacto",
-    cell: (row) => (
-      <a
-        href={`https://wa.me/${row.phone}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-black hover:text-green-700 font-medium underline"
-      >
-        {row.phone}
-      </a>
-    ),
-    sortable: false,
-  },
-{
+      ),
+      sortable: false,
+    },
+    {
       name: "CV",
       cell: (row) => (
-
         <button
           onClick={() => handleViewCV(row.cvUrl)}
           className="text-blue-600 underline hover:text-blue-800 flex items-center cursor-pointer"
@@ -287,30 +278,31 @@ const columns = [
         </button>
       ),
     },
-];
+  ];
 
-const normalizeText = (text) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const normalizeText = (text) =>
+    text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
 
+  const filtrarData = vacantes.filter((vacancy) => {
+    const searchTerm = normalizeText(filtrarVacantes);
 
-const filtrarData = vacantes.filter((vacancy) => {
-  const searchTerm = normalizeText(filtrarVacantes);
+    const nombre = normalizeText(vacancy.fullName || "");
+    const vacante = normalizeText(vacancy.job_posicion || "");
+    const fecha = normalizeText(vacancy.date || "");
+    const estado = normalizeText(vacancy.status || "");
+    const telefono = normalizeText(vacancy.phone || "");
 
-  const nombre = normalizeText(vacancy.fullName || "");
-  const vacante = normalizeText(vacancy.job_posicion || "");
-  const fecha = normalizeText(vacancy.date || "");
-  const estado = normalizeText(vacancy.status || "");
-  const telefono = normalizeText(vacancy.phone || "");
-
-  return (
-    nombre.includes(searchTerm) ||
-    vacante.includes(searchTerm) ||
-    fecha.includes(searchTerm) ||
-    estado.includes(searchTerm) ||
-    telefono.includes(searchTerm)
-  );
-});
-
-
+    return (
+      nombre.includes(searchTerm) ||
+      vacante.includes(searchTerm) ||
+      fecha.includes(searchTerm) ||
+      estado.includes(searchTerm) ||
+      telefono.includes(searchTerm)
+    );
+  });
 
   return (
     <>
@@ -380,16 +372,16 @@ const filtrarData = vacantes.filter((vacancy) => {
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
       />
-       {showModal && (
-          <>
-            <div className="fixed inset-0 z-40 bg-black/50"></div>
-            <div className="fixed inset-0 flex justify-center items-center z-50">
-              <div className="bg-white rounded-lg p-4 w-11/12 h-5/6 max-w-4xl relative flex flex-col">
-                <PdfModal cvUrl={selectedCV} onClose={handleCloseModal} />
-              </div>
+      {showModal && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/50"></div>
+          <div className="fixed inset-0 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg p-4 w-11/12 h-5/6 max-w-4xl relative flex flex-col">
+              <PdfModal cvUrl={selectedCV} onClose={handleCloseModal} />
             </div>
-          </>
-        )}
+          </div>
+        </>
+      )}
     </>
   );
 };
