@@ -25,15 +25,21 @@ const VacancyGallery = () => {
             de lo que piensas
           </h1>
 
-          <div className="mt-8 md:px-10 mb-10">
-            <h3 className="text-2xl font-semibold text-[#F88623] mb-4">
+          <div className="max-w-5xl mx-auto mt-12">
+            <h3 className="text-lg md:text-3xl font-medium  text-[#F88623] mb-4">
               Vacantes disponibles
             </h3>
-            <p className="text-black mb-6">
+            <p className="mb-6">
               Realiza la búsqueda en nuestra bolsa de trabajo actual.
             </p>
-            <VacancieTable className="hidden lg:block" />
-            <VacancieCards className="" />
+          </div>
+          <div>
+            <div className="hidden md:block">
+              <VacancieTable isPublic />
+            </div>
+            <div className="block md:hidden">
+              <VacancieCards />
+            </div>
           </div>
         </section>
       </div>
