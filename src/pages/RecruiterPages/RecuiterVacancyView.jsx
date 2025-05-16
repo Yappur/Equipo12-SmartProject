@@ -8,7 +8,6 @@ import { FaRegClipboard, FaArrowRightArrowLeft } from "react-icons/fa6";
 import MenuOpciones from "../../components/Navigate/MenuOpciones";
 import ModalEditarVacante from "../../components/Modals/ModalEditarVacante";
 
-
 const isAuthenticated = true;
 
 const RecuiterVacancyView = () => {
@@ -50,7 +49,9 @@ const RecuiterVacancyView = () => {
   };
 
   const eliminarVacante = async () => {
-    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar esta vacante?");
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de que deseas eliminar esta vacante?"
+    );
     if (!confirmDelete) return;
 
     try {
@@ -70,10 +71,7 @@ const RecuiterVacancyView = () => {
     }
   };
 
-
   useEffect(() => {
-
-
     obtenerVacante();
   }, [id]);
 
@@ -112,7 +110,8 @@ const RecuiterVacancyView = () => {
               key={item.title}
               to={item.path}
               className={({ isActive }) =>
-                `pb-2 relative font-semibold transition-colors duration-200 ${isActive ? "text-black" : "text-black hover:text-[#535353]"
+                `pb-2 relative font-semibold transition-colors duration-200 ${
+                  isActive ? "text-black" : "text-black hover:text-[#535353]"
                 }`
               }
             >
@@ -187,7 +186,6 @@ const RecuiterVacancyView = () => {
         vacancy={selectedVacancy}
         refreshVacancies={() => obtenerVacante()}
       />
-
     </div>
   );
 };

@@ -116,13 +116,6 @@ const VacancieTable = ({ isPublic = false }) => {
               onChange={handleFiltrarChange}
               placeholder="- Ingresar palabra clave -"
             />
-            <button
-              className="text-center bg-[#F88623] hover:bg-orange-500 font-semibold text-white rounded-xl px-10 py-2 relative"
-              style={{ transform: "scale(0.9)", right: "-5px" }}
-              onClick={() => obtenerVacantes(true)}
-            >
-              Buscar
-            </button>
           </div>
         </div>
 
@@ -131,7 +124,7 @@ const VacancieTable = ({ isPublic = false }) => {
           <thead>
             <tr className="text-left text-lg border-b border-gray-300">
               <th className="py-3 px-6 font-medium">Vacante</th>
-              <th className="py-3 px-6 font-medium">Descripción</th>
+              <th className="py-3 px-6 font-medium">Experiencia</th>
               <th className="py-3 px-6 font-medium">Fecha</th>
               <th className="py-3 px-6 font-medium">Ubicación</th>
               <th className="py-3 px-6 font-medium">Modalidad</th>
@@ -159,7 +152,7 @@ const VacancieTable = ({ isPublic = false }) => {
                     )}
                   </td>
                   <td className="py-3 px-6 max-w-xs truncate">
-                    {vacante.descripcion || (
+                    {vacante.experiencia || (
                       <span className="text-gray-400 italic">
                         Sin descripción
                       </span>

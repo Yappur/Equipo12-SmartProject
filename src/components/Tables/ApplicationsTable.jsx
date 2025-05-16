@@ -239,28 +239,7 @@ const ApplicationsTable = () => {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-blue-50 p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-blue-800">Total</h3>
-            <p className="text-2xl font-bold">{postulaciones.length}</p>
-          </div>
-          <div className="bg-yellow-50 p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-yellow-800">Recibidos</h3>
-            <p className="text-2xl font-bold">{totalRecibidos}</p>
-          </div>
-          <div className="bg-green-50 p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-green-800">
-              En revisión
-            </h3>
-            <p className="text-2xl font-bold">{totalEnRevision}</p>
-          </div>
-          <div className="bg-red-50 p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-red-800">Descartados</h3>
-            <p className="text-2xl font-bold">{totalDescartados}</p>
-          </div>
-        </div>
-
+      <div className=" rounded-lg p-4">
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={handleOpenAnalysisModal}
@@ -342,7 +321,6 @@ const ApplicationsTable = () => {
           }
         />
 
-        {/* Modal para ver el CV */}
         {showModal && (
           <>
             <div className="fixed inset-0 z-40 bg-black/50"></div>

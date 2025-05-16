@@ -30,7 +30,7 @@ const VacancieCards = ({ isPublic = false }) => {
         modalidad: modalidad,
         ubicacion: ubicacion,
         prioridad: prioridad,
-        limit: 6, // Límite por página
+        limit: 6,
         page: initial ? 1 : page,
       };
 
@@ -43,7 +43,7 @@ const VacancieCards = ({ isPublic = false }) => {
 
         if (initial) {
           setVacantes(response.data);
-          setPage(1); // Resetear página al hacer búsqueda inicial
+          setPage(1);
         } else {
           setVacantes((prev) => [...prev, ...response.data]);
         }
@@ -73,49 +73,16 @@ const VacancieCards = ({ isPublic = false }) => {
     }
   }, [page]);
 
-  useEffect(() => {
-    const obtenerUbicaciones = async () => {
-      try {
-        const response = await axiosConfig.get("/vacancies", {
-          params: { limit: 1000, page: 1 },
-        });
-
-        const ubicacionesUnicas = [
-          ...new Set(response.data.map((vacante) => vacante.ubicacion)),
-        ];
-
-        setUbicaciones(ubicacionesUnicas);
-      } catch (error) {
-        console.error("Error al cargar ubicaciones:", error.message);
-      }
-    };
-
-    obtenerUbicaciones();
-    obtenerVacantes(true);
-  }, []);
-
   const handleVerVacante = (id) => {
     navigate(`/ver/vacante/${id}`);
   };
 
-  const limpiarFiltros = () => {
-    setBusqueda("");
-    setModalidad("");
-    setUbicacion("");
-    setEstado("");
-    setPrioridad("");
-    setFiltrarVacantes(""); // Limpiamos también el filtro local
-    obtenerVacantes(true);
-  };
-
-  // Manejador para el filtro local
   const handleFiltrarChange = (e) => {
     setFiltrarVacantes(e.target.value);
   };
 
-  // Filtrado de vacantes usando toLowerCase (como en VacancieTable)
   const filtrarData = vacantes.filter((vacancy) => {
-    if (!filtrarVacantes) return true; // Si no hay filtro, mostrar todas
+    if (!filtrarVacantes) return true;
 
     const searchTerm = filtrarVacantes.toLowerCase();
     const nombre = (vacancy.nombre || "").toLowerCase();
@@ -166,71 +133,6 @@ const VacancieCards = ({ isPublic = false }) => {
             onChange={(e) => setBusqueda(e.target.value)}
             placeholder="Buscar en servidor"
           />
-          <button
-            className={`text-center bg-orange-400 hover:bg-orange-500 text-white rounded-md px-6 py-2 ${
-              busqueda ? "bg-orange-500" : ""
-            }`}
-            onClick={() => obtenerVacantes(true)}
-          >
-            Buscar
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-          <select
-            className="border rounded-md px-4 py-2 w-full bg-white hover:border-orange-500"
-            value={modalidad}
-            onChange={(e) => setModalidad(e.target.value)}
-          >
-            <option value="">Modalidad</option>
-            <option value="presencial">Presencial</option>
-            <option value="remoto">Remoto</option>
-            <option value="híbrido">Híbrido</option>
-          </select>
-
-          <select
-            className="border rounded-md px-4 py-2 w-full bg-white hover:border-orange-500"
-            value={ubicacion}
-            onChange={(e) => setUbicacion(e.target.value)}
-          >
-            <option value="">Ubicación</option>
-            {ubicaciones.map((ubic, index) => (
-              <option key={index} value={ubic}>
-                {ubic}
-              </option>
-            ))}
-          </select>
-
-          <select
-            className="border rounded-md px-4 py-2 w-full bg-white hover:border-orange-500"
-            value={estado}
-            onChange={(e) => setEstado(e.target.value)}
-          >
-            <option value="">Estado</option>
-            <option value="activo">Activo</option>
-            <option value="pausado">Pausado</option>
-            <option value="borrador">Borrador</option>
-            <option value="terminado">Terminado</option>
-            <option value="cancelado">Cancelado</option>
-          </select>
-
-          <select
-            className="border rounded-md px-4 py-2 w-full bg-white hover:border-orange-500"
-            value={prioridad}
-            onChange={(e) => setPrioridad(e.target.value)}
-          >
-            <option value="">Prioridad</option>
-            <option value="alta">Alta</option>
-            <option value="media">Media</option>
-            <option value="baja">Baja</option>
-          </select>
-
-          <button
-            className="bg-gray-400 hover:bg-gray-500 text-white rounded-md px-6 py-2 flex items-center justify-center"
-            onClick={limpiarFiltros}
-          >
-            Limpiar
-          </button>
         </div>
       </div>
 
@@ -246,7 +148,7 @@ const VacancieCards = ({ isPublic = false }) => {
             >
               <div className="mb-4">
                 <h3 className="text-xl font-bold text-[#F88623] mb-3">
-                  {vacante.nombre ? vacante.nombre : "Vacante sin título"}
+                  {vacante.nombre || vacante.puesto || "Vacante sin título"}
                 </h3>
 
                 <div className="text-gray-700">
