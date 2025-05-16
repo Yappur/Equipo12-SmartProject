@@ -60,7 +60,7 @@ export default function AdminNavbar() {
   return (
     <header className="w-full bg-white shadow-sm border-b border-gray-200 px-4 py-6 flex justify-between items-center sticky top-0 z-20">
       <h2 className="text-sm sm:text-base text-[#00254B] font-medium">
-        Panel {role === "admin" ? "Super Administrador" : "de Recursos Humanos"}
+        Panel {role === "admin" ? "Supervisor" : "de Recursos Humanos"}
       </h2>
 
       <div className="flex items-center gap-3 sm:gap-4" ref={dropdownRef}>

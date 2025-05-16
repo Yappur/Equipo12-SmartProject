@@ -430,7 +430,7 @@ const VacanciesTable = () => {
               columns={columns}
               data={filtrarData}
               pagination
-              highlightOnHover
+              paginationComponentOptions={paginationOptions}
               pointerOnHover
               paginationComponentOptions={paginationOptions}
               customStyles={customStyles}
