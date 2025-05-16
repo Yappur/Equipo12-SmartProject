@@ -47,9 +47,6 @@ const Sidebar = () => {
           icon: Users,
           path: "/reclutador/candidatosPorReclutador",
         },
-        {
-          path: "/reclutador/nuevaTabla",
-        },
       ];
     } else {
       return baseItems;
