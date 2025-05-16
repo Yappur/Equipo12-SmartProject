@@ -9,6 +9,7 @@ import { customStyles, paginationOptions } from "./DashboardsStyles";
 import ModalEditarVacante from "../Modals/ModalEditarVacante";
 import BotonEditar from "../../assets/img/editar.png";
 import { useAuth } from "../../context/AuthContext";
+import { showToast } from "../Modals/CustomToaster";
 
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
@@ -30,11 +31,6 @@ const VacanciesTable = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [changePrioridadModal, setChangePrioridadModal] = useState(false);
   const [changeStatusModal, setChangeStatusModal] = useState(false);
-  const [busqueda, setBusqueda] = useState("");
-  const [modalidad, setModalidad] = useState("");
-  const [ubicacion, setUbicacion] = useState("");
-  const [estado, setEstado] = useState("");
-  const [prioridad, setPrioridad] = useState("");
   const [ubicaciones, setUbicaciones] = useState([]);
   const [tempFieldValue, setTempFieldValue] = useState("");
   const [tempFieldName, setTempFieldName] = useState("");
@@ -51,7 +47,9 @@ const VacanciesTable = () => {
       setLoading(true);
       setError(null);
 
-      const response = await axiosConfig.get(`/vacancies/reclutador/${idUser?.uid}`);
+      const response = await axiosConfig.get(
+        `/vacancies/reclutador/${idUser?.uid}`
+      );
       setVacantes(response.data);
     } catch (error) {
       setError(`Error al cargar las vacantes: ${error.message}`);
@@ -61,19 +59,17 @@ const VacanciesTable = () => {
     }
   };
 
-
-
   // Efecto para obtener las vacantes al cargar el componente
   useEffect(() => {
     if (idUser?.uid) {
-      console.log("🔄 Cambio detectado en RecruiterVacancyList para el UID:", idUser.uid);
+      console.log(
+        "🔄 Cambio detectado en RecruiterVacancyList para el UID:",
+        idUser.uid
+      );
       setVacantes([]);
       obtenerVacantes();
     }
   }, [idUser?.timestamp]);
-
-
-
 
   useEffect(() => {
     const obtenerUbicaciones = async () => {
@@ -122,6 +118,11 @@ const VacanciesTable = () => {
     setEditModal(true);
   };
 
+  const closeEditModal = () => {
+    setEditModal(false);
+    setVacancyToEdit(null);
+  };
+
   const showSuccessMessage = (message) => {
     setSuccessMessage(message);
     setSuccessModal(true);
@@ -139,6 +140,11 @@ const VacanciesTable = () => {
       console.error("Error al eliminar la vacante:", error);
       setLoading(false);
     }
+  };
+
+  const handleVacancyUpdated = (updatedVacancy) => {
+    showToast("Vacante actualizada con éxito", "success");
+    obtenerVacantes();
   };
 
   const actualizarParametro = async () => {
@@ -214,7 +220,10 @@ const VacanciesTable = () => {
       console.log("🔎 Endpoint:", `/vacancies/${selectedVacancy.id}`);
       console.log("📦 Datos enviados:", datosActualizados);
 
-      await axiosConfig.patch(`/vacancies/${selectedVacancy.id}`, datosActualizados);
+      await axiosConfig.patch(
+        `/vacancies/${selectedVacancy.id}`,
+        datosActualizados
+      );
 
       console.log("✅ Modalidad actualizada correctamente");
 
@@ -234,7 +243,6 @@ const VacanciesTable = () => {
     }
   };
 
-
   const columns = [
     {
       name: "Puesto",
@@ -243,8 +251,9 @@ const VacanciesTable = () => {
           <a
             href={`/reclutador/Descriptionvacancy/${row.id}`}
             className="text-black hover:underline cursor-pointer font-medium"
-            title={`Ver dashboard de ${row.nombre || row.puesto || "Sin título"
-              }`}
+            title={`Ver dashboard de ${
+              row.nombre || row.puesto || "Sin título"
+            }`}
           >
             {row.nombre || row.puesto || "Sin título"}
           </a>
@@ -260,16 +269,14 @@ const VacanciesTable = () => {
     {
       name: "Modalidad",
       cell: (row) => {
-        const modalidades = [
-          "remoto",
-          "presencial",
-          "híbrido",
-        ];
+        const modalidades = ["remoto", "presencial", "híbrido"];
 
         let colorClass = "bg-gray-200 text-gray-800";
         if (row.modalidad === "remoto") colorClass = "bg-[#DAB0FA] text-black";
-        if (row.modalidad === "presencial") colorClass = "bg-orange-200/50 text-black";
-        if (row.modalidad === "híbrido") colorClass = "bg-yellow-200/30 text-black";
+        if (row.modalidad === "presencial")
+          colorClass = "bg-orange-200/50 text-black";
+        if (row.modalidad === "híbrido")
+          colorClass = "bg-yellow-200/30 text-black";
 
         return (
           <div className="flex flex-col">
@@ -292,16 +299,11 @@ const VacanciesTable = () => {
     {
       name: "Estado",
       cell: (row) => {
-        const estados = [
-          "pausa",
-          "cerrada",
-          "abierta",
-        ];
+        const estados = ["pausa", "cerrada", "abierta"];
 
         let colorClass = "bg-gray-200 text-gray-800";
         if (row.estado === "abierta") colorClass = "bg-green-200 text-black";
-        if (row.estado === "pausa")
-          colorClass = "bg-yellow-200/50 text-black";
+        if (row.estado === "pausa") colorClass = "bg-yellow-200/50 text-black";
         if (row.estado === "borrador") colorClass = "bg-blue-200 text-blue-800";
         if (row.estado === "cerrada" || row.estado === "cancelado")
           colorClass = "bg-gray-400/30 text-black";
@@ -330,8 +332,7 @@ const VacanciesTable = () => {
         const prioridades = ["baja", "media", "alta"];
 
         let colorClass = "bg-gray-200 text-black";
-        if (row.prioridad === "baja")
-          colorClass = "bg-blue-200/30 text-black";
+        if (row.prioridad === "baja") colorClass = "bg-blue-200/30 text-black";
         if (row.prioridad === "media")
           colorClass = "bg-orange-200/60 text-black";
         if (row.prioridad === "alta") colorClass = "bg-red-200 text-black";
@@ -359,9 +360,9 @@ const VacanciesTable = () => {
       cell: (row) => (
         <button
           onClick={() => openEditModal(row)}
-          className=" text-white font-bold py-2 px-4 rounded cursor-pointer"
+          className="  font-bold py-2 px-10 rounded cursor-pointer transition-all duration-300 ease-in-out hover:scale-140"
         >
-          <img src={BotonEditar} alt="Editar" className="w-4 h-4" />
+          <img src={BotonEditar} alt="Editar" className="w-6" />
         </button>
       ),
     },
@@ -446,9 +447,9 @@ const VacanciesTable = () => {
 
       <ModalEditarVacante
         isOpen={editModal}
-        onClose={() => setEditModal(false)}
-        vacancy={vacancyToEdit}
-        refreshVacancies={obtenerVacantes}
+        onClose={closeEditModal}
+        vacancyId={vacancyToEdit?.id}
+        onVacancyUpdated={handleVacancyUpdated}
       />
 
       <Modal
@@ -456,8 +457,9 @@ const VacanciesTable = () => {
         onClose={() => setDeleteModal(false)}
         tipo="delete"
         titulo="Eliminar Vacante"
-        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${selectedVacancy?.nombre || ""
-          }? Esta acción no se puede deshacer.`}
+        mensaje={`¿Estás seguro de que deseas eliminar la vacante ${
+          selectedVacancy?.nombre || ""
+        }? Esta acción no se puede deshacer.`}
         btnPrimario="Sí, eliminar"
         btnSecundario="Cancelar"
         accionPrimaria={() => handleDelete(selectedVacancy.id)}
@@ -473,17 +475,16 @@ const VacanciesTable = () => {
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarModalidad}
-
       />
-
 
       <Modal
         isOpen={changePrioridadModal}
         onClose={() => setChangePrioridadModal(false)}
         tipo="confirm"
         titulo="Cambiar Prioridad de Vacante"
-        mensaje={`¿Estás seguro de cambiar la prioridad de ${selectedVacancy?.nombre || ""
-          } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar la prioridad de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
@@ -494,8 +495,9 @@ const VacanciesTable = () => {
         onClose={() => setChangeStatusModal(false)}
         tipo="confirm"
         titulo="Cambiar Estado de Vacante"
-        mensaje={`¿Estás seguro de cambiar el estado de ${selectedVacancy?.nombre || ""
-          } a ${tempFieldValue}?`}
+        mensaje={`¿Estás seguro de cambiar el estado de ${
+          selectedVacancy?.nombre || ""
+        } a ${tempFieldValue}?`}
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
