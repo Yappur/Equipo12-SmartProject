@@ -17,31 +17,39 @@ export default function TalentMatchPage() {
           <span className="text-[#ff7b00] italic">click</span>. Así de simple.
         </h1>
       </main>
+<section className="bg-white flex flex-col md:flex-row items-center gap-12 px-8 md:px-20 py-16">
+  <div className="w-full h-[600px] md:w-1/2 relative flex items-stretch">
+    <img
+      src={FotoMujer}
+      alt="Personas conectándose"
+      className="rounded-xl shadow-lg object-cover h-full w-full"
+    />
+  </div>
 
-      <section className="bg-white flex flex-col md:flex-row items-center gap-8 px-6 md:px-16 py-10">
-        <div className="w-full md:w-1/2">
-          <img
-            src={FotoMujer}
-            alt="Personas conectándose"
-            className="rounded-lg shadow-md w-full h-auto object-cover"
-          />
-        </div>
-        <div className="w-full md:w-1/2">
-          <h2 className="text-2xl font-bold mb-4">Sobre nosotros</h2>
-          <p className="mb-4">
-            Creemos que encontrar trabajo —o el candidato ideal— no debería ser
-            complicado...
-          </p>
-          <p className="mb-4">Si buscas trabajo, aquí vas a encontrar...</p>
-          <p className="mb-4">
-            Si eres parte de un equipo de RRHH, te damos una herramienta...
-          </p>
-          <p>
-            Estamos para hacerte la vida más fácil. Ya sea que estés buscando
-            tu próxima oportunidad o talento.
-          </p>
-        </div>
-      </section>
+  <div className="w-full md:w-1/2 space-y-6 flex flex-col justify-between">
+    <h2 className="text-3xl poppins font-semibold text-gray-800">Sobre nosotros</h2>
+    <p className="text-gray-600 text-lg">
+      Creemos que encontrar trabajo —o al candidato ideal— no debería ser complicado. 
+      Por eso creamos esta plataforma: para hacer que el proceso sea claro, ágil y 
+      humano, tanto para quienes buscan como para quienes contratan.
+    </p>
+    <p className="text-gray-600 text-lg">
+      Si buscas trabajo, acá vas a encontrar vacantes reales, con procesos organizados 
+      y seguimiento claro.
+    </p>
+    <p className="text-gray-600 text-lg">
+      Si eres parte de un equipo de RRHH, te damos una herramienta fácil de usar para 
+      publicar vacantes, gestionar postulaciones y seguir el avance de cada proceso 
+      en un solo lugar.
+    </p>
+    <p className="text-gray-600 text-lg">
+      Estamos para hacerte la vida más fácil. Ya sea que estés buscando tu próxima 
+      oportunidad o buscando al próximo talento para tu equipo.
+    </p>
+  </div>
+</section>
+
+
 
       <section className="bg-white  flex flex-col lg:flex-row gap-8 px-6 md:px-16 py-10">
         <div className="bg-[#D8E9FF] rounded-xl shadow-md p-6 w-full lg:w-1/2 h-auto">
