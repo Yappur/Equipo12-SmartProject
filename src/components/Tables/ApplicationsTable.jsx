@@ -203,7 +203,7 @@ const ApplicationsTable = () => {
       cell: (row) => (
         <div className="flex items-center  ">
           <button
-            onClick={() => handleViewCV(row.cvPath)}
+            onClick={() => handleViewCV(row.cvUrl)}
             className="flex items-center gap-1 p-4 rounded-lg cursor-pointer duration-500 transform hover:scale-110"
             title="Ver CV"
           >

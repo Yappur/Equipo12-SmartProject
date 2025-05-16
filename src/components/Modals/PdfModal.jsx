@@ -1,37 +1,41 @@
 import { useState, useEffect } from "react";
-import { FiExternalLink, FiDownload, FiX } from "react-icons/fi";
-import axios from "axios";
+import { FiExternalLink, FiX } from "react-icons/fi";
+import axiosConfig from "../../helpers/axios.config";
 
 const PdfModal = ({ cvUrl, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
+  const [pdfUrlBlob, setPdfUrlBlob] = useState(null);
 
   useEffect(() => {
     const fetchPdf = async () => {
       try {
-        const response = await axios.get(pdfUrl, {
+        const response = await axiosConfig.get(cvUrl, {
           responseType: "blob",
         });
 
         const blob = new Blob([response.data], { type: "application/pdf" });
         const url = URL.createObjectURL(blob);
         setPdfUrlBlob(url);
-
-        return () => {
-          URL.revokeObjectURL(url);
-        };
+        setLoading(false);
       } catch (error) {
         console.error("Error al cargar el PDF:", error);
+        setLoading(false);
       }
     };
 
-    fetchPdf();
-    setLoading(true);
-  }, [cvUrl]);
+    if (cvUrl) {
+      setLoading(true);
+      fetchPdf();
+    }
 
-  const handleIframeLoad = () => {
-    setLoading(false);
-  };
+    // Limpieza de URL al desmontar
+    return () => {
+      if (pdfUrlBlob) {
+        URL.revokeObjectURL(pdfUrlBlob);
+      }
+    };
+  }, [cvUrl]);
 
   const toggleFullscreen = () => {
     setFullscreen(!fullscreen);
@@ -60,7 +64,7 @@ const PdfModal = ({ cvUrl, onClose }) => {
         </h3>
         <div className="flex gap-2">
           <a
-            href={cvUrl}
+            href={pdfUrlBlob || cvUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-600 hover:text-gray-800 p-1 rounded hover:bg-gray-200"
@@ -82,16 +86,19 @@ const PdfModal = ({ cvUrl, onClose }) => {
       </div>
 
       <div className="flex-1 relative">
-        {cvUrl ? (
-          <iframe
-            src={cvUrl}
-            width="100%"
-            height="600px"
-            title="PDF Viewer"
-            style={{ border: "none" }}
-          />
+        {loading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <p className="ml-3 text-gray-600">Cargando PDF...</p>
+          </div>
         ) : (
-          <p>Cargando PDF...</p>
+          <iframe
+            src={pdfUrlBlob || cvUrl}
+            width="100%"
+            height="100%"
+            title="PDF Viewer"
+            className="border-none"
+          />
         )}
       </div>
     </div>
