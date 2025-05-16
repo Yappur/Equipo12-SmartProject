@@ -26,77 +26,30 @@ const ApplicationsTable = () => {
   const [showResultModal, setShowResultModal] = useState(false);
 
   useEffect(() => {
-    console.log("ID de vacante en useEffect:", id);
-    obtenerPostulaciones();
+    obtenerPostulaciones(id);
   }, [id]);
 
-  const obtenerPostulaciones = async () => {
+  const obtenerPostulaciones = async (vacancyId) => {
     try {
       setLoading(true);
-      console.log("Obteniendo postulaciones para la vacante ID:", id);
-
-      // Llamamos directamente al endpoint correcto según la documentación
-      const response = await fetch(
-        "https://backend-foo-talent.onrender.com/recruitment/obtener_data",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // No se envían parámetros según la documentación
-          body: JSON.stringify({}), // Enviar un objeto vacío o eliminar esta línea si no se requiere body
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Datos recibidos del servidor:", data);
-
-      // Debugger para inspeccionar la estructura de datos
-      debugger;
-
-      // Verificamos si los datos son un array
-      if (!Array.isArray(data)) {
-        console.error("Los datos recibidos no son un array:", data);
-        alert(
-          "Formato de datos incorrecto. Por favor, contacte al administrador."
-        );
-        return;
-      }
-
-      const filteredData = data.filter((postulacion) => {
-        return String(postulacion.vacancyId) === String(id);
+      // Si estás usando axiosConfig, mantener esta estructura
+      const response = await axiosConfig.get("/applications", {
+        params: { vacancyId },
       });
-
-      console.log(
-        `Postulaciones filtradas (${filteredData.length}):`,
-        filteredData
-      );
-      setPostulaciones(filteredData);
+      setPostulaciones(response.data);
     } catch (error) {
       console.error("Error al obtener postulaciones:", error);
-      alert(
-        "No se pudieron cargar las postulaciones. Por favor, intente nuevamente."
-      );
     } finally {
       setLoading(false);
     }
   };
 
-  const actualizarEstado = async (applicationId, status) => {
+  const actualizarEstado = async (id, status, vacancyId) => {
     try {
-      // Se mantiene la estructura original para actualizar estados
-      await axiosConfig.patch(`/applications/${applicationId}/status`, {
-        status,
-      });
-      // Recargamos los datos después de actualizar
-      obtenerPostulaciones();
+      await axiosConfig.patch(`/applications/${id}/status`, { status });
+      obtenerPostulaciones(vacancyId);
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
-      alert("Error al actualizar el estado. Por favor, intente nuevamente.");
     }
   };
 
@@ -128,81 +81,39 @@ const ApplicationsTable = () => {
         (p) => p.status === "Recibido"
       );
 
-      console.log("Candidatos en estado 'Recibido':", candidatosRecibidos);
-
       if (candidatosRecibidos.length === 0) {
         alert("No hay candidatos en estado 'Recibido' para analizar");
         setAnalyzing(false);
         return;
       }
 
-      const candidatosParaAnalizar = candidatosRecibidos.slice(0, cvCount);
-      console.log(`Analizando ${cvCount} candidatos:`, candidatosParaAnalizar);
-
-      try {
-        console.log("Intentando llamada con parámetro 'amount'");
-        const response = await fetch(
-          "https://backend-foo-talent.onrender.com/recruitment/result_vacancies",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              vacancyId: id,
-              amount: cvCount,
-            }),
-          }
-        );
-
-        console.log("Respuesta del servidor (amount):", response);
-
-        if (!response.ok) {
-          console.warn(
-            "La llamada con 'amount' falló, intentando con 'candidates'"
-          );
-          throw new Error("Intentar con candidates");
+      const response = await fetch(
+        "https://backend-foo-talent.onrender.com/recruitment/result_vacancies",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            vacancyId: id,
+            amount: cvCount,
+          }),
         }
+      );
 
+      if (response.ok) {
         const resultData = await response.json();
-        console.log("Datos de análisis recibidos:", resultData);
         setAnalysisResults(resultData);
         setShowResultModal(true);
-      } catch (amountError) {
-        // Si falla, intentar con 'candidates'
-        console.log("Intentando llamada con parámetro 'candidates'");
-        const response = await fetch(
-          "https://backend-foo-talent.onrender.com/recruitment/result_vacancies",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              vacancyId: id,
-              candidates: candidatosParaAnalizar.map((c) => c.id),
-            }),
-          }
-        );
 
-        console.log("Respuesta del servidor (candidates):", response);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const resultData = await response.json();
-        console.log("Datos de análisis recibidos:", resultData);
-        setAnalysisResults(resultData);
-        setShowResultModal(true);
+        await obtenerPostulaciones(id);
+      } else {
+        console.error("Error en el análisis:", await response.text());
+        alert("Hubo un error al procesar los currículums");
       }
-
-      await obtenerPostulaciones();
     } catch (error) {
       console.error("Error al analizar los currículums:", error);
-      alert(
-        "Hubo un error al procesar los currículums. Por favor, intente nuevamente."
-      );
+      alert("Hubo un error al procesar los currículums");
     } finally {
       setAnalyzing(false);
     }
@@ -257,22 +168,19 @@ const ApplicationsTable = () => {
           "Descartado",
         ];
 
-        let colorClass = "bg-green-200 text-gray-800 w-41 h-7";
-        if (row.status === "Finalista")
-          colorClass = "bg-green-200 text-green-800 w-41 h-7";
+        let colorClass = "bg-green-200 w-41 h-7";
+        if (row.status === "Finalista") colorClass = "bg-green-200 w-41 h-7";
         if (["Recibido", "En revisión"].includes(row.status))
-          colorClass = "bg-yellow-200 text-yellow-800 w-41 h-7";
-        if (row.status === "Entrevista")
-          colorClass = "bg-blue-200 text-blue-800 w-41 h-7";
-        if (row.status === "Descartado")
-          colorClass = "bg-red-200 text-red-800 w-41 h-7";
+          colorClass = "bg-yellow-200 w-41 h-7";
+        if (row.status === "Entrevista") colorClass = "bg-blue-200 w-41 h-7";
+        if (row.status === "Descartado") colorClass = "bg-red-200 w-41 h-7";
 
         return (
           <div className="flex flex-col">
             <select
               value={row.status}
-              onChange={(e) => actualizarEstado(row.id, e.target.value)}
-              className={`text-sm border border-gray-300 rounded-lg px-2 py-1 ${colorClass}`}
+              onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
+              className={`text-sm font-semilight  rounded-2xl px-2 py-1 ${colorClass}`}
             >
               {estados.map((estado) => (
                 <option key={estado} value={estado}>
@@ -293,13 +201,13 @@ const ApplicationsTable = () => {
         </div>
       ),
       cell: (row) => (
-        <div className="w-full flex items-center gap-3 p-3">
+        <div className="flex items-center  ">
           <button
             onClick={() => handleViewCV(row.cvPath)}
-            className="flex items-center gap-1 p-2 rounded-lg cursor-pointer duration-500 transform hover:scale-110"
+            className="flex items-center gap-1 p-4 rounded-lg cursor-pointer duration-500 transform hover:scale-110"
             title="Ver CV"
           >
-            <img src={cvIcon} alt="CV" className="w-6 h-6" />
+            <img src={cvIcon} alt="CV" className="w-5" />
           </button>
         </div>
       ),
@@ -319,7 +227,6 @@ const ApplicationsTable = () => {
     );
   });
 
-  // Calcular estadísticas
   const totalRecibidos = postulaciones.filter(
     (p) => p.status === "Recibido"
   ).length;
@@ -333,7 +240,6 @@ const ApplicationsTable = () => {
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm p-4">
-        {/* Sección de estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-blue-50 p-4 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-blue-800">Total</h3>
@@ -393,14 +299,13 @@ const ApplicationsTable = () => {
               "Analizar Currículums"
             )}
           </button>
-
-          <div className="w-64">
-            <SearchBar
-              value={filtrarPostulaciones}
-              onChange={setFiltrarPostulaciones}
-              disabled={loading}
-            />
-          </div>
+        </div>
+        <div className="w-full">
+          <SearchBar
+            value={filtrarPostulaciones}
+            onChange={setFiltrarPostulaciones}
+            disabled={loading}
+          />
         </div>
 
         <DataTable
