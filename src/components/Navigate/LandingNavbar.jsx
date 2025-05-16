@@ -27,36 +27,27 @@ const LandingNavbar = () => {
         </div>
 
         {/* Menú desktop */}
-        <div className="hidden md:flex items-center gap-3">
-          {isAuthenticated ? (
-            <button
-              onClick={() => navigate("/perfil")}
-              className="px-5 py-2 rounded-full bg-white text-[#00598A] font-semibold hover:bg-gray-100 transition duration-200"
+        <div className="hidden md:flex items-center gap-8">
+          <>
+            <Link
+              to={"/About"}
+              className="text-md font-medium border text-black rounded-full px-14 py-1 hover:bg-gray-100"
             >
-              Ir a mi perfil
-            </button>
-          ) : (
-            <>
-              <Link
-                to={"/About"}
-                className="text-sm text-gray-800 border border-gray-800 rounded-full px-10 py-1.5 hover:bg-gray-300"
-              >
-                Quiénes somos
-              </Link>
-              <Link
-                to="/galeria/vacantes"
-                className="text-sm text-white bg-orange-500 rounded-full px-10 py-1.5 hover:bg-orange-600"
-              >
-                Ver vacantes
-              </Link>
-              <Link
-                to="/login"
-                className="text-sm text-white bg-blue-900 rounded-full px-10 py-1.5 hover:bg-blue-950"
-              >
-                Acceso reclutadores
-              </Link>
-            </>
-          )}
+              Quiénes somos
+            </Link>
+            <Link
+              to="/galeria/vacantes"
+              className="text-md text-white bg-[#FAA358] rounded-full font-medium px-14 py-1 hover:bg-orange-400"
+            >
+              Ver vacantes
+            </Link>
+            <Link
+              to="/login"
+              className="text-md text-white bg-[#152d53] hover:bg-blue-950 rounded-full font-medium px-14 py-1"
+            >
+              Acceso reclutadores
+            </Link>
+          </>
         </div>
 
         {/* Menú móvil */}
