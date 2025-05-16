@@ -5,6 +5,7 @@ import Loader from "../Common/Loader";
 import axiosConfig from "../../helpers/axios.config";
 import { FaChevronDown } from "react-icons/fa";
 import Modal from "../Modals/Modal";
+import UserIcon from "../../assets/img/user.webp"; // Asegúrate de tener esta imagen en la ruta correcta
 
 const UserActiveTable = () => {
   const [usersActive, setUserActive] = useState([]);
@@ -104,81 +105,51 @@ const UserActiveTable = () => {
       ) : (
         <>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl text-black">Usuarios Activos</h2>
+            <h2 className="text-lg text-black">Usuarios</h2>
             <Link
               to="/admin/panelUsuarios"
-              className="text-sm text-gray-500 hover:underline"
+              className="text-sm text-black hover:underline"
             >
               Ver todos
             </Link>
           </div>
-          <div className="border-t border-gray-200">
-            {usersActive.map((user) => (
-              <div
-                key={user.id}
-                className="flex items-center py-4 border-b border-gray-200"
-              >
-                <div className="flex-shrink-0 mr-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                    <User className="w-20 h-5 text-gray-400" />
-                  </div>
-                </div>
-                <div className="flex-grow">
-                  <div className="font-medium text-[#00254B]">
-                    {user.displayName}
-                  </div>
-                </div>
-                <div className="flex-shrink-0 w-30 text-black capitalize">
-                  {user.role}
-                </div>
-                <div className="flex-shrink-0 w-16 text-black">
-                  {formatMonthYear(user.createdAt)}
-                </div>
-                <div className="flex-shrink-0 ml-4">
-                  <button className="flex items-center px-3 py-1 rounded-full">
-                    <div
-                      className={`px-4 py-1 rounded-full text-sm font-medium cursor-pointer ${
-                        user.estado === "Activo"
-                          ? "bg-[#ADDFC4] text-black"
-                          : "bg-[#d8e9ff] text-black"
-                      }`}
-                      onClick={() =>
-                        openChangeStatusModal(
-                          user,
-                          user.estado === "Activo" ? "Inactivo" : "Activo"
-                        )
-                      }
-                    >
-                      {user.estado}{" "}
-                      <FaChevronDown className="inline ml-1 text-xs" />
-                    </div>
-                  </button>
-                </div>
-              </div>
-            ))}
-            <Modal
-              isOpen={changeStatusModal}
-              onClose={() => setChangeStatusModal(false)}
-              tipo="confirm"
-              titulo="Cambiar Estado de Usuario"
-              mensaje={`¿Estás seguro de cambiar el estado de ${
-                selectedUser?.displayName || ""
-              } a ${newStatus}?`}
-              btnPrimario="Confirmar Cambio"
-              btnSecundario="Cancelar"
-              accionPrimaria={handleChangeStatus}
-            />
+<div className="border-t border-gray-300 mt-4">
+  {usersActive.map((user) => (
+    <div
+      key={user.id}
+      className="flex flex-col md:flex-row items-center py-4 border-b border-gray-200 hover:bg-gray-50 transition duration-200"
+    >
+      {/* Icono o foto de perfil */}
+      <div className="flex-shrink-0 mb-2 md:mb-0 md:mr-4">
+        <img
+          className="w-16 h-16 md:w-10 md:h-10 rounded-full object-cover border border-gray-300"
+          src={user.photoURL || UserIcon}
+          alt="Foto de perfil del usuario"
+        />
+      </div>
 
-            <Modal
-              isOpen={successModal}
-              onClose={() => setSuccessModal(false)}
-              tipo="success"
-              titulo="El cambio se realizo con exito"
-              mensaje={successMessage}
-              btnPrimario="Aceptar"
-              accionPrimaria={() => setSuccessModal(false)}
-            />
-          </div>
+      {/* Información del usuario */}
+      <div className="flex-grow grid grid-cols-1 md:grid-cols-4 gap-2 md:gap-4 items-center w-full text-center md:text-left">
+        <div className="text-gray-800 font-medium text-lg">
+          {user.displayName}
+        </div>
+
+        <div className="text-gray-600 text-sm capitalize">
+          {user.role === "admin" ? "Supervisor" : "Reclutador"}
+        </div>
+
+        <div className="text-gray-500 text-sm">
+          {formatMonthYear(user.createdAt)}
+        </div>
+
+        <div className="text-gray-500 text-sm truncate">
+          {user.email}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
         </>
       )}
     </div>

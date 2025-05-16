@@ -23,6 +23,7 @@ import LandingView from "../pages/PublicPages/LandingView";
 import AboutPage from "../pages/PublicPages/AboutPage";
 import DashboardVacancyRecuiter from "../pages/RecruiterPages/DashboardVacancyRecuiter";
 import ViewCreateVacancy from "../pages/RecruiterPages/ViewCreateVacancy";
+import CandidatosDelReclutador from "../components/Tables/CandidatosDelReclutador";
 
 const RoutesViews = () => {
   const { isAuthenticated, role } = useAuth();
@@ -73,6 +74,14 @@ const RoutesViews = () => {
             element={
               <ProtectedRoute allowedRoles={["user", "admin"]}>
                 <RecuiterVacancyView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reclutador/candidatosPorReclutador"
+            element={
+              <ProtectedRoute allowedRoles={[ "user"]}>
+                <CandidatosDelReclutador />
               </ProtectedRoute>
             }
           />

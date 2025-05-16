@@ -196,8 +196,8 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   return (
     <>
       <div className="p-4 w-full">
-        <div className="bg-white">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white p-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
             <div className="my-2">
               <label className="block text-sm font-semilight mb-1">
                 Nombre y apellido<span className="text-red-500">*</span>

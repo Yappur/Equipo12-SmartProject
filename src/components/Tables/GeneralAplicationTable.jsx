@@ -3,8 +3,7 @@ import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import SearchBar from "./SearchBar";
-import { customStyles } from "./DashboardsStyles";
-import { paginationOptions } from "./DashboardsStyles";
+import { customStyles, paginationOptions } from "./DashboardsStyles";
 import IconoCV from "../../assets/img/cvicon.png";
 import PdfModal from "../Modals/PdfModal";
 
