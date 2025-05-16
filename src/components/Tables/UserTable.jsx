@@ -191,7 +191,7 @@ const UserTable = () => {
   return (
     <div className="p-6 rounded-lg">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-medium text-[#152D53] ">Usuarios</h1>
+          <h1 className="text-2xl poppins text-[#152D53]">Usuarios</h1>
         <Link
           to={"/admin/crear/usuario"}
           className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"

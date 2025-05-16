@@ -8,6 +8,7 @@ import CerrarVacante from "@/assets/img/cerrar-vacante.png";
 import axiosConfig from "@/helpers/axios.config";
 import { showToast } from "../../components/Modals/CustomToaster";
 import ModalEditarVacante from "../Modals/ModalEditarVacante";
+import { useAuth } from "../../context/AuthContext";
 
 export default function MenuOpciones({ idVacante, estado }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function MenuOpciones({ idVacante, estado }) {
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const [isClosed, setIsClosed] = useState(false);
+  const {idUser} = useAuth();
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -88,7 +90,8 @@ export default function MenuOpciones({ idVacante, estado }) {
     navigate(`/reclutador/candidatos`, { state: { idVacante } });
   };
 
-  return (
+return (
+  idUser.role !== "admin" && (
     <div className="" ref={menuRef}>
       <img
         src={menuIcon}
@@ -159,5 +162,7 @@ export default function MenuOpciones({ idVacante, estado }) {
         onVacancyUpdated={handleVacancyUpdated}
       />
     </div>
-  );
+  )
+);
+
 }

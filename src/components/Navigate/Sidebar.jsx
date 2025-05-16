@@ -46,8 +46,6 @@ const Sidebar = () => {
           title: "Candidatos",
           icon: Users,
           path: "/reclutador/candidatosPorReclutador",
-        }
-          path: "/reclutador/nuevaTabla",
         },
       ];
     } else {

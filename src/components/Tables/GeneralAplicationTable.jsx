@@ -199,7 +199,7 @@ const GeneralApplicationsTable = () => {
 
   return (
     <>
-      <div className="bg-white rounded-lg">
+      <div className="bg-white rounded-lg p-5">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl poppins text-[#152D53]">Candidatos</h1>
         </div>
@@ -208,6 +208,12 @@ const GeneralApplicationsTable = () => {
           onChange={setFiltrarPostulaciones}
           disabled={loading}
         />
+
+        <div className="flex justify-between items-center mb-4">
+        <p className="text-gray-500 text-sm mb-3">
+            Total de postulaciones: {filtrarData.length}
+          </p>
+          </div>
 
         <DataTable
           columns={columns}
