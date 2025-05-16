@@ -7,6 +7,8 @@ import axiosConfig from "../../helpers/axios.config";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import { customStyles, paginationOptions } from "./DashboardsStyles";
 import flechasIcon from "../../assets/img/TableCandidatosIcon.png";
+import { useAuth } from "../../context/AuthContext";
+
 const Loader = () => (
   <div className="flex justify-center items-center py-20">
     <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -32,12 +34,16 @@ const RecruiterVacancyList = () => {
   const [tempFieldValue, setTempFieldValue] = useState("");
   const [tempFieldName, setTempFieldName] = useState("");
 
+  const { idUser } = useAuth();
+  console.log("Valor de idUser:", idUser);
+  console.log("Valor de idUser.uid:", idUser?.uid);
+
   const obtenerVacantes = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await axiosConfig.get("/vacancies");
+      const response = await axiosConfig.get(`/vacancies/reclutador/${idUser?.uid}`);
       setVacantes(response.data);
     } catch (error) {
       setError(`Error al cargar las vacantes: ${error.message}`);
@@ -48,8 +54,15 @@ const RecruiterVacancyList = () => {
   };
 
   useEffect(() => {
-    obtenerVacantes();
-  }, []);
+    if (idUser?.uid) {
+      console.log("🔄 Cambio detectado en RecruiterVacancyList para el UID:", idUser.uid);
+      setVacantes([]);
+      obtenerVacantes();
+    }
+  }, [idUser?.timestamp]);
+
+
+
 
   const refreshVacantes = () => {
     obtenerVacantes();
@@ -61,6 +74,10 @@ const RecruiterVacancyList = () => {
   };
 
   const openChangeStatusModal = (vacancy, newStatus) => {
+    console.log("📝 Abriendo modal de estado:");
+    console.log("👉 Vacante seleccionada:", vacancy);
+    console.log("👉 Nuevo estado:", newStatus);
+
     setSelectedVacancy(vacancy);
     setTempFieldName("estado");
     setTempFieldValue(newStatus);
@@ -68,6 +85,10 @@ const RecruiterVacancyList = () => {
   };
 
   const openChangePrioridadModal = (vacancy, newPrioridad) => {
+    console.log("📝 Abriendo modal de prioridad:");
+    console.log("👉 Vacante seleccionada:", vacancy);
+    console.log("👉 Nueva prioridad:", newPrioridad);
+
     setSelectedVacancy(vacancy);
     setTempFieldName("prioridad");
     setTempFieldValue(newPrioridad);
@@ -95,6 +116,10 @@ const RecruiterVacancyList = () => {
 
   const actualizarParametro = async () => {
     if (!selectedVacancy || !tempFieldName || tempFieldValue === undefined) {
+      console.error("⛔ Error: Falta información para actualizar el parámetro");
+      console.log("📝 selectedVacancy:", selectedVacancy);
+      console.log("📝 tempFieldName:", tempFieldName);
+      console.log("📝 tempFieldValue:", tempFieldValue);
       return;
     }
 
@@ -106,22 +131,32 @@ const RecruiterVacancyList = () => {
         [tempFieldName]: tempFieldValue,
       };
 
-      await axiosConfig.patch(
+      console.log("🔄 Enviando datos al backend...");
+      console.log("🔎 Endpoint:", `/vacancies/${selectedVacancy.id}`);
+      console.log("📦 Datos enviados:", datosActualizados);
+
+      const response = await axiosConfig.patch(
         `/vacancies/${selectedVacancy.id}`,
         datosActualizados
       );
 
-      setVacantes(
-        vacantes.map((vacante) =>
-          vacante.id === selectedVacancy.id
-            ? { ...vacante, [tempFieldName]: tempFieldValue }
-            : vacante
-        )
-      );
+      console.log("✅ Vacante actualizada correctamente");
+      console.log("🔄 Respuesta del backend:", response.data);
+
+      // 🔄 Recargamos los datos de nuevo para actualizar la lista
+      console.log("🔄 Recargando vacantes...");
+
+      // 👇 Aquí forzamos el refresco
+      await obtenerVacantes();
+
+      // 👇 Log de verificación para ver los datos nuevos
+      console.log("📝 Vacantes recargadas después del update:", vacantes);
 
       if (tempFieldName === "prioridad") {
+        console.log("🔒 Cerrando modal de prioridad");
         setChangePrioridadModal(false);
       } else if (tempFieldName === "estado") {
+        console.log("🔒 Cerrando modal de estado");
         setChangeStatusModal(false);
       }
 
@@ -129,21 +164,21 @@ const RecruiterVacancyList = () => {
         `El campo ${tempFieldName} ha sido actualizado correctamente`
       );
     } catch (error) {
-      console.error("Error al actualizar el campo:", error);
+      console.error("❌ Error al actualizar el campo:", error.message);
       setUpdateError(`Error al actualizar el campo: ${error.message}`);
-      obtenerVacantes();
     } finally {
+      console.log("🔄 Finalizó el proceso de actualización.");
       setUpdating(false);
     }
   };
+
+
 
   const columns = [
     {
       name: (
         <div className="flex justify-center items-center gap-2 p-3">
-          <span></span>
-          <span className="flex justify-center items-center gap-2">Puesto</span>
-          <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
+          <span></span><span className="flex justify-center items-center gap-2">Puesto</span>
         </div>
       ),
       cell: (row) => (
@@ -214,20 +249,14 @@ const RecruiterVacancyList = () => {
     },
 
     {
-      name: (
-        <div className="flex justify-center items-center gap-2 p-3">
-          <span></span>
-          <span className="flex justify-center items-center gap-2">Estado</span>
-          <img src={flechasIcon} alt="icono correo" className="w-4 h-4" />
-        </div>
-      ),
+      name: (<div className="flex justify-center items-center gap-2 p-3">
+        <span></span><span className="flex justify-center items-center gap-2">Estado</span>
+      </div>),
       cell: (row) => {
         const estados = [
-          "activo",
-          "pausado",
-          "borrador",
-          "terminado",
-          "cancelado",
+          "Pausa",
+          "Cerrada",
+          "Abierta",
         ];
 
         let colorClass = "bg-gray-200 text-gray-800";
@@ -379,11 +408,13 @@ const RecruiterVacancyList = () => {
         title="Éxito"
         message={successMessage}
       />
-
       <Modal
         isOpen={changePrioridadModal}
         onClose={() => setChangePrioridadModal(false)}
-        onConfirm={actualizarParametro}
+        onConfirm={async () => {
+          await actualizarParametro();
+          setChangePrioridadModal(false);
+        }}
         title="Cambiar Prioridad"
         message={`¿Estás seguro de que deseas cambiar la prioridad de esta vacante a "${tempFieldValue}"?`}
         loading={updating}
@@ -393,12 +424,16 @@ const RecruiterVacancyList = () => {
       <Modal
         isOpen={changeStatusModal}
         onClose={() => setChangeStatusModal(false)}
-        onConfirm={actualizarParametro}
+        onConfirm={async () => {
+          await actualizarParametro();
+          setChangeStatusModal(false);
+        }}
         title="Cambiar Estado"
         message={`¿Estás seguro de que deseas cambiar el estado de esta vacante a "${tempFieldValue}"?`}
         loading={updating}
         error={updateError}
       />
+
     </>
   );
 };

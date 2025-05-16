@@ -12,14 +12,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [idUser, setIdUser] = useState(null);
 
-  const updateNombre = (nuevoNombre) => {
-    setNombre(nuevoNombre);
-  };
-  // ✅ Método para actualizar la imagen manualmente
-  const updateProfileImage = (newImageUrl) => {
-    setProfileImg(newImageUrl);
-  };
-
   useEffect(() => {
     const verifyToken = async () => {
       try {
@@ -33,17 +25,18 @@ export const AuthProvider = ({ children }) => {
             idToken: token,
           });
 
+
           // Si el token es válido, establecer estados
           setIsAuthenticated(true);
           setRole(data.role);
-          setProfileImg(data.photoURL || data.photoUrl || null); 
-
 
           setIdUser({
             id: data.uid || data.id,
             uid: data.uid,
             role: data.role,
+            timestamp: Date.now() // 🔄 Agregamos un timestamp para forzar el cambio
           });
+
 
           let photoUrl = null;
 
@@ -108,7 +101,13 @@ export const AuthProvider = ({ children }) => {
     verifyToken();
   }, []);
 
+  const updateProfileImage = (newImageUrl) => {
+    setProfileImg(newImageUrl);
+  };
 
+  const updateNombre = (nuevoNombre) => {
+    setNombre(nuevoNombre);
+  };
 
   return (
     <AuthContext.Provider

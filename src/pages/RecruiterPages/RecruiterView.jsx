@@ -1,8 +1,13 @@
 import { Link } from "react-router-dom";
 import crearUserIcon from "../../assets/img/DesingExports/crearUser.svg";
 import bagIcon from "../../assets/img/DesingExports/bag.svg";
+import { cambiarTitulo } from "../../hooks/cambiarTitulo";
+import { useEffect } from "react";
 
 const RecruiterView = () => {
+   useEffect(() => {
+        cambiarTitulo("Reclutador");
+      }, []);
   return (
     <div className="flex ">
       <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-
+import { cambiarTitulo } from "../../hooks/cambiarTitulo";
+import { useEffect } from "react";
 import modificarUserIcon from "../../assets/img/DesingExports/modificarUsuario.svg";
 import crearUserIcon from "../../assets/img/DesingExports/crearUser.svg";
 import UserActiveTable from "../../components/Tables/UserActiveTable";
@@ -7,6 +8,9 @@ import { useAuth } from "../../context/AuthContext";
 
 const AdminView = () => {
   const { nombre } = useAuth();
+   useEffect(() => {
+          cambiarTitulo("Reclutador");
+        }, []);
   return (
     <>
       <div className="pt-16 flex flex-col items-center justify-center w-full px-4 sm:px-6 py-8 sm:py-12 gap-8 sm:gap-12 md:gap-16">
