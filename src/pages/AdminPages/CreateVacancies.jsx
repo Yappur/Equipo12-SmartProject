@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosConfig from "../../helpers/axios.config";
 import { ChevronDown } from "lucide-react";
 import bagIcon from "../../assets/img/DesingExports/bag.svg";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { State, City } from "country-state-city";
+import SelectLocation from "../../components/Forms/SelectLocation";
 
 const MIN_DESCRIPTION_LENGTH = 200;
 const MAX_DESCRIPTION_LENGTH = 2000;
@@ -14,6 +16,7 @@ const CreateVacancies = () => {
   const [isFirstStep, setIsFirstStep] = useState(true);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const [cityOptions, setCityOptions] = useState([]);
 
   const [vacancy, setVacancy] = useState({
     puesto: "",
@@ -26,6 +29,23 @@ const CreateVacancies = () => {
     experiencia: "",
     responsabilidades: "",
   });
+
+  useEffect(() => {
+    const states = State.getStatesOfCountry("AR");
+    let cities = [];
+
+    states.forEach((state) => {
+      const citiesInState = City.getCitiesOfState("AR", state.isoCode);
+      citiesInState.forEach((city) => {
+        cities.push({
+          value: `${city.name}, ${state.name}`,
+          label: `Argentina, ${city.name}`,
+        });
+      });
+    });
+
+    setCityOptions(cities);
+  }, []);
 
   const getInputClass = (field) => {
     return `w-full px-4 py-2 border rounded-md focus:outline-none ${
@@ -57,12 +77,8 @@ const CreateVacancies = () => {
       isValid = false;
     }
 
-    if (!vacancy.ubicacion.trim()) {
+    if (!vacancy.ubicacion) {
       formErrors.ubicacion = "La ubicación es requerida";
-      isValid = false;
-    } else if (!validationPatterns.ubicacion.test(vacancy.ubicacion)) {
-      formErrors.ubicacion =
-        "La ubicación contiene caracteres no permitidos. Solo se permiten letras, números, espacios, comas y guiones.";
       isValid = false;
     }
 
@@ -123,7 +139,6 @@ const CreateVacancies = () => {
       return;
     }
 
-    // Control de máximo de caracteres para el campo puesto
     if (name === "puesto" && value.length > MAX_PUESTO_LENGTH) {
       return;
     }
@@ -164,6 +179,18 @@ const CreateVacancies = () => {
     }
 
     setVacancy({ ...vacancy, [name]: value });
+  };
+
+  const handleCitySelect = (selectedOption) => {
+    if (selectedOption) {
+      setVacancy({ ...vacancy, ubicacion: selectedOption.value });
+      setErrors((prev) => ({
+        ...prev,
+        ubicacion: "",
+      }));
+    } else {
+      setVacancy({ ...vacancy, ubicacion: "" });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -208,6 +235,10 @@ const CreateVacancies = () => {
       setIsSubmitting(false);
     }
   };
+
+  const selectedCityOption = cityOptions.find(
+    (option) => option.value === vacancy.ubicacion
+  );
 
   return (
     <>
@@ -257,14 +288,14 @@ const CreateVacancies = () => {
                 >
                   Ubicación<span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <SelectLocation
                   id="ubicacion"
                   name="ubicacion"
-                  value={vacancy.ubicacion}
-                  onChange={handleInputChange}
-                  placeholder="Añadir ubicación"
-                  className={getInputClass("ubicacion")}
+                  options={cityOptions}
+                  value={selectedCityOption}
+                  onChange={handleCitySelect}
+                  placeholder="Selecciona una ciudad en Argentina"
+                  hasError={!!errors.ubicacion}
                 />
                 {errors.ubicacion && (
                   <p className="mt-1 text-sm text-red-600">
