@@ -394,7 +394,7 @@ const VacanciesTable = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl poppins text-[#152D53]">Vacantes</h1>
           <Link
-            to={"/crear/vacante"}
+            to={"/reclutador/crear/vacante"}
             className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
           >
             <FaPlus className="mr-2" /> Crear Vacante
@@ -432,7 +432,6 @@ const VacanciesTable = () => {
               data={filtrarData}
               pagination
               paginationComponentOptions={paginationOptions}
-              pointerOnHover
               pointerOnHover
               customStyles={customStyles}
               noDataComponent={

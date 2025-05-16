@@ -1,11 +1,15 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+// Registrar el plugin ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
-//MODALES
+/**
+ * ANIMACIONES MODALES
+ */
 export const slideInUp = (element) => {
-  gsap.fromTo(
+  if (!element) return null;
+  return gsap.fromTo(
     element,
     { y: 100, opacity: 0 },
     { y: 0, opacity: 1, duration: 0.5 }
@@ -13,7 +17,8 @@ export const slideInUp = (element) => {
 };
 
 export const slideOutDown = (element, onComplete) => {
-  gsap.to(element, {
+  if (!element) return null;
+  return gsap.to(element, {
     y: 100,
     opacity: 0,
     duration: 0.4,
@@ -21,157 +26,298 @@ export const slideOutDown = (element, onComplete) => {
   });
 };
 
-// Función para animar elementos con fade in desde abajo
-export const fadeInUp = (element, delay = 0, duration = 0.8) => {
-  if (!element) return null;
-
-  return gsap.fromTo(
-    element,
-    {
-      y: 50,
-      opacity: 0,
-    },
-    {
-      y: 0,
-      opacity: 1,
-      duration,
-      delay,
-      ease: "power3.out",
-    }
-  );
-};
-
-// Función para animar elementos al hacer scroll
-export const createScrollAnimation = (element, options = {}) => {
+/**
+ * ANIMACIONES UNIVERSALES
+ * Función unificada para crear animaciones al hacer scroll o en la carga inicial
+ */
+export const createAnimation = (element, options = {}) => {
   if (!element) return null;
 
   const defaults = {
     y: 30,
+    x: 0,
     opacity: 0,
-    duration: 0.6,
+    duration: 0.7,
+    delay: 0,
     ease: "power2.out",
+    useScrollTrigger: false,
     start: "top 80%",
   };
 
   const settings = { ...defaults, ...options };
 
+  // Configuración base de la animación
+  const animConfig = {
+    y: 0,
+    x: 0,
+    opacity: 1,
+    duration: settings.duration,
+    delay: settings.delay,
+    ease: settings.ease,
+  };
+
+  // Añadir ScrollTrigger si es necesario
+  if (settings.useScrollTrigger) {
+    animConfig.scrollTrigger = {
+      trigger: element,
+      start: settings.start,
+      toggleActions: "play none none none",
+    };
+  }
+
+  // Crear y devolver la animación
   return gsap.fromTo(
     element,
     {
       y: settings.y,
+      x: settings.x,
       opacity: 0,
     },
-    {
-      y: 0,
-      opacity: 1,
-      duration: settings.duration,
-      ease: settings.ease,
-      scrollTrigger: {
-        trigger: element,
-        start: settings.start,
-        toggleActions: "play none none none",
-      },
-    }
+    animConfig
   );
 };
 
-// Función para animar la sección hero - MEJORADA
+/**
+ * ANIMACIÓN DE SECCIÓN HERO
+ * Versión simplificada que funciona con elementos individuales o un objeto con refs
+ */
 export const animateHero = (elements) => {
-  if (
-    !elements ||
-    !elements.title ||
-    !elements.description ||
-    !elements.button ||
-    !elements.image
-  ) {
-    console.warn("Elementos hero no encontrados");
+  if (!elements) return null;
+
+  // Comprobar si nos pasaron un objeto con referencias o elementos directos
+  const title = elements.title || elements.titleRef?.current;
+  const description = elements.description || elements.descriptionRef?.current;
+  const button = elements.button || elements.buttonRef?.current;
+  const image = elements.image || elements.imageRef?.current;
+
+  // Verificar que al menos tenemos el elemento principal
+  if (!title) {
+    console.warn("Elemento hero principal no encontrado");
     return null;
   }
 
   const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-  tl.fromTo(
-    elements.title,
-    { y: 50, opacity: 0 },
-    { y: 0, opacity: 1, duration: 0.8 }
-  )
-    .fromTo(
-      elements.description,
+  // Añadir animaciones secuenciales
+  tl.fromTo(title, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 });
+
+  // Añadir el resto de elementos si existen
+  if (description) {
+    tl.fromTo(
+      description,
       { y: 30, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.6 },
       "-=0.4"
-    )
-    .fromTo(
-      elements.button,
+    );
+  }
+
+  if (button) {
+    tl.fromTo(
+      button,
       { y: 20, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.5 },
       "-=0.2"
-    )
-    .fromTo(
-      elements.image,
+    );
+  }
+
+  if (image) {
+    tl.fromTo(
+      image,
       { x: 50, opacity: 0 },
       { x: 0, opacity: 1, duration: 1 },
       "-=0.7"
     );
+  }
 
   return tl;
 };
 
-// Función para animar secciones al hacer scroll - MEJORADA
-export const animateOnScroll = (elements, options = {}) => {
-  if (!elements) {
-    console.warn("No se encontraron elementos para animar en scroll");
-    return null;
-  }
+/**
+ * ANIMACIÓN DE GRUPOS DE ELEMENTOS
+ * Anima varios elementos con opciones de stagger
+ */
+export const animateGroup = (elements, options = {}) => {
+  if (!elements) return null;
 
   // Asegurar que elements sea un array
   const elementsArray = Array.isArray(elements) ? elements : [elements];
+  // Filtrar elementos nulos
+  const validElements = elementsArray.filter(
+    (el) => el !== null && el !== undefined
+  );
 
-  const animations = [];
+  if (validElements.length === 0) return null;
 
-  elementsArray.forEach((element, index) => {
-    if (!element) return;
+  const defaults = {
+    y: 30,
+    x: 0,
+    opacity: 0,
+    duration: 0.7,
+    stagger: 0.1,
+    ease: "power2.out",
+    useScrollTrigger: true,
+    start: "top 80%",
+  };
 
-    const delay = options.stagger
-      ? index * options.stagger
-      : options.delay || 0;
-    const animation = createScrollAnimation(element, { ...options, delay });
-    animations.push(animation);
-  });
+  const settings = { ...defaults, ...options };
 
-  return animations;
+  // Configuración base de la animación
+  const animConfig = {
+    y: 0,
+    x: 0,
+    opacity: 1,
+    duration: settings.duration,
+    stagger: settings.stagger,
+    ease: settings.ease,
+  };
+
+  // Añadir ScrollTrigger si es necesario
+  if (settings.useScrollTrigger) {
+    animConfig.scrollTrigger = {
+      trigger: validElements[0], // Usar el primer elemento como trigger
+      start: settings.start,
+      toggleActions: "play none none none",
+    };
+  }
+
+  // Crear y devolver la animación
+  return gsap.fromTo(
+    validElements,
+    {
+      y: settings.y,
+      x: settings.x,
+      opacity: 0,
+    },
+    animConfig
+  );
 };
-// Inicializar animaciones básicas - VERSIÓN PARA REFS
-export const initAnimationsWithRefs = (refs) => {
+
+/**
+ * INICIALIZADOR DE ANIMACIONES
+ * Versión simplificada que es menos propensa a errores
+ */
+export const initAnimations = (refs) => {
   // Limpiar animaciones previas
   ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
 
+  // Timeline para animaciones iniciales (no dependen de scroll)
+  const initialTl = gsap.timeline();
+
+  // Animaciones para cada sección
+
   // Hero section
-  if (refs.hero) {
-    animateHero(refs.hero);
+  if (refs.hero?.title) {
+    const heroTl = animateHero({
+      title: refs.hero?.title,
+      description: refs.hero?.description,
+      button: refs.hero?.button,
+      image: refs.hero?.image,
+    });
+
+    if (heroTl) initialTl.add(heroTl, 0);
   }
 
-  // Animaciones al hacer scroll
+  // Vacantes section - con ScrollTrigger
   if (refs.vacantes) {
-    animateOnScroll(refs.vacantes.title);
-    animateOnScroll(refs.vacantes.description, { delay: 0.2 });
-    animateOnScroll(refs.vacantes.content, { delay: 0.4 });
+    const titles = Array.isArray(refs.vacantes.title)
+      ? refs.vacantes.title
+      : [refs.vacantes.title];
+
+    // Títulos con efecto stagger
+    if (titles.some((t) => t)) {
+      animateGroup(titles, {
+        useScrollTrigger: true,
+        stagger: 0.2,
+      });
+    }
+
+    // Descripción
+    if (refs.vacantes.description) {
+      createAnimation(refs.vacantes.description, {
+        useScrollTrigger: true,
+        delay: 0.2,
+      });
+    }
+
+    // Contenido
+    if (refs.vacantes.content) {
+      createAnimation(refs.vacantes.content, {
+        useScrollTrigger: true,
+        delay: 0.3,
+        y: 40,
+      });
+    }
   }
 
+  // Recruiters section
   if (refs.recruiters) {
-    animateOnScroll(refs.recruiters.image, { x: -50, y: 0 });
-    animateOnScroll(refs.recruiters.title, { delay: 0.2 });
-    animateOnScroll(refs.recruiters.description, { delay: 0.4 });
-    animateOnScroll(refs.recruiters.benefits, { stagger: 0.1 });
-    animateOnScroll(refs.recruiters.button, { delay: 0.6 });
+    // Imagen
+    if (refs.recruiters.image) {
+      createAnimation(refs.recruiters.image, {
+        useScrollTrigger: true,
+        x: -30,
+        y: 0,
+      });
+    }
+
+    // Título
+    if (refs.recruiters.title) {
+      createAnimation(refs.recruiters.title, {
+        useScrollTrigger: true,
+        delay: 0.2,
+      });
+    }
+
+    // Descripción
+    if (refs.recruiters.description) {
+      createAnimation(refs.recruiters.description, {
+        useScrollTrigger: true,
+        delay: 0.3,
+      });
+    }
+
+    // Beneficios con stagger
+    if (refs.recruiters.benefits && refs.recruiters.benefits.length > 0) {
+      animateGroup(refs.recruiters.benefits, {
+        useScrollTrigger: true,
+        stagger: 0.1,
+        delay: 0.3,
+      });
+    }
+
+    // Botón
+    if (refs.recruiters.button) {
+      createAnimation(refs.recruiters.button, {
+        useScrollTrigger: true,
+        delay: 0.5,
+      });
+    }
   }
 
+  // Herramientas section
   if (refs.herramientas) {
-    animateOnScroll(refs.herramientas.header);
-    animateOnScroll(refs.herramientas.cards, { stagger: 0.15 });
+    // Header
+    if (refs.herramientas.header) {
+      createAnimation(refs.herramientas.header, {
+        useScrollTrigger: true,
+      });
+    }
+
+    // Cards con stagger
+    if (refs.herramientas.cards && refs.herramientas.cards.length > 0) {
+      animateGroup(refs.herramientas.cards, {
+        useScrollTrigger: true,
+        stagger: 0.15,
+        y: 40,
+      });
+    }
   }
 
   return () => {
+    initialTl.kill();
     ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    gsap.killTweensOf("*");
   };
 };
+
+export const initAnimationsWithRefs = initAnimations;
