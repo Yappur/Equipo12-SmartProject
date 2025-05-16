@@ -5,7 +5,8 @@ import Modal from "../Modals/Modal";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import customStyles from "./DashboardsStyles";
+import {customStyles} from "./DashboardsStyles";
+import {paginationOptions} from "./DashboardsStyles";
 import ModalEditarVacante from "../Modals/ModalEditarVacante";
 import BotonEditar from "../../assets/img/editar.png";
 import { useAuth } from "../../context/AuthContext";
@@ -429,7 +430,7 @@ const VacanciesTable = () => {
               columns={columns}
               data={filtrarData}
               pagination
-              highlightOnHover
+              paginationComponentOptions={paginationOptions}
               pointerOnHover
               customStyles={customStyles}
               noDataComponent={

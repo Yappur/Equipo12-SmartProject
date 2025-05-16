@@ -5,7 +5,7 @@ import Modal from "../Modals/Modal";
 import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import customStyles from "./DashboardsStyles";
+import {customStyles} from "./DashboardsStyles";
 import flechasIcon from "../../assets/img/TableCandidatosIcon.png";
 import { useAuth } from "../../context/AuthContext";
 const Loader = () => (
