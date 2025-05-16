@@ -28,18 +28,17 @@ export default function AdminNavbar() {
     if (profileImg) {
       setImageError(false);
       setImageLoaded(false);
-
-      // Verificación de la imagen
-      const img = new Image();
-      img.src = profileImg;
-      img.onload = () => setImageLoaded(true);
-      img.onerror = () => setImageError(true);
     }
   }, [profileImg]);
 
   const handleImageError = () => {
     setImageLoaded(false);
     setImageError(true);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    setImageError(false);
   };
 
   const isValidImageUrl =
@@ -61,7 +60,7 @@ export default function AdminNavbar() {
   return (
     <header className="w-full bg-white shadow-sm border-b border-gray-200 px-4 py-6 flex justify-between items-center sticky top-0 z-20">
       <h2 className="text-sm sm:text-base text-[#00254B] font-medium">
-        Panel {role === "admin" ? "Super Administrador" : "de Recursos Humanos"}
+        Panel {role === "admin" ? "Supervisor" : "de Recursos Humanos"}
       </h2>
 
       <div className="flex items-center gap-3 sm:gap-4" ref={dropdownRef}>
@@ -82,6 +81,7 @@ export default function AdminNavbar() {
                 alt="Perfil"
                 className="h-10 w-10 rounded-full object-cover border border-gray-200"
                 onError={handleImageError}
+                onLoad={handleImageLoad}
               />
               {!imageLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50 rounded-full">

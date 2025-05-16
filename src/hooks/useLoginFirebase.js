@@ -30,8 +30,14 @@ const traducirFirebaseError = (errorCode) => {
 export const useLoginFirebase = () => {
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(false);
-  const { setIsAuthenticated, setRole, setNombre } = useAuth();
-  const navigate = useNavigate();
+const {
+  setIsAuthenticated,
+  setRole,
+  setNombre,
+  setProfileImg,
+  setIdUser,
+} = useAuth(); 
+ const navigate = useNavigate();
 
   const login = async ({ email, password, rememberMe = false }) => {
     setCargando(true);
@@ -66,9 +72,25 @@ export const useLoginFirebase = () => {
         idToken,
       });
 
+      const imagen = await axiosConfig.get(`/users/${data.uid}`);
+      if (imagen.data && imagen.data.photoURL) {
+        console.log("Imagen de usuario:", imagen.data.photoURL);
+        data.photoURL = imagen.data.photoURL;
+      }
+      
+
+      console.log("Respuesta backend:", data);
+
       setIsAuthenticated(true);
       setRole(data.role);
-      setNombre(data.displayName || email); // Asignar el nombre o correo al estado
+      setNombre(data.displayName || email);
+      setIdUser({
+        id: data.uid || data.id,
+        uid: data.uid,
+        role: data.role,
+        timestamp: Date.now(), // Agregamos un timestamp para forzar el cambio
+      });
+      setProfileImg(data.photoURL || data.photoUrl || null);
       return data;
     } catch (err) {
       console.error("Error de login:", err.code, err.message);
@@ -81,14 +103,25 @@ export const useLoginFirebase = () => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("authToken");
-    sessionStorage.removeItem("authToken");
-    setIsAuthenticated(false);
-    setRole(null);
-    setNombre(null);
-    navigate("/login");
-  };
+const logout = () => {
+  // 🔄 Limpiar LocalStorage y SessionStorage
+  localStorage.removeItem("authToken");
+  sessionStorage.removeItem("authToken");
+
+  // 🔄 Limpiar el contexto de autenticación
+  setIsAuthenticated(false);
+  setRole(null);
+  setProfileImg(null);
+  setNombre(null);
+  setIdUser(null);
+
+  // 🔄 Emitimos un evento global para que otros componentes se actualicen
+  window.dispatchEvent(new Event("userChanged"));
+
+  // 🔄 Redirigir al login
+  navigate("/login");
+};
+
 
   return { login, logout, error, cargando };
 };

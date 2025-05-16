@@ -27,7 +27,7 @@ const Sidebar = () => {
       return [
         ...baseItems,
         { title: "Vacantes", icon: Briefcase, path: "admin/panelVacantes" },
-        { title: "Candidatos", icon: Users, path: "/reclutador/candidatos" },
+        { title: "Candidatos", icon: Users, path: "/reclutador/CandidatosTable" },
         { title: "Reclutadores", icon: Users, path: "/admin/panelUsuarios" },
       ];
     } else if (role === "user") {
@@ -41,7 +41,7 @@ const Sidebar = () => {
         {
           title: "Candidatos",
           icon: Users,
-          path: "/reclutador/CandidatosTable",
+          path: "/reclutador/nuevaTabla",
         },
       ];
     } else {

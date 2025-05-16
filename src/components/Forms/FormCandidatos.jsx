@@ -3,12 +3,19 @@ import axiosConfig from "../../helpers/axios.config";
 import { uploadCV } from "../../firebase/Upload/uploadPDF";
 import { useAuth } from "../../context/AuthContext";
 import { ChevronDown } from "lucide-react";
-import { showToast } from "../../components/Modals/CustomToaster";
+import toast from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom";
+
 
 const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const { idUser } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const vacancyIdFromURL = queryParams.get("vacancyId");
+
   const [vacanciesList, setVacanciesList] = useState([]);
-  const [selectedVacancyId, setSelectedVacancyId] = useState(vacancyId || "");
+  const [selectedVacancyId, setSelectedVacancyId] = useState(vacancyIdFromURL || vacancyId || "");
   const [candidato, setCandidato] = useState({
     fullName: "",
     email: "",
@@ -20,25 +27,24 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const [loadingVacancies, setLoadingVacancies] = useState(false);
   const [loadingCV, setLoadingCV] = useState(false);
 
+
+
   useEffect(() => {
     const fetchRecruiterVacancies = async () => {
       if (isRecruiter && idUser) {
         try {
           setLoadingVacancies(true);
-          console.log("Buscando vacantes para el reclutador:", idUser);
           const response = await axiosConfig.get("/vacancies");
-          console.log("Vacantes obtenidas:", response.data);
-
-          const recruiterVacancies = response.data.filter((vacancy) => {
-            console.log(`Comparando: ${vacancy.userId} con ${idUser.id}`);
-            return String(vacancy.userId) === String(idUser.id);
-          });
+          const recruiterVacancies = response.data.filter((vacancy) => String(vacancy.userId) === String(idUser.id));
 
           console.log("Vacantes filtradas:", recruiterVacancies);
           setVacanciesList(recruiterVacancies);
 
-          if (vacancyId) {
-            console.log("Usando vacancyId proporcionado:", vacancyId);
+          if (vacancyIdFromURL && recruiterVacancies.some(v => v.id === vacancyIdFromURL)) {
+            console.log("Usando vacancyId proporcionado desde URL:", vacancyIdFromURL);
+            setSelectedVacancyId(vacancyIdFromURL);
+          } else if (vacancyId && recruiterVacancies.some(v => v.id === vacancyId)) {
+            console.log("Usando vacancyId proporcionado como prop:", vacancyId);
             setSelectedVacancyId(vacancyId);
           } else if (recruiterVacancies.length > 0 && !selectedVacancyId) {
             console.log("Usando primera vacante:", recruiterVacancies[0].id);
@@ -49,9 +55,9 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
         } finally {
           setLoadingVacancies(false);
         }
-      } else if (vacancyId) {
-        console.log("No es reclutador pero hay vacancyId:", vacancyId);
-        setSelectedVacancyId(vacancyId);
+      } else if (vacancyIdFromURL) {
+        console.log("No es reclutador pero hay vacancyId en URL:", vacancyIdFromURL);
+        setSelectedVacancyId(vacancyIdFromURL);
         setLoadingVacancies(false);
       } else {
         setLoadingVacancies(false);
@@ -59,14 +65,14 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     };
 
     fetchRecruiterVacancies();
-  }, [isRecruiter, idUser, vacancyId]);
+  }, [isRecruiter, idUser, vacancyIdFromURL]);
 
   useEffect(() => {
-    if (vacancyId) {
-      console.log("vacancyId cambió a:", vacancyId);
-      setSelectedVacancyId(vacancyId);
+    if (vacancyIdFromURL) {
+      console.log("vacancyId cambió a:", vacancyIdFromURL);
+      setSelectedVacancyId(vacancyIdFromURL);
     }
-  }, [vacancyId]);
+  }, [vacancyIdFromURL]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -132,14 +138,14 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       const response = await axiosConfig.post("/applications", candidatoData);
       console.log("Respuesta:", response.data);
 
-      showToast("Postulacion enviada exitosamente", "success");
+      toast.success("Postulacion enviada exitosamente");
+      navigate(`/reclutador/ver/candidatos/${finalVacancyId}`);
       onClose();
     } catch (error) {
       console.error("Error al crear el candidato:", error);
-      showToast(
+      toast.error(
         `Error al crear el candidato: ${error.response?.data?.message || error.message
-        }`,
-        "error"
+        }`
       );
     } finally {
       setCargando(false);
@@ -211,10 +217,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                   <option value="">Seleccionar una vacante</option>
                   {vacanciesList.map((vacancy) => (
                     <option key={vacancy.id} value={vacancy.id}>
-                      {vacancy.title ||
-                        vacancy.nombre ||
-                        vacancy.puesto ||
-                        "Vacante sin título"}
+                      {vacancy.title || vacancy.nombre || vacancy.puesto || "Vacante sin título"}
                     </option>
                   ))}
                 </select>

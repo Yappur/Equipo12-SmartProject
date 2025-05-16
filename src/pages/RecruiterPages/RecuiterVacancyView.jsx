@@ -5,6 +5,9 @@ import { FiMonitor } from "react-icons/fi";
 import { LuClock5 } from "react-icons/lu";
 import { RiMapPinLine } from "react-icons/ri";
 import { FaRegClipboard, FaArrowRightArrowLeft } from "react-icons/fa6";
+import MenuOpciones from "../../components/Navigate/MenuOpciones";
+import ModalEditarVacante from "../../components/Modals/ModalEditarVacante";
+
 
 const isAuthenticated = true;
 
@@ -13,32 +16,63 @@ const RecuiterVacancyView = () => {
   const [vacante, setVacante] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedVacancy, setSelectedVacancy] = useState(null);
+
+  const handleEditVacancy = (vacancy) => {
+    setSelectedVacancy(vacancy);
+    setIsModalOpen(true);
+  };
+
+  const obtenerVacante = async () => {
+    try {
+      console.log("Renderizó la vista del reclutador");
+
+      const response = await axiosConfig.get(`/vacancies/${id}`);
+      console.log("Vacantes obtenidas:", response.data);
+
+      if (!response.data) {
+        console.warn("Vacante no encontrada con ID:", id);
+        setError("No se encontró la vacante con ese ID.");
+      } else {
+        console.log("Vacante encontrada:", response.data);
+        setVacante(response.data);
+      }
+    } catch (error) {
+      console.error(
+        "Error al obtener vacantes:",
+        error.response?.data || error.message
+      );
+      setError("No se pudo cargar la vacante");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const eliminarVacante = async () => {
+    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar esta vacante?");
+    if (!confirmDelete) return;
+
+    try {
+      if (!id) {
+        console.error("❌ No se encontró un ID para eliminar.");
+        return;
+      }
+
+      await axiosConfig.delete(`/vacancies/${id}`);
+      alert("✅ La vacante se eliminó correctamente.");
+
+      // Redireccionar a la lista de vacantes después de eliminar
+      window.location.href = "/reclutador/vacantes";
+    } catch (error) {
+      console.error("❌ Error al eliminar la vacante:", error.message);
+      alert("Hubo un error al eliminar la vacante.");
+    }
+  };
+
 
   useEffect(() => {
-    const obtenerVacante = async () => {
-      try {
-        console.log("Renderizó la vista del reclutador");
 
-        const response = await axiosConfig.get(`/vacancies/${id}`);
-        console.log("Vacantes obtenidas:", response.data);
-
-        if (!response.data) {
-          console.warn("Vacante no encontrada con ID:", id);
-          setError("No se encontró la vacante con ese ID.");
-        } else {
-          console.log("Vacante encontrada:", response.data);
-          setVacante(response.data);
-        }
-      } catch (error) {
-        console.error(
-          "Error al obtener vacantes:",
-          error.response?.data || error.message
-        );
-        setError("No se pudo cargar la vacante");
-      } finally {
-        setLoading(false);
-      }
-    };
 
     obtenerVacante();
   }, [id]);
@@ -57,7 +91,16 @@ const RecuiterVacancyView = () => {
   ];
 
   return (
-    <div className="container mx-auto py-10 px-4 sm:px-8">
+    <div className="container mx-auto py-10 px-4 sm:px-8 relative">
+      <MenuOpciones
+        onEdit={() => handleEditVacancy(vacante)}
+        onClose={() => console.log("Cerrar vacante")}
+        onLoadCandidate={() => console.log("Cargar candidato")}
+        onDelete={eliminarVacante}
+        estado={vacante.estado}
+        idVacante={id} // ✅ Aquí le pasamos el ID
+        className="absolute top-20 right-4"
+      />
       <h1 className="text-3xl font-medium text-[#152D53] mb-10">
         {vacante.nombre} {vacante.puesto}
       </h1>
@@ -69,8 +112,7 @@ const RecuiterVacancyView = () => {
               key={item.title}
               to={item.path}
               className={({ isActive }) =>
-                `pb-2 relative font-semibold transition-colors duration-200 ${
-                  isActive ? "text-black" : "text-black hover:text-[#535353]"
+                `pb-2 relative font-semibold transition-colors duration-200 ${isActive ? "text-black" : "text-black hover:text-[#535353]"
                 }`
               }
             >
@@ -139,6 +181,13 @@ const RecuiterVacancyView = () => {
           </div>
         </div>
       </div>
+      <ModalEditarVacante
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        vacancy={selectedVacancy}
+        refreshVacancies={() => obtenerVacante()}
+      />
+
     </div>
   );
 };
