@@ -7,6 +7,7 @@ import Modal from "../../components/Modals/Modal";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { cambiarTitulo } from "../../hooks/useCambiarTitulo";
 import { showToast } from "../../components/Modals/CustomToaster";
+import { useForm } from "react-hook-form";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,15 +15,26 @@ const LoginPage = () => {
   const { isAuthenticated, role, updateNombre, updateProfileImage } = useAuth();
   const navigate = useNavigate();
 
-  const [successModal, setSuccessModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Estados para manejar errores de validación
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const emailValue = watch("email");
+  const passwordValue = watch("password");
+  const formIsEmpty = !emailValue || !passwordValue;
 
   useEffect(() => {
     cambiarTitulo("Login");
@@ -35,37 +47,8 @@ const LoginPage = () => {
     }
   }, [error]);
 
-  // Comprueba simplemente si los campos están vacíos
-  const isEmpty = (value) => {
-    return value.trim() === "";
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormSubmitted(true);
-
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-
-    // Comprobar si los campos están vacíos
-    if (isEmpty(email)) {
-      setEmailError("Tienes que poner un correo válido");
-    } else {
-      setEmailError("");
-    }
-
-    if (isEmpty(password)) {
-      setPasswordError("Tienes que poner una contraseña válida");
-    } else {
-      setPasswordError("");
-    }
-
-    // Si algún campo está vacío, mostrar el modal y cancelar la acción
-    if (isEmpty(email) || isEmpty(password)) {
-      setModalMessage("Por favor, completa todos los campos correctamente.");
-      setErrorModal(true);
-      return; // Cancelar la acción
-    }
+  const onSubmit = async (data) => {
+    const { email, password } = data;
 
     const resultado = await login({ email, password, rememberMe });
     if (resultado) {
@@ -97,10 +80,6 @@ const LoginPage = () => {
     setRememberMe(e.target.checked);
   };
 
-  const handleCloseSuccessModal = () => {
-    setSuccessModal(false);
-  };
-
   const handleCloseErrorModal = () => {
     setErrorModal(false);
   };
@@ -111,57 +90,73 @@ const LoginPage = () => {
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
             <div className="p-8 md:p-12 text-black flex flex-col justify-center">
-              <h1 className="font-bold text-5xl  text-center mb-2 drop-shadow tracking-wide">
+              <h1 className="font-bold text-5xl text-center mb-2 drop-shadow tracking-wide">
                 <span className="text-[#152d53]">Talent </span>
                 <span className="text-[#F88623] italic">Match</span>
               </h1>
 
-              <form className="space-y-4" onSubmit={handleSubmit}>
+              <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                 <div className="my-6">
-                  <h2 className=" text-gray-800">Email</h2>
+                  <h2 className="text-gray-800">Email</h2>
                   <input
                     type="email"
-                    name="email"
+                    {...register("email", {
+                      required: true,
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "El formato del correo es inválido",
+                      },
+                    })}
                     className={`w-full p-2.5 mt-1 ${
-                      emailError
-                        ? "bg-red-50 border-red-300"
+                      errors.email
+                        ? "bg-red-50 border-red-500"
                         : "bg-white border-gray-400"
-                    } border border-gray-300 rounded-xl placeholder-gray-600 py-3 text-sm focus:ring-2 focus:ring-black focus:outline-none`}
+                    } border rounded-xl placeholder-gray-600 py-3 text-sm`}
                     placeholder="Introduce tu mail..."
-                    required
                   />
-                  {emailError && (
-                    <p className="text-red-500 text-sm">{emailError}</p>
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.email.message || "El formato del correo es inválido"}
+                    </p>
                   )}
                 </div>
 
                 <div className="relative">
-                  <h2 className=" text-gray-800">Contraseña</h2>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    className={`w-full p-2.5 ${
-                      passwordError
-                        ? "bg-red-50 border-red-300"
-                        : "bg-white border-gray-400"
-                    } border border-gray-300 rounded-xl placeholder-gray-600 py-3 text-sm focus:ring-2 focus:ring-black focus:outline-none pr-10`}
-                    placeholder="Introduce tu contraseña..."
-                    required
-                  />
-                  {passwordError && (
-                    <p className="text-red-500 text-sm">{passwordError}</p>
+                  <h2 className="text-gray-800">Contraseña</h2>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      {...register("password", {
+                        required: true,
+                        minLength: {
+                          value: 8,
+                          message: "La contraseña debe tener al menos 8 carácteres",
+                        },
+                      })}
+                      className={`w-full p-2.5 ${
+                        errors.password
+                          ? "bg-red-50 border-red-500"
+                          : "bg-white border-gray-400"
+                      } border rounded-xl placeholder-gray-600 py-3 text-sm pr-10`}
+                      placeholder="Introduce tu contraseña..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xl"
+                    >
+                      {showPassword ? (
+                        <FaRegEye className="text-[#152d53]" />
+                      ) : (
+                        <FaRegEyeSlash className="text-gray-500" />
+                      )}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.password.message || "La contraseña debe tener al menos 8 carácteres"}
+                    </p>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-3xl mt-3.5"
-                  >
-                    {showPassword ? (
-                      <FaRegEye className="text-[#152d53]" />
-                    ) : (
-                      <FaRegEyeSlash className="text-gray-500" />
-                    )}
-                  </button>
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
@@ -179,8 +174,12 @@ const LoginPage = () => {
                 <div className="mt-7 block">
                   <button
                     type="submit"
-                    disabled={cargando}
-                    className="inter text-2xl w-1/2 flex items-center justify-center mx-auto bg-[#152d53] hover:bg-[#181f31] text-white font-semilight py-2 rounded-md transition shadow-sm shadow-blue-950"
+                    disabled={formIsEmpty || cargando || !isValid}
+                    className={`inter text-2xl w-1/2 flex items-center justify-center mx-auto ${
+                      formIsEmpty || !isValid
+                        ? "bg-[#e8e8e8] text-[#8e8e8e] border border-[#8e8e8e]"
+                        : "bg-[#152d53] hover:bg-[#181f31] text-white shadow-sm shadow-blue-950"
+                    } font-semilight py-2 rounded-md transition`}
                   >
                     {cargando ? "Iniciando..." : "Iniciar sesión"}
                   </button>
