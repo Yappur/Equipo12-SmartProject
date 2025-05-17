@@ -6,21 +6,17 @@ import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import { FaPlus } from "react-icons/fa";
 import { customStyles, paginationOptions } from "./DashboardsStyles";
-import ModalEditarVacante from "../Modals/ModalEditarVacante";
-import BotonEditar from "../../assets/img/editar.png";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../Modals/CustomToaster";
 import PdfModal from "../Modals/PdfModal";
 import IconoCV from "@/assets/img/cvIcon.png";
+import Loader from "../Common/Loader";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
-const Loader = () => (
-  <div className="flex justify-center items-center py-20">
-    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    <p className="ml-4 text-gray-600 font-medium">Cargando Candidatos..</p>
-  </div>
-);
+<Loader text="Cargando Vacantes..." />;
 
 const CandidatosDelReclutador = () => {
+  useCambiarTitulo("MisCandidatos");
   const [filtrarVacantes, setFiltrarVacantes] = useState("");
   const [vacantes, setVacantes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,9 +32,6 @@ const CandidatosDelReclutador = () => {
   const [ubicaciones, setUbicaciones] = useState([]);
   const [tempFieldValue, setTempFieldValue] = useState("");
   const [tempFieldName, setTempFieldName] = useState("");
-  const [editModal, setEditModal] = useState(false);
-  const [vacancyToEdit, setVacancyToEdit] = useState(null);
-  const [changeModalidadModal, setChangeModalidadModal] = useState(false);
   const [selectedCV, setSelectedCV] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const { idUser } = useAuth();
@@ -48,14 +41,12 @@ const CandidatosDelReclutador = () => {
       setLoading(true);
       setError(null);
 
-      // 🔄 Endpoint actualizado al de la imagen
       const response = await axiosConfig.get(`/applications/${idUser?.uid}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      // 🔄 Asignar los datos obtenidos al estado
       setVacantes(response.data);
       console.log("✅ Aplicaciones obtenidas: ", response.data);
     } catch (error) {
@@ -67,7 +58,6 @@ const CandidatosDelReclutador = () => {
     }
   };
 
-  // Efecto para obtener las vacantes al cargar el componente
   useEffect(() => {
     if (idUser?.uid) {
       console.log(
@@ -85,7 +75,6 @@ const CandidatosDelReclutador = () => {
       await axiosConfig.patch(`/applications/${application.id}/status`, {
         status: nuevoEstado,
       });
-      // Actualizamos el estado localmente
       setVacantes((prev) =>
         prev.map((item) =>
           item.id === application.id ? { ...item, status: nuevoEstado } : item
@@ -102,11 +91,6 @@ const CandidatosDelReclutador = () => {
 
   const refreshVacantes = () => {
     obtenerVacantes();
-  };
-
-  const openDeleteModal = (vacancy) => {
-    setSelectedVacancy(vacancy);
-    setDeleteModal(true);
   };
 
   const openChangeStatusModal = (vacancy, newStatus) => {
@@ -230,18 +214,18 @@ const CandidatosDelReclutador = () => {
           "Descartado",
         ];
 
-        let colorClass = "bg-[#FCFFD2] text-black";
+        let colorClass = "bg-[#ECE8DC] text-black";
         if (row.status === "Entrevista") colorClass = "bg-[#D8E9FF] text-black";
         if (row.status === "Finalista") colorClass = "bg-[#A9EDC8] text-black";
         if (row.status === "Descartado") colorClass = "bg-[#FBAAB2] text-black";
         if (row.status === "En revisión")
-          colorClass = "bg-[#ECE8DC] text-black";
+          colorClass = "bg-[#FCFFD2] text-black";
 
         return (
           <select
             value={row.status}
             onChange={(e) => cambiarEstado(row, e.target.value)}
-            className={`text-[14px] border border-gray-300 rounded-full px-2 py-1 ${colorClass}`}
+            className={`text-[14px] rounded-full px-2 py-1 ${colorClass}`}
           >
             {estados.map((estado) => (
               <option key={estado} value={estado}>
@@ -342,7 +326,7 @@ const CandidatosDelReclutador = () => {
         {loading ? (
           <Loader />
         ) : (
-          <div className="bg-white rounded-lg shadow">
+          <div className="mt-4">
             <DataTable
               columns={columns}
               data={filtrarData}

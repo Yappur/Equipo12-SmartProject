@@ -7,11 +7,13 @@ import { RiMapPinLine } from "react-icons/ri";
 import { FaRegClipboard, FaArrowRightArrowLeft } from "react-icons/fa6";
 import MenuOpciones from "../../components/Navigate/MenuOpciones";
 import ModalEditarVacante from "../../components/Modals/ModalEditarVacante";
-
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
+import { showToast } from "../../components/Modals/CustomToaster";
 
 const isAuthenticated = true;
 
 const RecuiterVacancyView = () => {
+  useCambiarTitulo("DetalleVacante");
   const { id } = useParams();
   const [vacante, setVacante] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,16 +28,10 @@ const RecuiterVacancyView = () => {
 
   const obtenerVacante = async () => {
     try {
-      console.log("Renderizó la vista del reclutador");
-
       const response = await axiosConfig.get(`/vacancies/${id}`);
-      console.log("Vacantes obtenidas:", response.data);
-
       if (!response.data) {
-        console.warn("Vacante no encontrada con ID:", id);
         setError("No se encontró la vacante con ese ID.");
       } else {
-        console.log("Vacante encontrada:", response.data);
         setVacante(response.data);
       }
     } catch (error) {
@@ -50,7 +46,9 @@ const RecuiterVacancyView = () => {
   };
 
   const eliminarVacante = async () => {
-    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar esta vacante?");
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de que deseas eliminar esta vacante?"
+    );
     if (!confirmDelete) return;
 
     try {
@@ -60,9 +58,8 @@ const RecuiterVacancyView = () => {
       }
 
       await axiosConfig.delete(`/vacancies/${id}`);
-      alert("✅ La vacante se eliminó correctamente.");
+      showToast("La vacante fue eliminada correctamente", "success");
 
-      // Redireccionar a la lista de vacantes después de eliminar
       window.location.href = "/reclutador/vacantes";
     } catch (error) {
       console.error("❌ Error al eliminar la vacante:", error.message);
@@ -70,10 +67,7 @@ const RecuiterVacancyView = () => {
     }
   };
 
-
   useEffect(() => {
-
-
     obtenerVacante();
   }, [id]);
 
@@ -112,7 +106,8 @@ const RecuiterVacancyView = () => {
               key={item.title}
               to={item.path}
               className={({ isActive }) =>
-                `pb-2 relative font-semibold transition-colors duration-200 ${isActive ? "text-black" : "text-black hover:text-[#535353]"
+                `pb-2 relative font-semibold transition-colors duration-200 ${
+                  isActive ? "text-black" : "text-black hover:text-[#535353]"
                 }`
               }
             >
@@ -134,14 +129,12 @@ const RecuiterVacancyView = () => {
         {/* Columna Izquierda */}
         <div className="md:col-span-2">
           <section className="rounded-lg p-4 ">
-            <h2 className="text-2xl ml-6 font-semilight mb-6">Descripción</h2>
+            <h2 className="text-2xl font-semilight mb-6">Descripción</h2>
             <div className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden">
               {vacante.descripcion ||
                 "Sin descripción, comunicate con el reclutador."}
             </div>
-            <h2 className="text-2xl ml-5 font-semilight mb-6">
-              Responsabilidades
-            </h2>
+            <h2 className="text-2xl font-semilight mb-6">Responsabilidades</h2>
             <div className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden">
               {vacante.responsabilidades ||
                 "Sin responsabilidades, comunicate con el reclutador."}
@@ -187,7 +180,6 @@ const RecuiterVacancyView = () => {
         vacancy={selectedVacancy}
         refreshVacancies={() => obtenerVacante()}
       />
-
     </div>
   );
 };

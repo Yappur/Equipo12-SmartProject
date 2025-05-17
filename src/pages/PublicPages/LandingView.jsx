@@ -70,14 +70,11 @@ export default function AnimatedLandingView() {
       },
     };
 
-    // Iniciar animaciones y obtener función de limpieza
     const cleanup = initAnimations(refs);
 
-    // Limpiar animaciones cuando el componente se desmonte
     return cleanup;
   }, []);
 
-  // Función auxiliar para manejar las referencias múltiples
   const addToRefs = (el, refsArray) => {
     if (el && !refsArray.current.includes(el)) {
       refsArray.current.push(el);
