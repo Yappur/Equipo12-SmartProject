@@ -30,6 +30,13 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const [loadingCV, setLoadingCV] = useState(false);
   const [fileError, setFileError] = useState("");
   const [errorModal, setErrorModal] = useState(false);
+  const [errores, setErrores] = useState({
+    fullName: false,
+    email: false,
+    phone: false,
+    vacancyId: false,
+    cvUrl: false,
+  });
 
   useEffect(() => {
     const fetchRecruiterVacancies = async () => {
@@ -104,20 +111,35 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   };
 
   const validatePdfFile = (file) => {
-    if (!file) return false;
+    if (!file)
+      return { valid: false, message: "No se ha seleccionado ningún archivo" };
 
     const fileType = file.type;
     const fileName = file.name.toLowerCase();
+    const fileSize = file.size;
+    const maxSize = 5 * 1024 * 1024;
 
     if (fileType !== "application/pdf") {
-      return false;
+      return {
+        valid: false,
+        message: "Tipo de archivo no válido. Solo se permiten archivos PDF",
+      };
     }
 
     if (!fileName.endsWith(".pdf")) {
-      return false;
+      return {
+        valid: false,
+        message: "El archivo debe tener extensión .pdf",
+      };
     }
 
-    return true;
+    if (fileSize > maxSize) {
+      return {
+        valid: false,
+        message: "El tamaño del archivo excede el límite de 5MB",
+      };
+    }
+    return { valid: true, message: "" };
   };
 
   const handleFileChange = async (e) => {
@@ -149,7 +171,18 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!candidato.cvUrl) {
+    const nuevosErrores = {
+      fullName: candidato.fullName.trim() === "",
+      email: candidato.email.trim() === "",
+      phone: candidato.phone.trim() === "",
+      vacancyId: isRecruiter && !selectedVacancyId,
+      cvUrl: !candidato.cvUrl,
+    };
+
+    setErrores(nuevosErrores);
+
+    const hayErrores = Object.values(nuevosErrores).some((error) => error);
+    if (hayErrores) {
       setErrorModal(true);
       return;
     }
@@ -157,26 +190,14 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     setCargando(true);
     try {
       const finalVacancyId = isRecruiter ? selectedVacancyId : vacancyId;
-
-      if (!finalVacancyId) {
-        setErrorModal(true);
-        setCargando(false);
-        return;
-      }
-
       const candidatoData = {
-        fullName: candidato.fullName,
-        email: candidato.email,
-        phone: candidato.phone,
-        cvUrl: candidato.cvUrl,
-        status: candidato.status,
+        ...candidato,
         vacancyId: finalVacancyId,
       };
 
       const response = await axiosConfig.post("/applications", candidatoData);
-      console.log("Respuesta:", response.data);
+      showToast("Postulación enviada exitosamente", "success");
 
-      showToast("Postulacion enviada exitosamente", "success");
       if (isRecruiter) {
         navigate(`/reclutador/ver/candidatos/${finalVacancyId}`);
       } else {
@@ -185,11 +206,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
       onClose();
     } catch (error) {
       console.error("Error al crear el candidato:", error);
-      toast.error(
-        `Error al crear el candidato: ${
-          error.response?.data?.message || error.message
-        }`
-      );
+      setErrorModal(true);
     } finally {
       setCargando(false);
     }
@@ -197,7 +214,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
 
   return (
     <>
-      <div className="p-4 w-full">
+      <div className="p-6 w-full">
         <div className="bg-white p-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
             <div className="my-2">
@@ -209,10 +226,19 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                 name="fullName"
                 value={candidato.fullName}
                 onChange={handleChange}
-                className="w-full p-3 bg-[#f5f2ea] rounded border-none"
+                className={`w-full p-3 rounded-2xl border ${
+                  errores.fullName
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-500"
+                }`}
                 placeholder="Nombre completo"
                 required
               />
+              {errores.fullName && (
+                <p className="text-sm text-red-500 mt-1">
+                  Este campo es obligatorio
+                </p>
+              )}
             </div>
 
             <div className="my-2">
@@ -224,10 +250,17 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                 name="email"
                 value={candidato.email}
                 onChange={handleChange}
-                className="w-full p-3 bg-[#f5f2ea] rounded border-none"
+                className={`w-full p-3 rounded-2xl border ${
+                  errores.email ? "border-red-500 bg-red-50" : "border-gray-500"
+                }`}
                 placeholder="email@ejemplo.com"
                 required
               />
+              {errores.email && (
+                <p className="text-sm text-red-500 mt-1">
+                  Este campo es obligatorio
+                </p>
+              )}
             </div>
 
             <div className="my-2">
@@ -239,10 +272,17 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                 name="phone"
                 value={candidato.phone}
                 onChange={handleChange}
-                className="w-full p-3 bg-[#f5f2ea] rounded border-none"
+                className={`w-full p-3 rounded-2xl border ${
+                  errores.phone ? "border-red-500 bg-red-50" : "border-gray-500"
+                }`}
                 placeholder="+123456789"
                 required
               />
+              {errores.phone && (
+                <p className="text-sm text-red-500 mt-1">
+                  Este campo es obligatorio
+                </p>
+              )}
             </div>
 
             {isRecruiter && (
@@ -255,7 +295,12 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                     name="vacancyId"
                     value={selectedVacancyId}
                     onChange={handleVacancyChange}
-                    className="w-full p-3 bg-[#f5f2ea] rounded border-none appearance-none pr-10"
+                    className={`w-full p-3 rounded-2xl border appearance-none
+                    pr-10 ${
+                      errores.vacancyId
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-500"
+                    }`}
                     required
                   >
                     <option value="">Seleccionar una vacante</option>
@@ -285,21 +330,31 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                     Cargando vacantes...
                   </p>
                 )}
+
+                {errores.vacancyId && (
+                  <p className="text-sm text-red-500 mt-1">
+                    Este campo es obligatorio
+                  </p>
+                )}
               </div>
             )}
           </div>
 
           <div className="col-span-2 mt-5">
-            <label className="block text-sm font-semilight mb-1">
-              Importar CV (Solo PDF)<span className="text-red-500">*</span>
+            <label className="inline-block md:w-1/4  w-full border border-gray-300 cursor-pointer p-2 text-center bg-white rounded hover:bg-gray-200 transition">
+              <span className="font-medium text-xl text-center align-middle">
+                +
+              </span>{" "}
+              Adjuntar CV
+              <input
+                type="file"
+                accept="application/pdf, .pdf"
+                onChange={handleFileChange}
+                className="hidden"
+                disabled={loadingCV}
+              />
             </label>
-            <input
-              type="file"
-              accept="application/pdf, .pdf"
-              onChange={handleFileChange}
-              className="w-full p-3 bg-[#f5f2ea] rounded border-none"
-              disabled={loadingCV}
-            />
+
             {fileError && (
               <p className="text-sm text-red-500 mt-1">{fileError}</p>
             )}
@@ -315,11 +370,11 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
+          <div className="flex flex-col sm:flex-row justify-end gap-5 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-400 rounded bg-white text-black order-2 sm:order-1 mt-2 sm:mt-0"
+              className="px-7 py-2 border border-gray-400 rounded bg-white text-black order-2 sm:order-1 mt-2 sm:mt-0"
             >
               Cancelar
             </button>
@@ -327,7 +382,7 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
               type="button"
               onClick={handleSubmit}
               disabled={cargando || loadingCV}
-              className="px-4 py-2 bg-[#00254B] text-white rounded hover:bg-[#001a38] sm:order-2"
+              className="px-7 py-2 bg-[#F88623] text-white rounded hover:bg-[#F88623]/90 order-1 sm:order-2 shadow-lg shadow-gray-500/50"
             >
               {cargando ? "Cargando..." : "Guardar"}
             </button>

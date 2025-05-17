@@ -428,11 +428,11 @@ const Perfil = () => {
                             return true;
                           },
                         })}
-                        className={`bg-[#f5f2ec] border ${
+                        className={`w-full p-3 rounded-xl border   ${
                           errorsPerfil.displayName
                             ? "border-red-500"
-                            : "border-[#f5f2ec]"
-                        } rounded-md p-3`}
+                            : "border-gray-500"
+                        }`}
                         placeholder="Escribe tu nombre y apellido"
                       />
                       {errorsPerfil.displayName && (
@@ -458,11 +458,11 @@ const Perfil = () => {
                             message: "Ingrese un número de teléfono válido",
                           },
                         })}
-                        className={`bg-[#f5f2ec] border ${
+                        className={`w-full p-3 rounded-xl border ${
                           errorsPerfil.phoneNumber
                             ? "border-red-500"
-                            : "border-[#f5f2ec]"
-                        } rounded-md p-3`}
+                            : "border-gray-500"
+                        } `}
                         placeholder="Ej: +52123456789"
                       />
                       {errorsPerfil.phoneNumber && (
@@ -483,7 +483,7 @@ const Perfil = () => {
                         type="email"
                         id="email"
                         {...registerPerfil("email")}
-                        className="bg-[#f5f2ec] border border-[#f5f2ec] rounded-md p-3"
+                        className="w-full p-3 rounded-xl border border-gray-500"
                         disabled
                       />
                       <p className="text-xs text-gray-500">
@@ -502,7 +502,7 @@ const Perfil = () => {
                         type="text"
                         id="role"
                         {...registerPerfil("role")}
-                        className="bg-[#f5f2ec] border border-[#f5f2ec] rounded-md p-3"
+                        className="w-full p-3 rounded-xl border border-gray-500"
                         disabled
                       />
                       <p className="text-xs text-gray-500">
@@ -556,10 +556,10 @@ const Perfil = () => {
                               "La contraseña debe tener al menos 5 caracteres",
                           },
                         })}
-                        className={`bg-[#f5f2ec] border ${
+                        className={`w-full p-3 rounded-xl border border-gray-500 ${
                           errorsSeguridad.passwordActual
                             ? "border-red-500"
-                            : "border-[#f5f2ec]"
+                            : "border-gray-500"
                         } rounded-md p-3`}
                         placeholder="Contraseña actual"
                       />
@@ -588,10 +588,10 @@ const Perfil = () => {
                               "La contraseña debe tener al menos 5 caracteres",
                           },
                         })}
-                        className={`bg-[#f5f2ec] border ${
+                        className={`w-full p-3 rounded-xl border border-gray-500 ${
                           errorsSeguridad.password
                             ? "border-red-500"
-                            : "border-[#f5f2ec]"
+                            : "border-gray-500"
                         } rounded-md p-3`}
                         placeholder="Crea una nueva contraseña"
                       />
@@ -618,11 +618,11 @@ const Perfil = () => {
                             value === watchPassword ||
                             "Las contraseñas no coinciden",
                         })}
-                        className={`bg-[#f5f2ec] border ${
+                        className={`w-full p-3 rounded-xl border border-gray-500 ${
                           errorsSeguridad.passwordConfirmacion
                             ? "border-red-500"
-                            : "border-[#f5f2ec]"
-                        } rounded-md p-3`}
+                            : "border-gray-500"
+                        } `}
                         placeholder="Confirma tu nueva contraseña"
                       />
                       {errorsSeguridad.passwordConfirmacion && (

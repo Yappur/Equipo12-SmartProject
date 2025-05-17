@@ -371,7 +371,7 @@ const VacanciesTable = () => {
 
   return (
     <>
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <div className="bg-white p-6 rounded-lg">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl poppins text-[#152D53]">Vacantes</h1>
           {idUser.role !== "admin" && (
@@ -409,7 +409,7 @@ const VacanciesTable = () => {
         {loading ? (
           <Loader />
         ) : (
-          <div className="bg-white rounded-lg shadow">
+          <div className="bg-white rounded-lg">
             <DataTable
               columns={columns}
               data={filtrarData}
