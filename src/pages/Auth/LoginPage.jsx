@@ -116,8 +116,7 @@ const LoginPage = () => {
                   />
                   {errors.email && (
                     <p className="text-red-500 text-sm mt-1">
-                      {errors.email.message ||
-                        "El formato del correo es inválido"}
+                      {errors.email.message || "Ingresa un correo válido"}
                     </p>
                   )}
                 </div>
@@ -131,8 +130,7 @@ const LoginPage = () => {
                         required: true,
                         minLength: {
                           value: 8,
-                          message:
-                            "La contraseña debe tener al menos 8 carácteres",
+                          message: "Ingresa una contraseña valida",
                         },
                       })}
                       className={`w-full p-2.5 ${

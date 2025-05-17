@@ -4,7 +4,7 @@ import DataTable from "react-data-table-component";
 import Modal from "../Modals/Modal";
 import axiosConfig from "../../helpers/axios.config";
 import { FaRegTrashAlt, FaPlus, FaChevronDown } from "react-icons/fa";
-import {customStyles, paginationOptions} from "./DashboardsStyles";
+import { customStyles, paginationOptions } from "./DashboardsStyles";
 import Loader from "../Common/Loader";
 import SearchBar from "./SearchBar";
 import { showToast } from "../Modals/CustomToaster";
@@ -191,7 +191,7 @@ const UserTable = () => {
   return (
     <div className="p-6 rounded-lg">
       <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl poppins text-[#152D53]">Usuarios</h1>
+        <h1 className="text-2xl poppins text-[#152D53]">Usuarios</h1>
         <Link
           to={"/admin/crear/usuario"}
           className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"

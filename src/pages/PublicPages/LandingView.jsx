@@ -83,7 +83,7 @@ export default function AnimatedLandingView() {
             <div className="space-y-6 md:space-y-8">
               <h2
                 ref={heroTitleRef}
-                className="text-3xl md:text-5xl font-medium text-gray-800 leading-tight [text-wrap:balance]"
+                className="text-3xl md:text-5xl text-gray-800 leading-tight [text-wrap:balance]"
               >
                 Encuentra talento todo en un solo lugar.
               </h2>
@@ -101,7 +101,7 @@ export default function AnimatedLandingView() {
                 <Link
                   ref={heroButtonRef}
                   to="/about"
-                  className="bg-[#152d53] hover:bg-blue-950 text-white rounded-full px-12 py-4 inline-block transform transition-transform hover:scale-105 duration-300"
+                  className="bg-[#152d53] hover:bg-blue-950 font-medium shadow-md shadow-[#152d53]/60 text-white rounded-full px-12 py-4 inline-block transform transition-transform hover:scale-105 duration-300"
                 >
                   Comienza acá
                 </Link>
@@ -166,20 +166,23 @@ export default function AnimatedLandingView() {
           </section>
 
           {/* Recruiters Section */}
-          <section className="py-16 container mx-auto md-px-0 px-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <section className="py-16 px-5 md:px-0 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center">
+              {/* Imagen (se oculta en pantallas pequeñas) */}
               <div className="order-2 md:order-1">
                 <div
                   ref={recruitersImageRef}
-                  className="relative w-full h-80 md:h-96 rounded-lg overflow-hidden"
+                  className="relative w-full h-80 md:h-126 rounded-4xl overflow-hidden"
                 >
                   <img
                     src={imgVacantes || "/placeholder.svg"}
                     alt="Reclutadores usando la plataforma"
-                    className="object-cover w-full h-full"
+                    className="object-cover w-5/6 rounded-4xl h-full mx-auto"
                   />
                 </div>
               </div>
+
+              {/* Texto y beneficios */}
               <div
                 ref={recruitersImageRef}
                 className="order-1 md:order-2 space-y-6"
@@ -189,18 +192,17 @@ export default function AnimatedLandingView() {
                 </span>
                 <h2
                   ref={recruitersTitleRef}
-                  className="text-3xl font-bold text-gray-900"
+                  className="text-5xl font-medium text-gray-900"
                 >
                   Software de reclutamiento que{" "}
-                  <span className="text-blue-500">simplifica el proceso</span>
+                  <span className="text-blue-500 italic">
+                    simplifica el proceso
+                  </span>
                 </h2>
-                <p
-                  ref={recruitersDescriptionRef}
-                  className="text-gray-600 mt-4"
-                >
+                <p ref={recruitersDescriptionRef} className="mt-4 text-lg">
                   Desde la publicación de la vacante hasta la contratación
                   final. Gestiona todo en un solo lugar: vacantes, etapas,
-                  candidatos y reclutadores. Beneficios clave:
+                  candidatos y reclutadores. <br /> Beneficios clave:
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
@@ -311,19 +313,24 @@ export default function AnimatedLandingView() {
           </section>
 
           {/* Acerca Section */}
-          <section className="py-16 bg-white">
-            <div className="container mx-auto px-4 text-center">
-              <div ref={herramientasHeaderRef}>
-                <span className="text-blue-500">Acerca de nosotros:</span>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-4">
+          <section className="py-12 bg-white">
+            <div className="container mx-auto px-4">
+              <div
+                ref={herramientasHeaderRef}
+                className="text-center max-w-4xl mx-auto"
+              >
+                <span className="text-blue-600 text-xl font-medium">
+                  Acerca de nosotros:
+                </span>
+                <h2 className="text-3xl md:text-4xl font-medium text-gray-900 mt-2 mb-4">
                   Nuestras herramientas para tu empresa
                 </h2>
-                <p className="text-gray-600 mb-12 max-w-2xl mx-auto">
+                <p className="mb-8">
                   Unimos personas con oportunidades. Así de simple.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
                 {[
                   {
                     img: imgHerramientas1,
@@ -344,20 +351,22 @@ export default function AnimatedLandingView() {
                   <div
                     key={index}
                     ref={(el) => addToRefs(el, herramientaCardRefs)}
-                    className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-2"
+                    className="bg-white py-2 rounded-xl border border-gray-200 overflow-hidden shadow-md shadow-gray-400 hover:shadow-lg hover:shadow-[#F88623]/30 cursor-pointer  transition-all duration-300 transform hover:-translate-y-1"
                   >
-                    <div className="p-4">
-                      <div className="h-48 bg-gray-100 rounded-md mb-4 overflow-hidden">
+                    <div className="p-6 flex flex-col h-full">
+                      <div className="h-58 bg-gray-200 rounded-md mb-3 overflow-hidden">
                         <img
                           src={item.img || "/placeholder.svg"}
                           alt={item.title}
                           className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                         />
                       </div>
-                      <h3 className="text-xl font-semibold text-blue-600 mb-2">
-                        {item.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm">{item.desc}</p>
+                      <div>
+                        <h3 className="text-lg font-medium text-blue-600 mb-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-md">{item.desc}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -365,8 +374,8 @@ export default function AnimatedLandingView() {
             </div>
           </section>
         </main>
-        <Footer className="footer-content" />
       </div>
+      <Footer className="footer-content" />
     </>
   );
 }
