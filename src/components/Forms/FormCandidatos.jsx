@@ -104,20 +104,35 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   };
 
   const validatePdfFile = (file) => {
-    if (!file) return false;
+    if (!file)
+      return { valid: false, message: "No se ha seleccionado ningún archivo" };
 
     const fileType = file.type;
     const fileName = file.name.toLowerCase();
+    const fileSize = file.size;
+    const maxSize = 5 * 1024 * 1024;
 
     if (fileType !== "application/pdf") {
-      return false;
+      return {
+        valid: false,
+        message: "Tipo de archivo no válido. Solo se permiten archivos PDF",
+      };
     }
 
     if (!fileName.endsWith(".pdf")) {
-      return false;
+      return {
+        valid: false,
+        message: "El archivo debe tener extensión .pdf",
+      };
     }
 
-    return true;
+    if (fileSize > maxSize) {
+      return {
+        valid: false,
+        message: "El tamaño del archivo excede el límite de 5MB",
+      };
+    }
+    return { valid: true, message: "" };
   };
 
   const handleFileChange = async (e) => {
