@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useParams, useNavigate } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import { FiMonitor } from "react-icons/fi";
 import { LuClock5 } from "react-icons/lu";
@@ -15,6 +15,7 @@ const isAuthenticated = true;
 const RecuiterVacancyView = () => {
   useCambiarTitulo("DetalleVacante");
   const { id } = useParams();
+  const navigate = useNavigate();
   const [vacante, setVacante] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,11 +47,6 @@ const RecuiterVacancyView = () => {
   };
 
   const eliminarVacante = async () => {
-    const confirmDelete = window.confirm(
-      "¿Estás seguro de que deseas eliminar esta vacante?"
-    );
-    if (!confirmDelete) return;
-
     try {
       if (!id) {
         console.error("❌ No se encontró un ID para eliminar.");
@@ -59,16 +55,48 @@ const RecuiterVacancyView = () => {
 
       await axiosConfig.delete(`/vacancies/${id}`);
       showToast("La vacante fue eliminada correctamente", "success");
-
-      window.location.href = "/reclutador/vacantes";
+      navigate("/reclutador/vacantes");
     } catch (error) {
       console.error("❌ Error al eliminar la vacante:", error.message);
-      alert("Hubo un error al eliminar la vacante.");
+      showToast("Hubo un error al eliminar la vacante", "error");
     }
+  };
+
+  const toggleVacanteEstado = async () => {
+    try {
+      const nuevoEstado = vacante.estado === "cerrada" ? "abierta" : "cerrada";
+
+      await axiosConfig.patch(`/vacancies/${id}`, {
+        estado: nuevoEstado,
+      });
+
+      showToast(`La vacante fue ${nuevoEstado} correctamente`, "success");
+      obtenerVacante(); // Recargar la vacante para ver el cambio de estado
+    } catch (error) {
+      console.error(
+        "❌ Error al actualizar el estado de la vacante:",
+        error.message
+      );
+      showToast("Hubo un error al actualizar el estado de la vacante", "error");
+    }
+  };
+
+  const cargarCandidato = () => {
+    navigate(`/reclutador/candidatos?vacancyId=${id}`);
   };
 
   useEffect(() => {
     obtenerVacante();
+
+    const handleVacancyUpdated = () => {
+      obtenerVacante();
+    };
+
+    window.addEventListener("vacancyUpdated", handleVacancyUpdated);
+
+    return () => {
+      window.removeEventListener("vacancyUpdated", handleVacancyUpdated);
+    };
   }, [id]);
 
   if (loading) return <p className="pt-24 text-center">Cargando...</p>;
@@ -88,11 +116,11 @@ const RecuiterVacancyView = () => {
     <div className="container mx-auto py-10 px-4 sm:px-8 relative">
       <MenuOpciones
         onEdit={() => handleEditVacancy(vacante)}
-        onClose={() => console.log("Cerrar vacante")}
-        onLoadCandidate={() => console.log("Cargar candidato")}
+        onClose={toggleVacanteEstado}
+        onLoadCandidate={cargarCandidato}
         onDelete={eliminarVacante}
         estado={vacante.estado}
-        idVacante={id} // ✅ Aquí le pasamos el ID
+        idVacante={id}
         className="absolute top-20 right-4"
       />
       <h1 className="text-3xl font-medium text-[#152D53] mb-10">

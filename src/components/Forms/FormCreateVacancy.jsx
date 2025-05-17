@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
 import { State, City } from "country-state-city";
 import SelectLocation from "../../components/Forms/SelectLocation";
@@ -17,65 +17,74 @@ const FormCreateVacancy = ({
   const [errors, setErrors] = useState({});
   const [cityOptions, setCityOptions] = useState([]);
 
+  // Usar useState para almacenar los valores actuales del formulario
   const [vacancy, setVacancy] = useState({
-    puesto: "",
-    ubicacion: "",
-    descripcion: "",
-    estado: "",
-    modalidad: "",
-    prioridad: "",
-    jornada: "",
-    experiencia: "",
-    responsabilidades: "",
-    ...initialValues,
+    puesto: initialValues.puesto || "",
+    ubicacion: initialValues.ubicacion || "",
+    descripcion: initialValues.descripcion || "",
+    estado: initialValues.estado || "",
+    modalidad: initialValues.modalidad || "",
+    prioridad: initialValues.prioridad || "",
+    jornada: initialValues.jornada || "",
+    experiencia: initialValues.experiencia || "",
+    responsabilidades: initialValues.responsabilidades || "",
   });
 
+  // Cargar ciudades solo una vez al inicio - memoizado para evitar recalcular
   useEffect(() => {
-    const states = State.getStatesOfCountry("AR");
-    let cities = [];
+    const loadCities = () => {
+      const states = State.getStatesOfCountry("AR");
+      const cities = [];
 
-    states.forEach((state) => {
-      const citiesInState = City.getCitiesOfState("AR", state.isoCode);
-      citiesInState.forEach((city) => {
-        cities.push({
-          value: `${city.name}, ${state.name}`,
-          label: `Argentina, ${city.name}`,
+      states.forEach((state) => {
+        const citiesInState = City.getCitiesOfState("AR", state.isoCode);
+        citiesInState.forEach((city) => {
+          cities.push({
+            value: `${city.name}, ${state.name}`,
+            label: `Argentina, ${city.name}`,
+          });
         });
       });
-    });
 
-    setCityOptions(cities);
+      setCityOptions(cities);
+    };
+
+    loadCities();
   }, []);
 
+  // Manejar la ubicación inicial - con dependencias mínimas
   useEffect(() => {
-    if (initialValues.ubicacion && cityOptions.length > 0) {
-      const selectedCity = cityOptions.find(
-        (option) => option.value === initialValues.ubicacion
+    if (!initialValues.ubicacion || cityOptions.length === 0) return;
+
+    const selectedCity = cityOptions.find(
+      (option) => option.value === initialValues.ubicacion
+    );
+
+    if (!selectedCity && typeof initialValues.ubicacion === "string") {
+      const cityName = initialValues.ubicacion.split(",")[0]?.trim();
+      const matchingCity = cityOptions.find((option) =>
+        option.value.includes(cityName)
       );
 
-      if (!selectedCity && typeof initialValues.ubicacion === "string") {
-        const cityName = initialValues.ubicacion.split(",")[0]?.trim();
-        const matchingCity = cityOptions.find((option) =>
-          option.value.includes(cityName)
-        );
-
-        if (matchingCity) {
-          setVacancy((prev) => ({
-            ...prev,
-            ubicacion: matchingCity.value,
-          }));
-        }
+      if (matchingCity) {
+        setVacancy((prev) => ({
+          ...prev,
+          ubicacion: matchingCity.value,
+        }));
       }
     }
   }, [initialValues.ubicacion, cityOptions]);
 
-  const getInputClass = (field) => {
-    return `w-full px-4 py-2 border rounded-md focus:outline-none ${
-      errors[field]
-        ? "border-red-500 focus:border-red-500 bg-red-50"
-        : "border-gray-300"
-    }`;
-  };
+  const getInputClass = useCallback(
+    (field) => {
+      return `w-full px-4 py-2 border rounded-md focus:outline-none ${
+        errors[field]
+          ? "border-red-500 focus:border-red-500 bg-red-50"
+          : "border-gray-300"
+      }`;
+    },
+    [errors]
+  );
 
   const validationPatterns = {
     puesto: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,()&+-/]+$/,
@@ -83,7 +92,26 @@ const FormCreateVacancy = ({
     ubicacion: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s.,]+$/,
   };
 
-  const validateForm = () => {
+  // Manejador de cambios optimizado para evitar re-renders excesivos
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+
+    setVacancy((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Limpiamos errores solo si existen para ese campo
+    setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const newErrors = { ...prev };
+      delete newErrors[name];
+      return newErrors;
+    });
+  }, []);
+
+  // Validación completa solo cuando se envía el formulario
+  const validateForm = useCallback(() => {
     let formErrors = {};
     let isValid = true;
 
@@ -148,72 +176,21 @@ const FormCreateVacancy = ({
 
     setErrors(formErrors);
     return isValid;
-  };
+  }, [vacancy, validationPatterns]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleCitySelect = useCallback((selectedOption) => {
+    setVacancy((prev) => ({
+      ...prev,
+      ubicacion: selectedOption ? selectedOption.value : "",
+    }));
 
-    if (name === "descripcion" && value.length > MAX_DESCRIPTION_LENGTH) {
-      return;
-    }
-
-    if (name === "responsabilidades" && value.length > MAX_DESCRIPTION_LENGTH) {
-      return;
-    }
-
-    if (name === "puesto" && value.length > MAX_PUESTO_LENGTH) {
-      return;
-    }
-
-    if (
-      (name === "experiencia" || name === "ubicacion" || name === "puesto") &&
-      value.trim() !== ""
-    ) {
-      const pattern = validationPatterns[name];
-      if (!pattern.test(value)) {
-        let errorMessage = "";
-
-        if (name === "experiencia") {
-          errorMessage =
-            "Solo se permiten letras, números, espacios, comas, puntos y los símbolos: + ( ) /";
-
-          if (value.includes("-") && /\b-\d+\b/.test(value)) {
-            errorMessage = "No se permiten números negativos";
-          }
-        } else if (name === "ubicacion") {
-          errorMessage =
-            "Solo se permiten letras, números, espacios, comas, puntos y guiones";
-        } else if (name === "puesto") {
-          errorMessage =
-            "Solo se permiten letras, números, espacios, comas, puntos, paréntesis, &, + y -";
-        }
-
-        setErrors((prev) => ({
-          ...prev,
-          [name]: errorMessage,
-        }));
-      } else {
-        setErrors((prev) => ({
-          ...prev,
-          [name]: "",
-        }));
-      }
-    }
-
-    setVacancy({ ...vacancy, [name]: value });
-  };
-
-  const handleCitySelect = (selectedOption) => {
-    if (selectedOption) {
-      setVacancy({ ...vacancy, ubicacion: selectedOption.value });
-      setErrors((prev) => ({
-        ...prev,
-        ubicacion: "",
-      }));
-    } else {
-      setVacancy({ ...vacancy, ubicacion: "" });
-    }
-  };
+    setErrors((prev) => {
+      if (!prev.ubicacion) return prev;
+      const newErrors = { ...prev };
+      delete newErrors.ubicacion;
+      return newErrors;
+    });
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -227,7 +204,6 @@ const FormCreateVacancy = ({
     }
 
     const { fecha, ...vacancyData } = vacancy;
-
     onSubmit(vacancyData);
     return true;
   };
@@ -236,114 +212,122 @@ const FormCreateVacancy = ({
     (option) => option.value === vacancy.ubicacion
   );
 
-  const TextFieldWithCounter = ({
-    id,
-    name,
-    value,
-    label,
-    placeholder,
-    maxLength,
-    isTextarea = false,
-    min = null,
-  }) => {
-    return (
-      <div>
-        <label
-          htmlFor={id}
-          className={`block text-sm font-medium mb-1 text-[18px] ${
-            errors[name] ? "text-red-600" : ""
-          }`}
-        >
-          {label}
-          <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          {isTextarea ? (
-            <textarea
-              id={id}
-              name={name}
-              value={value}
-              onChange={handleInputChange}
-              placeholder={placeholder}
-              className={`${getInputClass(name)} min-h-[120px]`}
-            />
-          ) : (
-            <input
-              type="text"
-              id={id}
-              name={name}
-              value={value}
-              onChange={handleInputChange}
-              placeholder={placeholder}
-              className={`${getInputClass(name)} ${
-                name === "puesto" ? "pr-14" : ""
-              } text-[#535353]`}
-              maxLength={maxLength}
-            />
-          )}
-
-          {maxLength && (
-            <div
-              className={`absolute bottom-2 right-2 text-xs ${
-                value.length >= maxLength ? "text-orange-500" : "text-gray-500"
-              }`}
-            >
-              {value.length}/{maxLength}
-            </div>
-          )}
-        </div>
-        {errors[name] && (
-          <p className="mt-1 text-sm text-red-600">{errors[name]}</p>
-        )}
-        {min && (
-          <p className="text-xs text-gray-600">Mínimo {min} caracteres</p>
-        )}
-      </div>
-    );
-  };
-
-  // Componente de select con icono
-  const SelectField = ({ id, name, value, label, options, placeholder }) => {
-    return (
-      <div>
-        <label
-          htmlFor={id}
-          className={`block text-sm font-medium mb-1 text-[18px] ${
-            errors[name] ? "text-red-600" : ""
-          }`}
-        >
-          {label}
-          <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          <select
-            id={id}
-            name={name}
-            value={value}
-            onChange={handleInputChange}
-            className={`${getInputClass(
-              name
-            )} text-[#535353] appearance-none pr-10`}
+  // Componente de campo de texto con contador - memoizado para mejor rendimiento
+  const TextFieldWithCounter = useCallback(
+    ({
+      id,
+      name,
+      value,
+      label,
+      placeholder,
+      maxLength,
+      isTextarea = false,
+      min = null,
+    }) => {
+      return (
+        <div>
+          <label
+            htmlFor={id}
+            className={`block text-sm font-medium mb-1 text-[18px] ${
+              errors[name] ? "text-red-600" : ""
+            }`}
           >
-            <option value="" disabled hidden>
-              {placeholder}
-            </option>
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <ChevronDown className="w-7 h-7" />
+            {label}
+            <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            {isTextarea ? (
+              <textarea
+                id={id}
+                name={name}
+                value={value}
+                onChange={handleInputChange}
+                placeholder={placeholder}
+                className={`${getInputClass(name)} min-h-[120px]`}
+              />
+            ) : (
+              <input
+                type="text"
+                id={id}
+                name={name}
+                value={value}
+                onChange={handleInputChange}
+                placeholder={placeholder}
+                className={`${getInputClass(name)} ${
+                  name === "puesto" ? "pr-14" : ""
+                } text-[#535353]`}
+              />
+            )}
+
+            {maxLength && (
+              <div
+                className={`absolute bottom-2 right-2 text-xs ${
+                  value.length >= maxLength
+                    ? "text-orange-500"
+                    : "text-gray-500"
+                }`}
+              >
+                {value.length}/{maxLength}
+              </div>
+            )}
           </div>
+          {errors[name] && (
+            <p className="mt-1 text-sm text-red-600">{errors[name]}</p>
+          )}
+          {min && (
+            <p className="text-xs text-gray-600">Mínimo {min} caracteres</p>
+          )}
         </div>
-        {errors[name] && (
-          <p className="mt-1 text-sm text-red-600">{errors[name]}</p>
-        )}
-      </div>
-    );
-  };
+      );
+    },
+    [errors, getInputClass, handleInputChange]
+  );
+
+  // Componente de select con icono - memoizado para mejor rendimiento
+  const SelectField = useCallback(
+    ({ id, name, value, label, options, placeholder }) => {
+      return (
+        <div>
+          <label
+            htmlFor={id}
+            className={`block text-sm font-medium mb-1 text-[18px] ${
+              errors[name] ? "text-red-600" : ""
+            }`}
+          >
+            {label}
+            <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <select
+              id={id}
+              name={name}
+              value={value}
+              onChange={handleInputChange}
+              className={`${getInputClass(
+                name
+              )} text-[#535353] appearance-none pr-10`}
+            >
+              <option value="" disabled hidden>
+                {placeholder}
+              </option>
+              {options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <ChevronDown className="w-7 h-7" />
+            </div>
+          </div>
+          {errors[name] && (
+            <p className="mt-1 text-sm text-red-600">{errors[name]}</p>
+          )}
+        </div>
+      );
+    },
+    [errors, getInputClass, handleInputChange]
+  );
 
   // Lista de opciones para los selects
   const selectOptions = {
