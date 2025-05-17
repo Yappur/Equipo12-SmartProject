@@ -103,9 +103,7 @@ const FormRegister = () => {
     return regex.test(password);
   };
 
-  // Validación mejorada de teléfono
   const validarTelefono = (phoneNumber) => {
-    // Formato: +código país + número (mínimo 8 dígitos en total)
     const regex = /^\+[1-9][0-9\s-]{6,14}$/;
     return regex.test(phoneNumber);
   };
@@ -114,10 +112,8 @@ const FormRegister = () => {
     const { name, value } = e.target;
 
     if (name === "phoneNumber") {
-      // Permitimos espacios y guiones para mejor UX, pero mantenemos el formato +código
       const cleanedValue = value.replace(/[^\d+\s-]/g, "");
 
-      // Aseguramos que el número comience con +
       const formattedValue = cleanedValue.startsWith("+")
         ? cleanedValue
         : cleanedValue
@@ -152,7 +148,6 @@ const FormRegister = () => {
     if (!file) return;
 
     try {
-      // Validar que sea una imagen
       if (!file.type.startsWith("image/")) {
         setErrors({
           ...errors,

@@ -115,7 +115,11 @@ const VacancyView = () => {
                 <div className="flex items-start space-x-2">
                   <LuClock5 className="w-5 h-5 mt-0.5 flex-shrink-0" />
                   <span className="break-words">Jornada:</span>
-                  <span>{vacante.jornada || "Completa"}</span>
+                  <span>
+                    {vacante.jornada === "medio_tiempo"
+                      ? "Medio Tiempo"
+                      : "Completa"}
+                  </span>
                 </div>
 
                 <div className="flex items-start space-x-2">
