@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useParams, Navigate } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import ApplicationsTable from "../../components/Tables/ApplicationsTable";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 const CandidatosDashboard = () => {
+  useCambiarTitulo("DetalleVacante");
+
   const { id } = useParams();
   const [vacante, setVacante] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,16 +23,10 @@ const CandidatosDashboard = () => {
   useEffect(() => {
     const obtenerVacante = async () => {
       try {
-        console.log("Renderizó la vista del reclutador");
-
         const response = await axiosConfig.get(`/vacancies/${id}`);
-        console.log("Vacantes obtenidas:", response.data);
-
         if (!response.data) {
-          console.warn("Vacante no encontrada con ID:", id);
           setError("No se encontró la vacante con ese ID.");
         } else {
-          console.log("Vacante encontrada:", response.data);
           setVacante(response.data);
         }
       } catch (error) {
@@ -56,7 +53,7 @@ const CandidatosDashboard = () => {
       <h1 className="text-3xl font-medium text-[#152D53] mb-10">
         {vacante.nombre} {vacante.puesto}
       </h1>
-      <div className="relative mb-6 pb-2">
+      <div className="relative mb-1 pb-2">
         <div className="flex space-x-6 border-b border-gray-300">
           {navItems.map((item) => (
             <NavLink

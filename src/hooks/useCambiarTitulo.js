@@ -33,6 +33,12 @@ export const cambiarTitulo = (nombrePagina) => {
     case "CrearUsuario":
       document.title = "Crear Usuario | Talent Match";
       break;
+    case "CrearVacante":
+      document.title = "Crear Vacante | Talent Match";
+      break;
+    case "CrearCandidatos":
+      document.title = "Crear Candidato | Talent Match";
+      break;
     case "Reclutador":
       document.title = "Reclutador | Talent Match";
       break;
@@ -40,16 +46,16 @@ export const cambiarTitulo = (nombrePagina) => {
       document.title = "Ver Candidatos | Talent Match";
       break;
     case "DetalleVacante":
-      document.title = "Detalle de Vacante";
+      document.title = "Detalle de Vacante | Talent Match";
       break;
-    case "DashboardVacante":
-      document.title = "Vacantes Reclutador";
+    case "MisCandidatos":
+      document.title = "Mis Candidatos | Talent Match";
       break;
-    case "CandidatosTable":
-      document.title = "Tabla de Candidatos";
+    case "MisVacantes":
+      document.title = "Mis Vacantes | Talent Match";
       break;
     case "VerCandidatos":
-      document.title = "Candidato";
+      document.title = "Candidatos | Talent Match";
       break;
 
     default:

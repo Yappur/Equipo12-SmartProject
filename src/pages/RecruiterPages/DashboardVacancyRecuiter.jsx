@@ -1,8 +1,9 @@
 import React from "react";
-import RecruiterVacancyList from "../../components/Tables/RecruiterVacancyList";
 import VacanciesTable from "../../components/Tables/VacanciesTable";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 const DashboardVacancyRecuiter = () => {
+  useCambiarTitulo("MisVacantes");
   return (
     <>
       <div className="">

@@ -83,7 +83,7 @@ const RoutesViews = () => {
           <Route
             path="/reclutador/candidatosPorReclutador"
             element={
-              <ProtectedRoute allowedRoles={[ "user"]}>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <CandidatosDelReclutador />
               </ProtectedRoute>
             }
@@ -92,10 +92,7 @@ const RoutesViews = () => {
             path="/reclutador/vacantes"
             element={<DashboardVacancyRecuiter />}
           />
-          <Route
-            path="/reclutador/CandidatosTable"
-            element={<GeneralCandidatosDashboard />}
-          />
+
           <Route
             path="/reclutador/ver/candidatos/:id"
             element={<CandidatosDashboard />}
@@ -132,6 +129,14 @@ const RoutesViews = () => {
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <VacanciesDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reclutador/CandidatosTable"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <GeneralCandidatosDashboard />
               </ProtectedRoute>
             }
           />

@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import FormCreateVacancy from "../../components/Forms/FormCreateVacancy";
 import { showToast } from "../../components/Modals/CustomToaster";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 const ViewCreateVacancy = () => {
+  useCambiarTitulo("CrearVacante");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFirstStep, setIsFirstStep] = useState(true);
   const navigate = useNavigate();

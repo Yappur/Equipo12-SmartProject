@@ -10,14 +10,9 @@ import ModalEditarVacante from "../Modals/ModalEditarVacante";
 import BotonEditar from "../../assets/img/editar.png";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../Modals/CustomToaster";
+import Loader from "../Common/Loader";
 
-
-const Loader = () => (
-  <div className="flex justify-center items-center py-20">
-    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    <p className="ml-4 text-gray-600 font-medium">Cargando Vacantes...</p>
-  </div>
-);
+<Loader />;
 
 const VacanciesTable = () => {
   const [filtrarVacantes, setFiltrarVacantes] = useState("");
@@ -28,11 +23,8 @@ const VacanciesTable = () => {
   const [updateError, setUpdateError] = useState(null);
   const [selectedVacancy, setSelectedVacancy] = useState(null);
   const [deleteModal, setDeleteModal] = useState(false);
-  const [successModal, setSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
   const [changePrioridadModal, setChangePrioridadModal] = useState(false);
   const [changeStatusModal, setChangeStatusModal] = useState(false);
-  const [ubicaciones, setUbicaciones] = useState([]);
   const [tempFieldValue, setTempFieldValue] = useState("");
   const [tempFieldName, setTempFieldName] = useState("");
   const [editModal, setEditModal] = useState(false);
@@ -40,17 +32,24 @@ const VacanciesTable = () => {
   const [changeModalidadModal, setChangeModalidadModal] = useState(false);
 
   const { idUser } = useAuth();
-  console.log("Valor de idUser:", idUser);
-  console.log("Valor de idUser.uid:", idUser?.uid);
 
-  const obtenerVacantes = async () => {
+  const obtenerVacantes = async (page = 1, limit = 100) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await axiosConfig.get(
-        `/vacancies/reclutador/${idUser?.uid}`
-      );
+      if (!idUser?.role) {
+        setError("Rol de usuario no identificado");
+        return;
+      }
+
+      const endpoint =
+        idUser.role === "admin"
+          ? `/admin?page=${page}&limit=${limit}`
+          : `/vacancies/reclutador/${idUser?.uid}`;
+
+      const response = await axiosConfig.get(endpoint);
+
       setVacantes(response.data);
     } catch (error) {
       setError(`Error al cargar las vacantes: ${error.message}`);
@@ -60,44 +59,15 @@ const VacanciesTable = () => {
     }
   };
 
-  // Efecto para obtener las vacantes al cargar el componente
   useEffect(() => {
     if (idUser?.uid) {
-      console.log(
-        "🔄 Cambio detectado en RecruiterVacancyList para el UID:",
-        idUser.uid
-      );
       setVacantes([]);
       obtenerVacantes();
     }
   }, [idUser?.timestamp]);
 
-  useEffect(() => {
-    const obtenerUbicaciones = async () => {
-      try {
-        const response = await axiosConfig.get("/vacancies", {
-          params: { limit: 1000, page: 1 },
-        });
-
-        const ubicacionesUnicas = [
-          ...new Set(response.data.map((vacante) => vacante.ubicacion)),
-        ];
-        setUbicaciones(ubicacionesUnicas);
-      } catch (error) {
-        console.error("Error al cargar ubicaciones:", error.message);
-      }
-    };
-
-    obtenerUbicaciones();
-  }, []);
-
   const refreshVacantes = () => {
     obtenerVacantes();
-  };
-
-  const openDeleteModal = (vacancy) => {
-    setSelectedVacancy(vacancy);
-    setDeleteModal(true);
   };
 
   const openChangeStatusModal = (vacancy, newStatus) => {
@@ -124,18 +94,14 @@ const VacanciesTable = () => {
     setVacancyToEdit(null);
   };
 
-  const showSuccessMessage = (message) => {
-    setSuccessMessage(message);
-    setSuccessModal(true);
-  };
-
   const handleDelete = async (id) => {
     try {
       const response = await axiosConfig.delete(`/vacancies/${id}`);
       obtenerVacantes();
       setDeleteModal(false);
-      showSuccessMessage(
-        `La Vacante ${selectedVacancy.nombre} ha sido eliminada correctamente`
+      showToast(
+        `La Vacante ${selectedVacancy.nombre} ha sido eliminada correctamente`,
+        "success"
       );
     } catch (error) {
       console.error("Error al eliminar la vacante:", error);
@@ -180,11 +146,11 @@ const VacanciesTable = () => {
         setChangeStatusModal(false);
       }
 
-      showSuccessMessage(
-        `El campo ${tempFieldName} ha sido actualizado correctamente`
+      showToast(
+        `El campo ${tempFieldName} ha sido actualizado correctamente`,
+        "success"
       );
     } catch (error) {
-      console.error("Error al actualizar el campo:", error);
       setUpdateError(`Error al actualizar el campo: ${error.message}`);
       obtenerVacantes();
     } finally {
@@ -193,10 +159,6 @@ const VacanciesTable = () => {
   };
 
   const openChangeModalidadModal = (vacancy, newModalidad) => {
-    console.log("📝 Abriendo modal de modalidad:");
-    console.log("👉 Vacante seleccionada:", vacancy);
-    console.log("👉 Nueva modalidad:", newModalidad);
-
     setSelectedVacancy(vacancy);
     setTempFieldName("modalidad");
     setTempFieldValue(newModalidad);
@@ -217,29 +179,18 @@ const VacanciesTable = () => {
         [tempFieldName]: tempFieldValue,
       };
 
-      console.log("🔄 Enviando datos al backend...");
-      console.log("🔎 Endpoint:", `/vacancies/${selectedVacancy.id}`);
-      console.log("📦 Datos enviados:", datosActualizados);
-
       await axiosConfig.patch(
         `/vacancies/${selectedVacancy.id}`,
         datosActualizados
       );
 
-      console.log("✅ Modalidad actualizada correctamente");
-
-      // 🔄 Recargamos los datos de nuevo para actualizar la lista
       await obtenerVacantes();
 
-      console.log("🔄 Lista actualizada en frontend");
-
       setChangeModalidadModal(false);
-      showSuccessMessage(`La modalidad ha sido actualizada correctamente`);
+      showToast(`La modalidad ha sido actualizada correctamente`, "success");
     } catch (error) {
-      console.error("❌ Error al actualizar la modalidad:", error.message);
       setUpdateError(`Error al actualizar la modalidad: ${error.message}`);
     } finally {
-      console.log("🔄 Finalizó el proceso de actualización.");
       setUpdating(false);
     }
   };
@@ -271,83 +222,102 @@ const VacanciesTable = () => {
       name: "Modalidad",
       cell: (row) => {
         const modalidades = ["remoto", "presencial", "híbrido"];
-
         let colorClass = "bg-gray-200 text-gray-800";
+
         if (row.modalidad === "remoto") colorClass = "bg-[#DAB0FA] text-black";
         if (row.modalidad === "presencial")
-          colorClass = "bg-orange-200/50 text-black";
-        if (row.modalidad === "híbrido")
-          colorClass = "bg-yellow-200/30 text-black";
+          colorClass = "bg-[#FFE3CA] text-black";
+        if (row.modalidad === "híbrido") colorClass = "bg-[#FCFFD2] text-black";
 
         return (
-          <div className="flex flex-col">
-            <select
-              value={row.modalidad}
-              onChange={(e) => openChangeModalidadModal(row, e.target.value)}
-              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
-            >
-              {modalidades.map((modalidad) => (
-                <option key={modalidad} value={modalidad}>
-                  {modalidad}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-col w-24 rounded-xl">
+            {idUser.role === "admin" ? (
+              <span
+                className={`text-sm border border-gray-300 rounded-2xl px-2 py-1 ${colorClass}`}
+              >
+                {row.modalidad}
+              </span>
+            ) : (
+              <select
+                value={row.modalidad}
+                onChange={(e) => openChangeModalidadModal(row, e.target.value)}
+                className={`text-sm border border-gray-300 rounded-2xl px-2 py-1 ${colorClass}`}
+              >
+                {modalidades.map((modalidad) => (
+                  <option key={modalidad} value={modalidad}>
+                    {modalidad}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         );
       },
+      sortable: true,
+    },
+    {
+      name: "Fecha",
+      selector: (row) => row.createadAt || "No especificado",
       sortable: true,
     },
     {
       name: "Estado",
       cell: (row) => {
         const estados = ["pausa", "cerrada", "abierta"];
-
         let colorClass = "bg-gray-200 text-gray-800";
-        if (row.estado === "abierta") colorClass = "bg-green-200 text-black";
-        if (row.estado === "pausa") colorClass = "bg-yellow-200/50 text-black";
+
+        if (row.estado === "abierta") colorClass = "bg-[#A9EDC8] text-black";
+        if (row.estado === "pausa") colorClass = "bg-[#FCFFD2] text-black";
         if (row.estado === "borrador") colorClass = "bg-blue-200 text-blue-800";
         if (row.estado === "cerrada" || row.estado === "cancelado")
-          colorClass = "bg-gray-400/30 text-black";
+          colorClass = "bg-[#ECE8DC] text-black";
 
         return (
-          <div className="flex flex-col">
-            <select
-              value={row.estado}
-              onChange={(e) => openChangeStatusModal(row, e.target.value)}
-              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
-            >
-              {estados.map((estado) => (
-                <option key={estado} value={estado}>
-                  {estado}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-col w-24">
+            {idUser.role === "admin" ? (
+              <span
+                className={`text-sm border border-gray-300 rounded-2xl px-2 py-1 ${colorClass}`}
+              >
+                {row.estado}
+              </span>
+            ) : (
+              <select
+                value={row.estado}
+                onChange={(e) => openChangeStatusModal(row, e.target.value)}
+                className={`text-sm border border-gray-300 rounded-2xl px-2 py-1 ${colorClass}`}
+              >
+                {estados.map((estado) => (
+                  <option key={estado} value={estado}>
+                    {estado}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         );
       },
       sortable: true,
     },
-    {
+    idUser.role !== "admin" && {
       name: "Prioridad",
       cell: (row) => {
         const prioridades = ["baja", "media", "alta"];
-
         let colorClass = "bg-gray-200 text-black";
-        if (row.prioridad === "baja") colorClass = "bg-blue-200/30 text-black";
-        if (row.prioridad === "media")
-          colorClass = "bg-orange-200/60 text-black";
-        if (row.prioridad === "alta") colorClass = "bg-red-200 text-black";
+
+        if (row.prioridad === "baja") colorClass = "bg-[#D8E9FF] text-black";
+        if (row.prioridad === "media") colorClass = "bg-[#FFE3CA] text-black";
+        if (row.prioridad === "alta") colorClass = "bg-[#FBAAB2] text-black";
 
         return (
-          <div className="flex flex-col">
+          <div className="flex flex-col w-24">
             <select
               value={row.prioridad}
               onChange={(e) => openChangePrioridadModal(row, e.target.value)}
-              className={`text-sm border border-gray-300 rounded-4xl px-2 py-1 ${colorClass}`}
+              className={`text-sm border border-gray-300 rounded-2xl px-2 py-1 ${colorClass}`}
             >
-              {prioridades.map((prioridade) => (
-                <option key={prioridade} value={prioridade}>
-                  {prioridade}
+              {prioridades.map((prioridad) => (
+                <option key={prioridad} value={prioridad}>
+                  {prioridad}
                 </option>
               ))}
             </select>
@@ -356,18 +326,29 @@ const VacanciesTable = () => {
       },
       sortable: false,
     },
-    {
+    idUser.role !== "user" && {
+      name: "Reclutador",
+      selector: (row) => {
+        const reclutador = row.recruter_name || "No especificado";
+        return <div className="text-center">{reclutador}</div>;
+      },
+    },
+
+    idUser.role !== "admin" && {
       name: "Acciones",
       cell: (row) => (
         <button
           onClick={() => openEditModal(row)}
-          className="  font-bold py-2 px-10 rounded cursor-pointer transition-all duration-300 ease-in-out hover:scale-140"
+          disabled={idUser.role === "admin"}
+          className={`font-bold py-2 px-10 rounded cursor-pointer transition-all duration-300 ease-in-out hover:scale-110 ${
+            idUser.role === "admin" ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          <img src={BotonEditar} alt="Editar" className="w-6" />
+          <img src={BotonEditar} alt="Editar" className="w-4" />
         </button>
       ),
     },
-  ];
+  ].filter(Boolean);
 
   const filtrarData = vacantes.filter((vacancy) => {
     const searchTerm = filtrarVacantes.toLowerCase();
@@ -393,12 +374,14 @@ const VacanciesTable = () => {
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl poppins text-[#152D53]">Vacantes</h1>
-          <Link
-            to={"/reclutador/crear/vacante"}
-            className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
-          >
-            <FaPlus className="mr-2" /> Crear Vacante
-          </Link>
+          {idUser.role !== "admin" && (
+            <Link
+              to={"/reclutador/crear/vacante"}
+              className="bg-[#152D53] hover:bg-[#0c1b33] text-white py-2 px-4 rounded-md flex items-center"
+            >
+              <FaPlus className="mr-2" /> Crear Vacante
+            </Link>
+          )}
         </div>
         <SearchBar
           value={filtrarVacantes}
@@ -432,7 +415,6 @@ const VacanciesTable = () => {
               data={filtrarData}
               pagination
               paginationComponentOptions={paginationOptions}
-              pointerOnHover
               customStyles={customStyles}
               noDataComponent={
                 <div className="p-6 text-center text-gray-500">
@@ -501,16 +483,6 @@ const VacanciesTable = () => {
         btnPrimario="Confirmar Cambio"
         btnSecundario="Cancelar"
         accionPrimaria={actualizarParametro}
-      />
-
-      <Modal
-        isOpen={successModal}
-        onClose={() => setSuccessModal(false)}
-        tipo="success"
-        titulo="Operación exitosa"
-        mensaje={successMessage}
-        btnPrimario="Aceptar"
-        accionPrimaria={() => setSuccessModal(false)}
       />
     </>
   );

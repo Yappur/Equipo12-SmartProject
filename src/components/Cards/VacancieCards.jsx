@@ -7,17 +7,14 @@ const VacancieCards = ({ isPublic = false }) => {
   const [loading, setLoading] = useState(false);
   const [moreAvailable, setMoreAvailable] = useState(true);
   const [page, setPage] = useState(1);
-  const [ubicaciones, setUbicaciones] = useState([]);
+  const [filtrarVacantes, setFiltrarVacantes] = useState("");
 
-  // Filtros del formulario
+  // Estados para los filtros (igual que en VacancieTable)
+  const [estado, setEstado] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [modalidad, setModalidad] = useState("");
   const [ubicacion, setUbicacion] = useState("");
-  const [estado, setEstado] = useState("");
   const [prioridad, setPrioridad] = useState("");
-
-  // Filtro local para búsqueda en el cliente (usando toLowerCase)
-  const [filtrarVacantes, setFiltrarVacantes] = useState("");
 
   const navigate = useNavigate();
 
@@ -30,7 +27,7 @@ const VacancieCards = ({ isPublic = false }) => {
         modalidad: modalidad,
         ubicacion: ubicacion,
         prioridad: prioridad,
-        limit: 6, // Límite por página
+        limit: 6, // Mantenemos el límite de 6 para las cards
         page: initial ? 1 : page,
       };
 
@@ -43,11 +40,12 @@ const VacancieCards = ({ isPublic = false }) => {
 
         if (initial) {
           setVacantes(response.data);
-          setPage(1); // Resetear página al hacer búsqueda inicial
+          setPage(1);
         } else {
           setVacantes((prev) => [...prev, ...response.data]);
         }
 
+        // Validar si hay más para cargar
         if (response.data.length < 6) {
           setMoreAvailable(false);
         } else {
@@ -68,74 +66,43 @@ const VacancieCards = ({ isPublic = false }) => {
   };
 
   useEffect(() => {
+    obtenerVacantes(true);
+  }, []);
+
+  useEffect(() => {
     if (page > 1) {
       obtenerVacantes(false);
     }
   }, [page]);
 
-  useEffect(() => {
-    const obtenerUbicaciones = async () => {
-      try {
-        const response = await axiosConfig.get("/vacancies", {
-          params: { limit: 1000, page: 1 },
-        });
-
-        const ubicacionesUnicas = [
-          ...new Set(response.data.map((vacante) => vacante.ubicacion)),
-        ];
-
-        setUbicaciones(ubicacionesUnicas);
-      } catch (error) {
-        console.error("Error al cargar ubicaciones:", error.message);
-      }
-    };
-
-    obtenerUbicaciones();
-    obtenerVacantes(true);
-  }, []);
-
   const handleVerVacante = (id) => {
     navigate(`/ver/vacante/${id}`);
   };
 
-  const limpiarFiltros = () => {
-    setBusqueda("");
-    setModalidad("");
-    setUbicacion("");
-    setEstado("");
-    setPrioridad("");
-    setFiltrarVacantes(""); // Limpiamos también el filtro local
-    obtenerVacantes(true);
-  };
-
-  // Manejador para el filtro local
   const handleFiltrarChange = (e) => {
     setFiltrarVacantes(e.target.value);
   };
 
-  // Filtrado de vacantes usando toLowerCase (como en VacancieTable)
   const filtrarData = vacantes.filter((vacancy) => {
-    if (!filtrarVacantes) return true; // Si no hay filtro, mostrar todas
-
     const searchTerm = filtrarVacantes.toLowerCase();
-    const nombre = (vacancy.nombre || "").toLowerCase();
     const puesto = (vacancy.puesto || "").toLowerCase();
     const ubicacion = (vacancy.ubicacion || "").toLowerCase();
     const modalidad = (vacancy.modalidad || "").toLowerCase();
     const estado = (vacancy.estado || "").toLowerCase();
     const prioridad = (vacancy.prioridad || "").toLowerCase();
     const jornada = (vacancy.jornada || "").toLowerCase();
+    const nombre = (vacancy.nombre || "").toLowerCase();
     const descripcion = (vacancy.descripcion || "").toLowerCase();
     const experiencia = (vacancy.experiencia || "").toLowerCase();
 
     return (
-      nombre.includes(searchTerm) ||
       puesto.includes(searchTerm) ||
       ubicacion.includes(searchTerm) ||
       modalidad.includes(searchTerm) ||
       estado.includes(searchTerm) ||
       prioridad.includes(searchTerm) ||
       jornada.includes(searchTerm) ||
+      nombre.includes(searchTerm) ||
       descripcion.includes(searchTerm) ||
       experiencia.includes(searchTerm)
     );
@@ -143,100 +110,23 @@ const VacancieCards = ({ isPublic = false }) => {
 
   return (
     <div className="block lg:hidden">
-      <div className="space-y-4 mb-6 border-b border-gray-300 pb-10">
-        <div className="flex gap-2">
+      {/* Barra de búsqueda con el mismo estilo que la tabla */}
+      <div className="space-y-4 mb-6">
+        <div className="flex gap-8">
           <input
-            type="text"
-            className={`border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 ${
-              filtrarVacantes ? "border-orange-500" : "focus:ring-blue-500"
-            }`}
+            className="border border-gray-400 bg-[#fff8f1] rounded-xl px-4 py-2 w-full focus:outline-none focus:ring-2"
             value={filtrarVacantes}
             onChange={handleFiltrarChange}
-            placeholder="Filtrar vacantes (local)"
+            placeholder="- Ingresar palabra clave -"
           />
-        </div>
-
-        <div className="flex gap-2">
-          <input
-            type="text"
-            className={`border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 ${
-              busqueda ? "border-orange-500" : "focus:ring-blue-500"
-            }`}
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Buscar en servidor"
-          />
-          <button
-            className={`text-center bg-orange-400 hover:bg-orange-500 text-white rounded-md px-6 py-2 ${
-              busqueda ? "bg-orange-500" : ""
-            }`}
-            onClick={() => obtenerVacantes(true)}
-          >
-            Buscar
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-          <select
-            className="border rounded-md px-4 py-2 w-full bg-white hover:border-orange-500"
-            value={modalidad}
-            onChange={(e) => setModalidad(e.target.value)}
-          >
-            <option value="">Modalidad</option>
-            <option value="presencial">Presencial</option>
-            <option value="remoto">Remoto</option>
-            <option value="híbrido">Híbrido</option>
-          </select>
-
-          <select
-            className="border rounded-md px-4 py-2 w-full bg-white hover:border-orange-500"
-            value={ubicacion}
-            onChange={(e) => setUbicacion(e.target.value)}
-          >
-            <option value="">Ubicación</option>
-            {ubicaciones.map((ubic, index) => (
-              <option key={index} value={ubic}>
-                {ubic}
-              </option>
-            ))}
-          </select>
-
-          <select
-            className="border rounded-md px-4 py-2 w-full bg-white hover:border-orange-500"
-            value={estado}
-            onChange={(e) => setEstado(e.target.value)}
-          >
-            <option value="">Estado</option>
-            <option value="activo">Activo</option>
-            <option value="pausado">Pausado</option>
-            <option value="borrador">Borrador</option>
-            <option value="terminado">Terminado</option>
-            <option value="cancelado">Cancelado</option>
-          </select>
-
-          <select
-            className="border rounded-md px-4 py-2 w-full bg-white hover:border-orange-500"
-            value={prioridad}
-            onChange={(e) => setPrioridad(e.target.value)}
-          >
-            <option value="">Prioridad</option>
-            <option value="alta">Alta</option>
-            <option value="media">Media</option>
-            <option value="baja">Baja</option>
-          </select>
-
-          <button
-            className="bg-gray-400 hover:bg-gray-500 text-white rounded-md px-6 py-2 flex items-center justify-center"
-            onClick={limpiarFiltros}
-          >
-            Limpiar
-          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {loading && page === 1 ? (
-          <p className="text-center text-gray-500">Cargando vacantes...</p>
+          <div className="col-span-full text-center py-10">
+            Cargando vacantes...
+          </div>
         ) : filtrarData.length > 0 ? (
           filtrarData.map((vacante) => (
             <div
@@ -244,41 +134,57 @@ const VacancieCards = ({ isPublic = false }) => {
               onClick={() => handleVerVacante(vacante.id)}
               className="bg-white border border-gray-200 p-6 rounded-xl shadow-md hover:shadow-lg cursor-pointer transition transform hover:-translate-y-1"
             >
-              <div className="mb-4">
-                <h3 className="text-xl font-bold text-[#F88623] mb-3">
-                  {vacante.nombre ? vacante.nombre : "Vacante sin título"}
-                </h3>
+              <h3 className="text-xl font-bold text-[#F88623] mb-4">
+                {vacante.nombre || vacante.puesto || "Vacante sin título"}
+              </h3>
 
-                <div className="text-gray-700">
-                  <p className="text-sm font-semibold text-[#14599A] mb-1">
-                    Ubicación:
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {vacante.ubicacion ? vacante.ubicacion : "No especificada"}
-                  </p>
-                </div>
-
-                <div className="text-gray-700 mt-3">
-                  <p className="text-sm font-semibold text-[#14599A] mb-1">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-semibold text-[#14599A]">
                     Experiencia:
                   </p>
                   <p className="text-sm text-gray-600">
-                    {vacante.experiencia
-                      ? `${vacante.experiencia} años`
-                      : "No especificada"}
+                    {vacante.experiencia || "Sin descripción"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold text-[#14599A]">Fecha:</p>
+                  <p className="text-sm text-gray-600">
+                    {vacante.fecha
+                      ? new Date(vacante.fecha).toLocaleDateString("es-ES")
+                      : "Sin fecha registrada"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold text-[#14599A]">
+                    Ubicación:
+                  </p>
+                  <p className="text-sm text-gray-600 capitalize">
+                    {vacante.ubicacion || "Sin ubicación"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold text-[#14599A]">
+                    Modalidad:
+                  </p>
+                  <p className="text-sm text-gray-600 capitalize">
+                    {vacante.modalidad || "Sin modalidad"}
                   </p>
                 </div>
               </div>
 
-              <button className="w-full bg-[#F88623] text-white py-2 rounded-md hover:bg-[#F67518] transition">
+              <button className="w-full bg-[#F88623] text-white py-2 rounded-md hover:bg-orange-500 transition mt-4">
                 Ver más detalles
               </button>
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500">
+          <div className="col-span-full text-center py-10">
             No se encontraron vacantes.
-          </p>
+          </div>
         )}
       </div>
 
@@ -288,13 +194,13 @@ const VacancieCards = ({ isPublic = false }) => {
         </div>
       )}
 
-      {moreAvailable && !loading && filtrarVacantes === "" && (
-        <div className="flex justify-center my-6">
+      {moreAvailable && !loading && (
+        <div className="flex justify-center my-8">
           <button
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-10 rounded-full transition"
+            className="w-full max-w-6xl mx-auto bg-[#F88623] hover:bg-orange-500 text-white font-semibold py-3 px-10 rounded-full transition"
             onClick={cargarMasVacantes}
           >
-            Cargar más vacantes
+            Ver todas las vacantes activas
           </button>
         </div>
       )}
