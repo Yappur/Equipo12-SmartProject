@@ -30,6 +30,13 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const [loadingCV, setLoadingCV] = useState(false);
   const [fileError, setFileError] = useState("");
   const [errorModal, setErrorModal] = useState(false);
+  const [errores, setErrores] = useState({
+    fullName: false,
+    email: false,
+    phone: false,
+    vacancyId: false,
+    cvUrl: false,
+  });
 
   useEffect(() => {
     const fetchRecruiterVacancies = async () => {
@@ -164,7 +171,18 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!candidato.cvUrl) {
+    const nuevosErrores = {
+      fullName: candidato.fullName.trim() === "",
+      email: candidato.email.trim() === "",
+      phone: candidato.phone.trim() === "",
+      vacancyId: isRecruiter && !selectedVacancyId,
+      cvUrl: !candidato.cvUrl,
+    };
+
+    setErrores(nuevosErrores);
+
+    const hayErrores = Object.values(nuevosErrores).some((error) => error);
+    if (hayErrores) {
       setErrorModal(true);
       return;
     }
@@ -172,26 +190,14 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
     setCargando(true);
     try {
       const finalVacancyId = isRecruiter ? selectedVacancyId : vacancyId;
-
-      if (!finalVacancyId) {
-        setErrorModal(true);
-        setCargando(false);
-        return;
-      }
-
       const candidatoData = {
-        fullName: candidato.fullName,
-        email: candidato.email,
-        phone: candidato.phone,
-        cvUrl: candidato.cvUrl,
-        status: candidato.status,
+        ...candidato,
         vacancyId: finalVacancyId,
       };
 
       const response = await axiosConfig.post("/applications", candidatoData);
-      console.log("Respuesta:", response.data);
+      showToast("Postulación enviada exitosamente", "success");
 
-      showToast("Postulacion enviada exitosamente", "success");
       if (isRecruiter) {
         navigate(`/reclutador/ver/candidatos/${finalVacancyId}`);
       } else {
@@ -220,10 +226,19 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                 name="fullName"
                 value={candidato.fullName}
                 onChange={handleChange}
-                className="w-full p-3 rounded-2xl border border-gray-500 "
+                className={`w-full p-3 rounded-2xl border ${
+                  errores.fullName
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-500"
+                }`}
                 placeholder="Nombre completo"
                 required
               />
+              {errores.fullName && (
+                <p className="text-sm text-red-500 mt-1">
+                  Este campo es obligatorio
+                </p>
+              )}
             </div>
 
             <div className="my-2">
@@ -235,10 +250,17 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                 name="email"
                 value={candidato.email}
                 onChange={handleChange}
-                className="w-full p-3 rounded-2xl border border-gray-500 "
+                className={`w-full p-3 rounded-2xl border ${
+                  errores.email ? "border-red-500 bg-red-50" : "border-gray-500"
+                }`}
                 placeholder="email@ejemplo.com"
                 required
               />
+              {errores.email && (
+                <p className="text-sm text-red-500 mt-1">
+                  Este campo es obligatorio
+                </p>
+              )}
             </div>
 
             <div className="my-2">
@@ -250,10 +272,17 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                 name="phone"
                 value={candidato.phone}
                 onChange={handleChange}
-                className="w-full p-3 rounded-2xl border border-gray-500 "
+                className={`w-full p-3 rounded-2xl border ${
+                  errores.phone ? "border-red-500 bg-red-50" : "border-gray-500"
+                }`}
                 placeholder="+123456789"
                 required
               />
+              {errores.phone && (
+                <p className="text-sm text-red-500 mt-1">
+                  Este campo es obligatorio
+                </p>
+              )}
             </div>
 
             {isRecruiter && (
@@ -266,7 +295,12 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                     name="vacancyId"
                     value={selectedVacancyId}
                     onChange={handleVacancyChange}
-                    className="w-full p-3 bg-[#f5f2ea] rounded border-none appearance-none pr-10"
+                    className={`w-full p-3 rounded-2xl border appearance-none
+                    pr-10 ${
+                      errores.vacancyId
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-500"
+                    }`}
                     required
                   >
                     <option value="">Seleccionar una vacante</option>
@@ -294,6 +328,12 @@ const FormCandidatos = ({ onClose, vacancyId, isRecruiter = false }) => {
                 {loadingVacancies && (
                   <p className="text-sm text-gray-500 mt-1">
                     Cargando vacantes...
+                  </p>
+                )}
+
+                {errores.vacancyId && (
+                  <p className="text-sm text-red-500 mt-1">
+                    Este campo es obligatorio
                   </p>
                 )}
               </div>
