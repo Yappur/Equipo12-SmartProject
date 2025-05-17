@@ -6,8 +6,10 @@ import fotoMariana from "../../assets/img/WebP/mariaLopezAbout.webp";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 import Footer from "../../components/Navigate/Footer";
 import useAboutAnimations from "../../hooks/animate/useAboutAnimations";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 export default function TalentMatchPage() {
+  useCambiarTitulo("About");
   const {
     headerRef,
     aboutImageRef,

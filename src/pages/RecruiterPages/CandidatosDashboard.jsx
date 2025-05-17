@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useParams, Navigate } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import ApplicationsTable from "../../components/Tables/ApplicationsTable";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 const CandidatosDashboard = () => {
+  useCambiarTitulo("DetalleVacante");
+
   const { id } = useParams();
   const [vacante, setVacante] = useState(null);
   const [loading, setLoading] = useState(true);

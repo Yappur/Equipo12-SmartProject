@@ -3,8 +3,10 @@ import crearUser from "../../assets/img/DesingExports/crearUser.svg";
 import FormCandidatos from "../../components/Forms/FormCandidatos";
 import axiosConfig from "../../helpers/axios.config";
 import { useAuth } from "../../context/AuthContext";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 const CandidatosView = () => {
+  useCambiarTitulo("CrearCandidatos");
   const { idUser } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [vacancies, setVacancies] = useState([]);
@@ -96,55 +98,6 @@ const CandidatosView = () => {
             </div>
             <span className="text-lg font-medium">Nuevo Candidato</span>
           </div>
-
-          {/* Lista de vacantes del reclutador */}
-          {/* {vacancies.length > 0 ? (
-            <div className="mt-8">
-              <h2 className="text-xl font-medium text-[#00254B] mb-4">
-                Mis Vacantes
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {vacancies.map((vacancy) => (
-                  <div
-                    key={vacancy.id}
-                    className="border rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow"
-                    onClick={() => handleShowForm(vacancy.id)}
-                  >
-                    <h3 className="font-medium">
-                      {vacancy.nombre || vacancy.title || "Vacante sin título"}
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                      {vacancy.descripcion ||
-                        vacancy.description ||
-                        "Sin descripción"}
-                    </p>
-                    <div className="mt-4 flex justify-between items-center">
-                      <span className="text-xs text-gray-500">
-                        Candidatos: {vacancy.applicationsCount || 0}
-                      </span>
-                      <button
-                        className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShowForm(vacancy.id);
-                        }}
-                      >
-                        + Agregar Candidato
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="mt-8 p-4 border rounded-lg bg-yellow-50 text-yellow-800">
-              <h2 className="text-xl font-medium mb-2">No tienes vacantes</h2>
-              <p>
-                Debes crear vacantes primero antes de poder agregar candidatos a
-                ellas.
-              </p>
-            </div>
-          )} */}
         </div>
       ) : (
         <div className="">
