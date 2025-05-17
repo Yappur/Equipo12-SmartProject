@@ -40,16 +40,16 @@ export const cambiarTitulo = (nombrePagina) => {
       document.title = "Ver Candidatos | Talent Match";
       break;
     case "DetalleVacante":
-      document.title = "Detalle de Vacante";
+      document.title = "Detalle de Vacante | Talent Match";
       break;
     case "DashboardVacante":
-      document.title = "Vacantes Reclutador";
+      document.title = "Vacantes Reclutador | Talent Match";
       break;
-    case "CandidatosTable":
-      document.title = "Tabla de Candidatos";
+    case "MisCandidatos":
+      document.title = "Mis Candidatos | Talent Match";
       break;
     case "VerCandidatos":
-      document.title = "Candidato";
+      document.title = "Candidatos | Talent Match";
       break;
 
     default:

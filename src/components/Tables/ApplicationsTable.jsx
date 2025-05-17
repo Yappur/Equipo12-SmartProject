@@ -6,6 +6,9 @@ import PdfModal from "../Modals/PdfModal";
 import SearchBar from "./SearchBar";
 import { customStyles, paginationOptions } from "./DashboardsStyles";
 import cvIcon from "../../assets/img/cvIcon.png";
+import { FaSave } from "react-icons/fa";
+import Loader from "../Common/Loader";
+import { showToast } from "../Modals/CustomToaster";
 
 const ApplicationsTable = () => {
   const { id } = useParams();
@@ -32,7 +35,6 @@ const ApplicationsTable = () => {
   const obtenerPostulaciones = async (vacancyId) => {
     try {
       setLoading(true);
-      // Si estás usando axiosConfig, mantener esta estructura
       const response = await axiosConfig.get("/applications", {
         params: { vacancyId },
       });
@@ -48,6 +50,7 @@ const ApplicationsTable = () => {
     try {
       await axiosConfig.patch(`/applications/${id}/status`, { status });
       obtenerPostulaciones(vacancyId);
+      showToast("Estado actualizado correctamente", "success");
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
     }
@@ -76,7 +79,6 @@ const ApplicationsTable = () => {
       setAnalyzing(true);
       handleCloseAnalysisModal();
 
-      // Obtener candidatos en estado "Recibido"
       const candidatosRecibidos = postulaciones.filter(
         (p) => p.status === "Recibido"
       );
@@ -168,19 +170,19 @@ const ApplicationsTable = () => {
           "Descartado",
         ];
 
-        let colorClass = "bg-green-200 w-41 h-7";
-        if (row.status === "Finalista") colorClass = "bg-green-200 w-41 h-7";
-        if (["Recibido", "En revisión"].includes(row.status))
-          colorClass = "bg-yellow-200 w-41 h-7";
-        if (row.status === "Entrevista") colorClass = "bg-blue-200 w-41 h-7";
-        if (row.status === "Descartado") colorClass = "bg-red-200 w-41 h-7";
+        let colorClass = "bg-[#ECE8DC] text-black";
+        if (row.status === "Entrevista") colorClass = "bg-[#D8E9FF] text-black";
+        if (row.status === "Finalista") colorClass = "bg-[#A9EDC8] text-black";
+        if (row.status === "Descartado") colorClass = "bg-[#FBAAB2] text-black";
+        if (row.status === "En revisión")
+          colorClass = "bg-[#FCFFD2] text-black";
 
         return (
           <div className="flex flex-col">
             <select
               value={row.status}
               onChange={(e) => actualizarEstado(row.id, e.target.value, id)}
-              className={`text-sm font-semilight  rounded-2xl px-2 py-1 ${colorClass}`}
+              className={`text-[14px] rounded-full px-2 py-1  ${colorClass}`}
             >
               {estados.map((estado) => (
                 <option key={estado} value={estado}>
@@ -247,7 +249,7 @@ const ApplicationsTable = () => {
             className={`${
               analyzing || totalRecibidos === 0
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
+                : "bg-[#152d53] hover:bg-[#192435]"
             } text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center gap-2`}
           >
             {analyzing ? (
@@ -295,30 +297,7 @@ const ApplicationsTable = () => {
           paginationComponentOptions={paginationOptions}
           noDataComponent="No hay postulantes disponibles"
           progressPending={loading}
-          progressComponent={
-            <div className="p-4 flex justify-center">
-              <svg
-                className="animate-spin h-10 w-10 text-blue-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            </div>
-          }
+          progressComponent={<Loader />}
         />
 
         {showModal && (
@@ -336,46 +315,27 @@ const ApplicationsTable = () => {
         {showAnalysisModal && (
           <>
             <div className="fixed inset-0 z-40 bg-black/50"></div>
-            <div className="fixed inset-0 flex justify-center items-center z-50">
-              <div className="bg-white rounded-lg p-6 w-11/12 max-w-md relative flex flex-col">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-gray-800">
-                    Analizar Currículums
+            <div className="fixed inset-0 text-center flex flex-col justify-center items-center z-50">
+              <div className="bg-white rounded-lg p-6 w-11/12 max-w-md relative flex flex-col items-center">
+                <div className="mb-4 flex flex-col items-center">
+                  <div className="flex h-18 w-18 items-center justify-center rounded-full bg-[#AFCEFF] mb-3">
+                    <FaSave className="h-9 w-9 text-[#3D75CE]" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-800 text-center">
+                    ¿Cuántos CVs deseas analizar?
                   </h2>
-                  <button
-                    onClick={handleCloseAnalysisModal}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      ></path>
-                    </svg>
-                  </button>
                 </div>
 
-                <div className="mb-6">
-                  <p className="text-gray-600 mb-4">
+                <div className="mb-6 w-full">
+                  <p className="text-gray-600 mb-2 text-center">
                     Se analizarán los CVs en estado "Recibido" y se cambiarán a
-                    "En revisión" o "Descartado" según corresponda.
+                    "En revisión" o "Descartado" según los resultados.
                   </p>
 
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
-                    ¿Cuántos currículums deseas analizar?
-                  </label>
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-center ">
                     <button
                       onClick={() => setCvCount(Math.max(1, cvCount - 1))}
-                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-l"
+                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-l flex items-center justify-center"
                     >
                       -
                     </button>
@@ -401,25 +361,22 @@ const ApplicationsTable = () => {
                       onClick={() =>
                         setCvCount(Math.min(cvCount + 1, totalRecibidos))
                       }
-                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-r"
+                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-r flex items-center justify-center"
                     >
                       +
                     </button>
                   </div>
-                  <p className="text-sm text-gray-500 mt-2">
-                    {totalRecibidos} candidatos disponibles para analizar
-                  </p>
                 </div>
 
-                <div className="text-center">
+                <div className="text-center w-full">
                   <button
                     onClick={handleStartAnalysis}
                     disabled={totalRecibidos === 0}
                     className={`${
                       totalRecibidos === 0
                         ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700"
-                    } text-white font-medium py-2 px-8 rounded-lg transition duration-300`}
+                        : "bg-[#152d53] hover:bg-[#192435]"
+                    } text-white font-medium py-2 px-8 rounded-lg transition duration-300 w-full sm:w-auto`}
                   >
                     Comenzar Análisis
                   </button>
@@ -436,92 +393,53 @@ const ApplicationsTable = () => {
             <div className="fixed inset-0 flex justify-center items-center z-50">
               <div className="bg-white rounded-lg p-6 w-11/12 max-w-lg relative flex flex-col">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-gray-800">
+                  <h2 className="text-xl font-semibold text-gray-800">
                     Resultados del Análisis
                   </h2>
-                  <button
-                    onClick={handleCloseResultModal}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      ></path>
-                    </svg>
-                  </button>
                 </div>
 
                 <div className="mb-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg">
-                      <h3 className="text-lg font-semibold text-blue-800">
+                      <h3 className="text-xl font-medium text-blue-800">
                         Total procesados
                       </h3>
-                      <p className="text-2xl font-bold">
+                      <p className="text-2xl font-semibold">
                         {analysisResults.processedCount}
                       </p>
                     </div>
                     <div className="bg-green-50 p-4 rounded-lg">
-                      <h3 className="text-lg font-semibold text-green-800">
+                      <h3 className="text-xl font-medium text-green-800">
                         Exitosos
                       </h3>
-                      <p className="text-2xl font-bold">
+                      <p className="text-2xl font-semibold">
                         {analysisResults.successfulCount}
                       </p>
                     </div>
                     <div className="bg-red-50 p-4 rounded-lg">
-                      <h3 className="text-lg font-semibold text-red-800">
+                      <h3 className="text-xl font-medium text-red-800">
                         Fallidos
                       </h3>
-                      <p className="text-2xl font-bold">
+                      <p className="text-2xl font-semibold">
                         {analysisResults.failureCount}
                       </p>
                     </div>
                     <div className="bg-yellow-50 p-4 rounded-lg">
-                      <h3 className="text-lg font-semibold text-yellow-800">
+                      <h3 className="text-xl font-medium text-yellow-800">
                         Pendientes
                       </h3>
-                      <p className="text-2xl font-bold">
+                      <p className="text-2xl font-semibold">
                         {analysisResults.totalApplications -
                           analysisResults.processedCount}
                       </p>
                     </div>
                   </div>
-
-                  {analysisResults.batches &&
-                    analysisResults.batches.length > 0 && (
-                      <div className="mt-4">
-                        <h3 className="text-md font-semibold text-gray-800 mb-2">
-                          Detalles por lote:
-                        </h3>
-                        {analysisResults.batches.map((batch, index) => (
-                          <div
-                            key={index}
-                            className="border rounded-lg p-3 mb-2"
-                          >
-                            <p>
-                              Lote {index + 1}: {batch.processed} procesados,{" "}
-                              {batch.successful} exitosos
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                 </div>
 
                 <div className="text-center">
                   <button
                     onClick={handleCloseResultModal}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-8 rounded-lg transition duration-300"
+                    className="bg-[#152d53] hover:bg-[#192435] text-white font-normal py-2 px-8 rounded-lg transition duration-300"
                   >
                     Cerrar
                   </button>
