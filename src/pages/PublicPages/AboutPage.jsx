@@ -5,28 +5,53 @@ import fotoLucas from "../../assets/img/WebP/LucasFernandezAbout.webp";
 import fotoMariana from "../../assets/img/WebP/mariaLopezAbout.webp";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 import Footer from "../../components/Navigate/Footer";
+import useAboutAnimations from "../../hooks/animate/useAboutAnimations";
 
 export default function TalentMatchPage() {
+  const {
+    headerRef,
+    aboutImageRef,
+    aboutTextRef,
+    missionRef,
+    impactRef,
+    differencesRef,
+    teamTitleRef,
+    teamCardsRef,
+  } = useAboutAnimations();
+
+  const addTeamCardRef = (el) => {
+    if (el && !teamCardsRef.current.includes(el)) {
+      teamCardsRef.current.push(el);
+    }
+  };
+
   return (
     <div className="font-sans bg-[#f4f6fb] text-gray-800">
       <LandingNavbar />
 
-      <main className="text-center py-16 px-4 bg-[#D8E9FF]">
+      <main ref={headerRef} className="text-center py-16 px-4 bg-[#D8E9FF]">
         <h1 className="text-3xl md:text-5xl font-semibold mb-4">
           Unimos personas con oportunidades <br /> en un{" "}
           <span className="text-[#ff7b00] italic">click</span>. Así de simple.
         </h1>
       </main>
+
       <section className="bg-white flex flex-col md:flex-row items-center gap-12 px-8 md:px-20 py-16">
-        <div className="w-full h-[600px] md:w-1/2 relative flex items-stretch">
+        <div
+          ref={aboutImageRef}
+          className="w-full h-[600px] md:w-1/2 relative flex items-stretch"
+        >
           <img
-            src={FotoMujer}
+            src={FotoMujer || "/placeholder.svg"}
             alt="Personas conectándose"
             className="rounded-xl shadow-lg object-cover h-full w-full"
           />
         </div>
 
-        <div className="w-full md:w-1/2 space-y-6 flex flex-col justify-between">
+        <div
+          ref={aboutTextRef}
+          className="w-full md:w-1/2 space-y-6 flex flex-col justify-between"
+        >
           <h2 className="text-3xl poppins font-semibold text-gray-800">
             Sobre nosotros
           </h2>
@@ -52,8 +77,11 @@ export default function TalentMatchPage() {
         </div>
       </section>
 
-      <section className="bg-white  flex flex-col lg:flex-row gap-8 px-6 md:px-16 py-10">
-        <div className="bg-[#D8E9FF] rounded-xl shadow-md p-6 w-full lg:w-1/2 h-auto">
+      <section className="bg-white flex flex-col lg:flex-row gap-8 px-6 md:px-16 py-10">
+        <div
+          ref={missionRef}
+          className="bg-[#D8E9FF] rounded-xl shadow-md p-6 w-full lg:w-1/2 h-auto"
+        >
           <h3 className="text-xl font-bold mb-4 text-[#162C4D]">
             Nuestra misión
           </h3>
@@ -70,7 +98,10 @@ export default function TalentMatchPage() {
           </p>
         </div>
 
-        <div className="bg-[#F9F9F9] border rounded-xl shadow-md p-6 w-full lg:w-1/2 h-auto">
+        <div
+          ref={impactRef}
+          className="bg-[#F9F9F9] border rounded-xl shadow-md p-6 w-full lg:w-1/2 h-auto"
+        >
           <h3 className="text-xl font-bold mb-4 text-[#162C4D]">
             Nuestro Impacto
           </h3>
@@ -89,7 +120,10 @@ export default function TalentMatchPage() {
         </div>
       </section>
 
-      <section className="bg-white px-6 md:px-20 py-12 border-t border-b">
+      <section
+        ref={differencesRef}
+        className="bg-white px-6 md:px-20 py-12 border-t border-b"
+      >
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Columna 1: Título */}
           <div>
@@ -133,7 +167,7 @@ export default function TalentMatchPage() {
       </section>
 
       <section className="px-6 md:px-20 py-12 bg-white">
-        <div className="text-center mb-12">
+        <div ref={teamTitleRef} className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Quiénes somos</h2>
           <p className="text-gray-700 max-w-2xl mx-auto">
             Conectamos personas con oportunidades, pero detrás también hay
@@ -146,9 +180,12 @@ export default function TalentMatchPage() {
 
         <div className="space-y-16">
           {/* Tarjeta 1 */}
-          <div className="flex flex-col md:flex-row items-center gap-6 max-w-5xl mx-auto">
+          <div
+            ref={addTeamCardRef}
+            className="flex flex-col md:flex-row items-center gap-6 max-w-5xl mx-auto"
+          >
             <img
-              src={fotoMariana}
+              src={fotoMariana || "/placeholder.svg"}
               alt="Mariana López"
               className="w-full md:w-[300px] h-[200px] rounded-lg object-cover"
             />
@@ -169,9 +206,12 @@ export default function TalentMatchPage() {
           </div>
 
           {/* Tarjeta 2 */}
-          <div className="flex flex-col md:flex-row-reverse items-center gap-6 max-w-5xl mx-auto">
+          <div
+            ref={addTeamCardRef}
+            className="flex flex-col md:flex-row-reverse items-center gap-6 max-w-5xl mx-auto"
+          >
             <img
-              src={fotoSofia}
+              src={fotoSofia || "/placeholder.svg"}
               alt="Sofía Méndez"
               className="w-full md:w-[300px] h-[200px] rounded-lg object-cover"
             />
@@ -190,9 +230,12 @@ export default function TalentMatchPage() {
           </div>
 
           {/* Tarjeta 3 */}
-          <div className="flex flex-col md:flex-row items-center gap-6 max-w-5xl mx-auto">
+          <div
+            ref={addTeamCardRef}
+            className="flex flex-col md:flex-row items-center gap-6 max-w-5xl mx-auto"
+          >
             <img
-              src={fotoLucas}
+              src={fotoLucas || "/placeholder.svg"}
               alt="Lucas Fernández"
               className="w-full md:w-[300px] h-[200px] rounded-lg object-cover"
             />
