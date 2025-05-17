@@ -3,48 +3,40 @@ import { Link } from "react-router-dom";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
 import Footer from "../../components/Navigate/Footer";
 import { initAnimations } from "../../helpers/animate";
-import { cambiarTitulo } from "../../hooks/useCambiarTitulo";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 // Images
-import imgMujer from "@/assets/img/mujer-hero.png";
-import imgVacantes from "@/assets/img/vacantes-landing.jpg";
-import imgHerramientas1 from "@/assets/img/herramientas-1.jpg";
-import imgHerramientas2 from "@/assets/img/herramientas-2.jpg";
-import imgHerramientas3 from "@/assets/img/herramientas-3.jpg";
+import imgMujer from "@/assets/img/WebP/mujer-hero.webp";
+import imgVacantes from "@/assets/img/WebP/vacantes-landing.webp";
+import imgHerramientas1 from "@/assets/img/WebP/herramientas-1.webp";
+import imgHerramientas2 from "@/assets/img/WebP/herramientas-2.webp";
+import imgHerramientas3 from "@/assets/img/WebP/herramientas-3.webp";
 import VacancieTable from "../../components/Tables/VacancieTable";
 import VacancieCards from "../../components/Cards/VacancieCards";
 
 export default function AnimatedLandingView() {
-  // Cambiar título de la página
-  useEffect(() => {
-    cambiarTitulo("Landing");
-  }, []);
+  useCambiarTitulo("Landing");
 
-  // Hero section refs
   const heroTitleRef = useRef(null);
   const heroDescriptionRef = useRef(null);
   const heroButtonRef = useRef(null);
   const heroImageRef = useRef(null);
 
-  // Vacantes section refs
   const vacantesTitleRefs = useRef([]);
   const vacantesDescriptionRef = useRef(null);
   const vacantesContentRef = useRef(null);
 
-  // Recruiters section refs
   const recruitersImageRef = useRef(null);
   const recruitersTitleRef = useRef(null);
   const recruitersDescriptionRef = useRef(null);
   const benefitItemRefs = useRef([]);
   const recruitersButtonRef = useRef(null);
 
-  // Herramientas section refs
   const herramientasHeaderRef = useRef(null);
   const herramientaCardRefs = useRef([]);
 
   // Inicializar animaciones
   useEffect(() => {
-    // Configurar referencias para las animaciones
     const refs = {
       hero: {
         title: heroTitleRef.current,

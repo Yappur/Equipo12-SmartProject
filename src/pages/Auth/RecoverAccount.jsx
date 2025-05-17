@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logoLogin from "@/assets/img/mujer-hero.png";
+import logoLogin from "@/assets/img/WebP/mujer-hero.webp";
 import Modal from "../../components/Modals/Modal";
 import { usePasswordReset } from "@/hooks/usePasswordReset";
 import axiosConfig from "../../helpers/axios.config";
 import { showToast } from "../../components/Modals/CustomToaster";
-import cambiarTitulo from "../../hooks/useCambiarTitulo";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 const RecoverAccount = () => {
-  cambiarTitulo("RecuperarCuenta");
+  useCambiarTitulo("RecuperarCuenta");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const [errorModal, setErrorModal] = useState(false);

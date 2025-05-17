@@ -6,15 +6,11 @@ import { Link } from "react-router-dom";
 import axiosConfig from "../../helpers/axios.config";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import { customStyles, paginationOptions } from "./DashboardsStyles";
-import flechasIcon from "../../assets/img/TableCandidatosIcon.png";
 import { useAuth } from "../../context/AuthContext";
+import Loader from "../Common/Loader";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
-const Loader = () => (
-  <div className="flex justify-center items-center py-20">
-    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    <p className="ml-4 text-gray-600 font-medium">Cargando Vacantes...</p>
-  </div>
-);
+<Loader text="Cargando Vacantes..." />;
 
 const RecruiterVacancyList = () => {
   const [filtrarVacantes, setFiltrarVacantes] = useState("");
@@ -43,7 +39,9 @@ const RecruiterVacancyList = () => {
       setLoading(true);
       setError(null);
 
-      const response = await axiosConfig.get(`/vacancies/reclutador/${idUser?.uid}`);
+      const response = await axiosConfig.get(
+        `/vacancies/reclutador/${idUser?.uid}`
+      );
       setVacantes(response.data);
     } catch (error) {
       setError(`Error al cargar las vacantes: ${error.message}`);
@@ -55,14 +53,14 @@ const RecruiterVacancyList = () => {
 
   useEffect(() => {
     if (idUser?.uid) {
-      console.log("🔄 Cambio detectado en RecruiterVacancyList para el UID:", idUser.uid);
+      console.log(
+        "🔄 Cambio detectado en RecruiterVacancyList para el UID:",
+        idUser.uid
+      );
       setVacantes([]);
       obtenerVacantes();
     }
   }, [idUser?.timestamp]);
-
-
-
 
   const refreshVacantes = () => {
     obtenerVacantes();
@@ -172,13 +170,12 @@ const RecruiterVacancyList = () => {
     }
   };
 
-
-
   const columns = [
     {
       name: (
         <div className="flex justify-center items-center gap-2 p-3">
-          <span></span><span className="flex justify-center items-center gap-2">Puesto</span>
+          <span></span>
+          <span className="flex justify-center items-center gap-2">Puesto</span>
         </div>
       ),
       cell: (row) => (
@@ -249,15 +246,14 @@ const RecruiterVacancyList = () => {
     },
 
     {
-      name: (<div className="flex justify-center items-center gap-2 p-3">
-        <span></span><span className="flex justify-center items-center gap-2">Estado</span>
-      </div>),
+      name: (
+        <div className="flex justify-center items-center gap-2 p-3">
+          <span></span>
+          <span className="flex justify-center items-center gap-2">Estado</span>
+        </div>
+      ),
       cell: (row) => {
-        const estados = [
-          "Pausa",
-          "Cerrada",
-          "Abierta",
-        ];
+        const estados = ["Pausa", "Cerrada", "Abierta"];
 
         let colorClass = "bg-gray-200 text-gray-800";
         if (row.estado === "activo") colorClass = "bg-green-200 text-green-800";
@@ -433,7 +429,6 @@ const RecruiterVacancyList = () => {
         loading={updating}
         error={updateError}
       />
-
     </>
   );
 };

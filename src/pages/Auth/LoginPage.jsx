@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import logoLogin from "@/assets/img/mujer-hero.png";
+import logoLogin from "@/assets/img/WebP/mujer-hero.webp";
 import { useLoginFirebase } from "@/hooks/useLoginFirebase";
 import { useAuth } from "../../context/AuthContext";
 import Modal from "../../components/Modals/Modal";
@@ -116,7 +116,8 @@ const LoginPage = () => {
                   />
                   {errors.email && (
                     <p className="text-red-500 text-sm mt-1">
-                      {errors.email.message || "El formato del correo es inválido"}
+                      {errors.email.message ||
+                        "El formato del correo es inválido"}
                     </p>
                   )}
                 </div>
@@ -130,7 +131,8 @@ const LoginPage = () => {
                         required: true,
                         minLength: {
                           value: 8,
-                          message: "La contraseña debe tener al menos 8 carácteres",
+                          message:
+                            "La contraseña debe tener al menos 8 carácteres",
                         },
                       })}
                       className={`w-full p-2.5 ${
@@ -154,7 +156,8 @@ const LoginPage = () => {
                   </div>
                   {errors.password && (
                     <p className="text-red-500 text-sm mt-1">
-                      {errors.password.message || "La contraseña debe tener al menos 8 carácteres"}
+                      {errors.password.message ||
+                        "La contraseña debe tener al menos 8 carácteres"}
                     </p>
                   )}
                 </div>

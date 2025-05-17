@@ -1,14 +1,14 @@
 import { useEffect, useRef, useLayoutEffect } from "react";
 import { useState } from "react";
 import LandingNavbar from "../../components/Navigate/LandingNavbar";
-import imgVacantes from "@/assets/img/img-vacantes.png";
+import imgVacantes from "@/assets/img/WebP/img-vacantes.webp";
 import VacancieTable from "../../components/Tables/VacancieTable";
 import Footer from "../../components/Navigate/Footer";
 import VacancieCards from "../../components/Cards/VacancieCards";
-import { cambiarTitulo } from "../../hooks/useCambiarTitulo";
+import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 const VacancyGallery = () => {
-  cambiarTitulo("VacantesGaleria");
+  useCambiarTitulo("VacantesGaleria");
 
   return (
     <>
@@ -19,8 +19,8 @@ const VacancyGallery = () => {
           src={imgVacantes || "/placeholder.svg"}
           alt=""
         />
-        <section className="relative bg-[#F9F9F9] max-w-screen-xl mx-auto px-6 py-10 rounded-xl shadow-lg md:-mt-32 mt-0">
-          <h1 className="text-center text-[#F88623] font-poppins text-3xl md:text-4xl mt-5 leading-relaxed font-semibold">
+        <div className="relative bg-gray-50 max-w-screen-xl mx-auto px-6 py-10 rounded-3xl shadow-gray-500 shadow-md md:-mt-46 mt-0">
+          <h1 className="text-center text-[#F88623] font-poppins text-xl md:text-5xl mt-5 leading-relaxed font-semilight">
             Tu próximo trabajo está más cerca <br className="hidden md:block" />{" "}
             de lo que piensas
           </h1>
@@ -41,7 +41,7 @@ const VacancyGallery = () => {
               <VacancieCards />
             </div>
           </div>
-        </section>
+        </div>
       </div>
       <Footer />
     </>
