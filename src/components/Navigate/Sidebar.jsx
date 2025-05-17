@@ -99,9 +99,9 @@ const Sidebar = () => {
             transition={{ duration: 0.3, type: "tween" }}
             className="fixed z-45 top-0 left-0 w-64 h-screen bg-[#00254B] text-white shadow-lg p-6 md:hidden overflow-y-auto flex flex-col"
           >
-            <div className="mt-11 mb-4 font-semibold text-2xl tracking-wide">
+            <div className="mt-11 mb-4 font-semibold text-[48px] tracking-wide">
               <span className="text-white">Talent </span>
-              <span className="text-orange-400 italic">Match</span>
+              <span className="text-[#F88623] italic">Match</span>
             </div>
 
             <nav className="flex flex-col flex-1">

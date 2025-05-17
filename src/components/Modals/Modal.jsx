@@ -98,7 +98,7 @@ export default function Modal({
 
             {mensaje && <p className="text-sm text-gray-600">{mensaje}</p>}
 
-            <div className="mt-2 flex w-full flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
+            <div className="mt-2 flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
               {tipo === "success" || tipo === "error" ? (
                 <button
                   onClick={handleAccionPrimaria}
