@@ -3,7 +3,7 @@ import VacanciesTable from "../../components/Tables/VacanciesTable";
 import useCambiarTitulo from "../../hooks/useCambiarTitulo";
 
 const VacanciesDashboard = () => {
-  useCambiarTitulo("PanelVacantess");
+  useCambiarTitulo("PanelVacantes");
   return (
     <>
       <div className="">
