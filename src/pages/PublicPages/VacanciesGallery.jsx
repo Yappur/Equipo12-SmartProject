@@ -19,7 +19,7 @@ const VacancyGallery = () => {
           src={imgVacantes || "/placeholder.svg"}
           alt=""
         />
-        <div className="relative bg-gray-50 max-w-screen-xl mx-auto px-6 py-10 rounded-3xl shadow-gray-500 shadow-md md:-mt-46 mt-0">
+        <div className="relative bg-gray-50 max-w-screen-xl mx-auto px-6 mb-10 py-10 rounded-3xl shadow-gray-500 shadow-md md:-mt-46">
           <h1 className="text-center text-[#F88623] font-poppins text-xl md:text-5xl mt-5 leading-relaxed font-semilight">
             Tu próximo trabajo está más cerca <br className="hidden md:block" />{" "}
             de lo que piensas

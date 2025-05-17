@@ -53,7 +53,7 @@ const VacancyView = () => {
         <img
           className="w-full hidden md:block"
           src={imgVacantes || "/placeholder.svg"}
-          alt=""
+          alt="Oficina de trabajo"
         />
 
         <div className="relative bg-gray-50 max-w-screen-xl mx-auto px-6 py-10 rounded-3xl shadow-gray-500 shadow-md md:-mt-46 mt-0">
@@ -76,17 +76,21 @@ const VacancyView = () => {
               {/* Columna Izquierda */}
               <div className="md:col-span-2">
                 <section className="rounded-lg p-4 ">
-                  <h2 className="text-2xl ml-6 font-semilight mb-6">
-                    Descripción
-                  </h2>
-                  <div className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden">
+                  <h2 className="text-2xl font-semilight mb-6">Descripción</h2>
+                  <div
+                    style={{ whiteSpace: "pre-line" }}
+                    className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden"
+                  >
                     {vacante.descripcion ||
                       "Sin descripción, comunicate con el reclutador."}
                   </div>
-                  <h2 className="text-2xl ml-5 font-semilight mb-6">
+                  <h2 className="text-2xl font-semilight mb-6">
                     Responsabilidades
                   </h2>
-                  <div className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden">
+                  <div
+                    style={{ whiteSpace: "pre-line" }}
+                    className="text-sm text-gray-600 mb-10 break-words whitespace-normal overflow-hidden"
+                  >
                     {vacante.responsabilidades ||
                       "Sin responsabilidades, comunicate con el reclutador."}
                   </div>
@@ -94,26 +98,28 @@ const VacancyView = () => {
               </div>
 
               {/* Columna Derecha */}
-              <div className="space-y-7 text-md p-4 rounded-md text-gray-800 bg-white/50">
-                <h2 className="text-xl md:text-2xl font-semilight">Detalles</h2>
+              <div className="space-y-10 text-md p-4 rounded-md text-gray-800 bg-white/50">
+                <h2 className="text-black text-xl md:text-2xl font-semilight">
+                  Detalles
+                </h2>
                 <div className="flex items-start space-x-2">
-                  <FaRegClipboard className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <FaRegClipboard className="text-black w-5 h-5 mt-0.5 flex-shrink-0" />
                   <span className="break-words">Experiencia:</span>
                   <span>{vacante.experiencia || "Sin experiencia"}</span>
                 </div>
                 <div className="flex items-start space-x-2">
-                  <FiMonitor className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <FiMonitor className="text-black w-5 h-5 mt-0.5 flex-shrink-0" />
                   <span className="break-words">Modalidad: </span>
                   <span>{vacante.modalidad || "Remoto"}</span>
                 </div>
 
                 <div className="flex items-start space-x-2">
-                  <RiMapPinLine className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <RiMapPinLine className="text-black w-5 h-5 mt-0.5 flex-shrink-0" />
                   <span className="break-words">Ubicación:</span>
                   <span>{vacante.ubicacion || "N/A"}</span>
                 </div>
                 <div className="flex items-start space-x-2">
-                  <LuClock5 className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <LuClock5 className="text-black w-5 h-5 mt-0.5 flex-shrink-0" />
                   <span className="break-words">Jornada:</span>
                   <span>
                     {vacante.jornada === "medio_tiempo"
@@ -123,7 +129,7 @@ const VacancyView = () => {
                 </div>
 
                 <div className="flex items-start space-x-2">
-                  <FaArrowRightArrowLeft className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <FaArrowRightArrowLeft className="text-black w-5 h-5 mt-0.5 flex-shrink-0" />
                   <span className="break-words">Estado:</span>
                   <span>{vacante.estado}</span>
                 </div>
@@ -149,12 +155,6 @@ const VacancyView = () => {
                   <h2 className="text-2xl font-medium break-words max-w-[80%]">
                     Postulación a {vacante.nombre || vacante.puesto}
                   </h2>
-                  <button
-                    onClick={handleCloseModal}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    ✕
-                  </button>
                 </div>
                 <div className="px-5">
                   <FormCandidatos onClose={handleCloseModal} vacancyId={id} />
