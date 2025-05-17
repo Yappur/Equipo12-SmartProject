@@ -16,11 +16,7 @@ const GeneralCandidatosDashboard = () => {
   ];
 
   return (
-    <div className=" px-8 min-h-screen">
-      <div className="relative mb-6 pb-2">
-        <div className="flex space-x-6 border-b border-gray-300"></div>
-      </div>
-
+    <div className="p-1 ">
       <div>
         <GeneralApplicationsTable />
       </div>
